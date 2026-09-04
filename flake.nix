@@ -13,16 +13,71 @@
           inherit system;
         };
         lib = pkgs.lib;
+
+        isLinux = pkgs.stdenv.hostPlatform.isLinux;
+        libX11 = pkgs.libX11;
+
+        # Bumped alongside the git tag at release time. Nix has no view of the
+        # tag a flake was fetched at, so unlike goreleaser this cannot derive
+        # itself from `{{.Version}}` — it has to be written down.
+        version = "0.25.0";
+
         slk = pkgs.buildGo126Module {
           pname = "slk";
-          version = "0.0.0";
+          inherit version;
           src = ./.;
           vendorHash = "sha256-/J4gr4m9v6Y0Be8BU4wepIdl2sjoPh0pFCvJL2kIeLk=";
-          buildInputs = [pkgs.libX11];
+
+          # golang.design/x/clipboard compiles a cgo shim that #includes
+          # X11/Xlib.h, so the headers are needed to build at all on Linux.
+          # See postFixup for why this is necessary but not sufficient.
+          buildInputs = lib.optionals isLinux [ libX11 ];
+
           # The test suite spins up httptest servers on loopback. The macOS
           # Nix sandbox denies all networking by default, so allow loopback
           # there; the attribute is a no-op on Linux.
           __darwinAllowLocalNetworking = true;
+
+          nativeBuildInputs = lib.optionals isLinux [ pkgs.makeWrapper ];
+
+          # Mirrors the ldflags in .goreleaser.yaml so a Nix-built slk reports
+          # the same `slk --version` as a released one. Without these, every
+          # Nix user sees "slk dev (commit none, built unknown)".
+          #
+          # lastModifiedDate is used for the build date because it is a
+          # property of the locked revision — a wall-clock timestamp would
+          # make the derivation non-reproducible.
+          ldflags = [
+            "-s"
+            "-w"
+            "-X main.version=${version}"
+            "-X main.commit=${self.shortRev or (self.dirtyShortRev or "unknown")}"
+            "-X main.date=${self.lastModifiedDate or "unknown"}"
+          ];
+
+          # The buildInput above supplies X11 headers at COMPILE time, but
+          # golang.design/x/clipboard does not link against libX11 — it
+          # dlopen()s a bare "libX11.so" at runtime. The built binary
+          # therefore carries no reference to it, and on any system without a
+          # global library directory (NixOS, or `nix profile install` on a
+          # foreign distro) that dlopen fails and copy/paste silently
+          # degrades to the OSC 52 fallback.
+          #
+          # Putting libX11 on LD_LIBRARY_PATH is what actually makes the
+          # native clipboard path reachable. Linux-only: the darwin backend
+          # is ObjC and needs no help.
+          postFixup = lib.optionalString isLinux ''
+            wrapProgram $out/bin/slk \
+              --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ libX11 ]}
+          '';
+
+          meta = {
+            description = "A blazingly fast Slack TUI";
+            homepage = "https://getslk.sh/";
+            license = lib.licenses.mit;
+            mainProgram = "slk";
+            platforms = lib.platforms.unix;
+          };
         };
         # At this lock, nixpkgs builds libwebsockets with its event-loop
         # plugin directory as the store path twice over, so ttyd can't load
