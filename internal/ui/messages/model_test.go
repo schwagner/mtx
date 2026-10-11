@@ -15,12 +15,12 @@ import (
 	"testing"
 
 	"github.com/charmbracelet/x/ansi"
-	"github.com/gammons/slk/internal/config"
-	emojiutil "github.com/gammons/slk/internal/emoji"
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui/imgrender"
-	"github.com/gammons/slk/internal/ui/peerstatus"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/config"
+	emojiutil "github.com/schwagner/mtx/internal/emoji"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui/imgrender"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 func TestMessagePaneView(t *testing.T) {

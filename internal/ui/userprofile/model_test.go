@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 func TestOpenCloseVisibility(t *testing.T) {

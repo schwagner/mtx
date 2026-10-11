@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // timeFromTS returns the local time of a Slack timestamp

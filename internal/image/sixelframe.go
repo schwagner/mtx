@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/debuglog"
 )
 
 // frameTitleMarker is the private suffix slk appends to Bubble Tea's

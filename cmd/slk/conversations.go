@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 	"github.com/slack-go/slack"
 )
 

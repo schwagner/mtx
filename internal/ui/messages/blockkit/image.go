@@ -26,9 +26,9 @@ import (
 
 	"charm.land/lipgloss/v2"
 
-	"github.com/gammons/slk/internal/debuglog"
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/debuglog"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // urlCacheKey hashes a URL into a short, stable cache key suitable

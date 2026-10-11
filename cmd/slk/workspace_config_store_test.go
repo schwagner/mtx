@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/config"
+	"github.com/schwagner/mtx/internal/config"
 )
 
 // TestWorkspaceConfigStore_ConcurrentSaveAndSnapshot is a race-detector

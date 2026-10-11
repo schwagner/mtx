@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	slk "github.com/gammons/slk/internal/slack"
+	slk "github.com/schwagner/mtx/internal/slack"
 )
 
 // SectionsClient is the subset of slk.Client SectionStore needs.

@@ -14,7 +14,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	imgpkg "github.com/gammons/slk/internal/image"
+	imgpkg "github.com/schwagner/mtx/internal/image"
 )
 
 // pathLog records the request paths a test server saw, in order.

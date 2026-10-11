@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 	"github.com/slack-go/slack"
 )
 

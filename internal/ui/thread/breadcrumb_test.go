@@ -6,7 +6,7 @@ import (
 
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // pad right-pads s with spaces to width cells.

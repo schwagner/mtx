@@ -3,7 +3,7 @@ package sidebar
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 // items C1..C4; C2 and C4 are unread, C3 is unread-but-muted (excluded),

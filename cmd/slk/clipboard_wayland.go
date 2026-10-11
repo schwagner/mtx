@@ -8,7 +8,7 @@ import (
 
 	"golang.design/x/clipboard"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // IsWayland reports whether the runtime is a Wayland session.

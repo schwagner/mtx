@@ -5,7 +5,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 func TestBoxSizeMatchesRender(t *testing.T) {

@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // activityFetchFunc builds the ActivityService.Fetch closure: one page

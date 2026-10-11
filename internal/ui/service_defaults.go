@@ -3,7 +3,7 @@ package ui
 import (
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // Defaults so the App can dispatch to a service before one is wired

@@ -9,7 +9,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // fakeMessagesList serves messages.list the way Slack was observed to:

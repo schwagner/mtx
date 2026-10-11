@@ -7,9 +7,9 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // ---------------------------------------------------------------------
@@ -540,7 +540,7 @@ func TestChannelFinderModeKeys(t *testing.T) {
 			// searchresults is NOT affected: its default arm counts
 			// RUNES (searchresults/model.go:180).
 			//
-			// Tracked as https://github.com/gammons/slk/issues/187,
+			// Tracked as https://github.com/schwagner/mtx/issues/187,
 			// which covers both sites. WHEN THAT BUG IS FIXED: the rune
 			// reaches the query, so re-pin Query() to "é", expect the
 			// list to re-filter (0 items against this fixture) and a

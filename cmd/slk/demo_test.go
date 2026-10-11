@@ -8,9 +8,9 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/gammons/slk/internal/demo"
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/demo"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // deliverDemo feeds msg to app, then runs the commands it returns,

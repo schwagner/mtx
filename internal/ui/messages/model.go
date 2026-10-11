@@ -10,17 +10,17 @@ import (
 
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/debuglog"
-	emojiutil "github.com/gammons/slk/internal/emoji"
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui/imgrender"
-	"github.com/gammons/slk/internal/ui/messages/blockkit"
-	"github.com/gammons/slk/internal/ui/peerstatus"
-	"github.com/gammons/slk/internal/ui/scrollbar"
-	"github.com/gammons/slk/internal/ui/selection"
-	"github.com/gammons/slk/internal/ui/styles"
-	"github.com/gammons/slk/internal/usergroups"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/debuglog"
+	emojiutil "github.com/schwagner/mtx/internal/emoji"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui/imgrender"
+	"github.com/schwagner/mtx/internal/ui/messages/blockkit"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/ui/scrollbar"
+	"github.com/schwagner/mtx/internal/ui/selection"
+	"github.com/schwagner/mtx/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/usergroups"
 )
 
 // The message data types live in internal/core so the engine can build

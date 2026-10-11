@@ -12,7 +12,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/gammons/slk/internal/usergroups"
+	"github.com/schwagner/mtx/internal/usergroups"
 )
 
 var (

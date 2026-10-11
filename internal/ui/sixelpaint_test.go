@@ -24,10 +24,10 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui/imgrender"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/wintree"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui/imgrender"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/wintree"
 )
 
 // primeChromeHeight drives one ViewBare call so messagepane.ChromeHeight()

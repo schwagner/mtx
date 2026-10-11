@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/slack/edge"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/slack/edge"
 )
 
 // revalidate refreshes the cache against edgeapi instead of

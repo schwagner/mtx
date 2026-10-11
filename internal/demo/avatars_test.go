@@ -6,7 +6,7 @@ import (
 
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/gammons/slk/internal/avatar"
+	"github.com/schwagner/mtx/internal/avatar"
 )
 
 func TestAvatarFootprintMatchesTheRealAvatars(t *testing.T) {

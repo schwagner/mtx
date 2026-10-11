@@ -16,7 +16,7 @@ import (
 	"charm.land/huh/v2"
 	"golang.org/x/term"
 
-	slackclient "github.com/gammons/slk/internal/slack"
+	slackclient "github.com/schwagner/mtx/internal/slack"
 )
 
 // The browser-session flow signs a workspace in without the Slack desktop app

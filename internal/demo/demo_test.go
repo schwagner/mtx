@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 func TestNewRejectsUnknownScenario(t *testing.T) {

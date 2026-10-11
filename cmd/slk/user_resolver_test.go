@@ -13,9 +13,9 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/slack/edge"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/slack/edge"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // TestUserResolver_BoundsConcurrentRequests is the second half of the

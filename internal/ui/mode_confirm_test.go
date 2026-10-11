@@ -145,7 +145,7 @@ func TestConfirmModeKeys(t *testing.T) {
 			//
 			// An Escape arm that rewrote the key to "esc" used to sit
 			// beside the Enter one; it had no effect and was removed
-			// (https://github.com/gammons/slk/issues/188, item 1). This
+			// (https://github.com/schwagner/mtx/issues/188, item 1). This
 			// row is the witness that the removal was safe, and fails if
 			// a modified Escape ever stops cancelling.
 			name:     "shift+esc cancels: confirmprompt's default cancels without an esc arm",

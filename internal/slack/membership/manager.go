@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 // TTL bounds how stale cached membership can be before EnsureFresh

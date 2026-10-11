@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // benchChannels and benchMessages are the fixed 100-channel / 200-message

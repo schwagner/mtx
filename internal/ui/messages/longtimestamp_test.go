@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // longTSClock is Tuesday 2026-09-29 16:00 in the LOCAL zone. Local (not

@@ -10,8 +10,8 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/debuglog"
 )
 
 // activityFeedTypes is the full set of activity item types slk requests

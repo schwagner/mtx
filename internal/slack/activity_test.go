@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 func loadActivityFixture(t *testing.T) ActivityFeedResult {

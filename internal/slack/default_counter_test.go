@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gammons/slk/internal/slackhttp"
+	"github.com/schwagner/mtx/internal/slackhttp"
 )
 
 // The workspace API client carries most of slk's traffic. If it does

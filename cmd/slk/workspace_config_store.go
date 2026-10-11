@@ -3,7 +3,7 @@ package main
 import (
 	"sync"
 
-	"github.com/gammons/slk/internal/config"
+	"github.com/schwagner/mtx/internal/config"
 )
 
 // workspaceConfigStore holds cfg.Workspaces. SaveTheme and

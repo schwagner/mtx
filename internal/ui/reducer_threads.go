@@ -62,11 +62,11 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/debuglog"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/slack/mrkdwn"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/statusbar"
+	"github.com/schwagner/mtx/internal/debuglog"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/slack/mrkdwn"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/statusbar"
 )
 
 var reduceThreads reducerFunc = func(a *App, msg tea.Msg) (tea.Cmd, bool) {

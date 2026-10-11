@@ -8,7 +8,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // SaveThread writes the thread as Markdown into ExportDir and returns

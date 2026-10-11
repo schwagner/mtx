@@ -10,11 +10,11 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 	"github.com/slack-go/slack"
 )
 

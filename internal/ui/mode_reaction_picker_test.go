@@ -7,9 +7,9 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // reactionCalls records what the injected ReactionService was asked to
@@ -445,7 +445,7 @@ func TestReactionPickerModeKeys(t *testing.T) {
 				// fix silently, which is the one thing a BUG?: marker
 				// must not do.
 				//
-				// Filed as https://github.com/gammons/slk/issues/193.
+				// Filed as https://github.com/schwagner/mtx/issues/193.
 				// WHEN THAT BUG IS FIXED: row 0 becomes a "t..." prefix
 				// match, the HasPrefix half fires with the message
 				// below, and this row should be re-pinned to REQUIRE

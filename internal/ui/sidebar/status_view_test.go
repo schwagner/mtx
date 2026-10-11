@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
 )
 
 func TestView_DNDReplacesPresenceDotAndStatusEmojiFollowsName(t *testing.T) {

@@ -7,8 +7,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/newmessagepicker"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/newmessagepicker"
 )
 
 // openedConversationMsg is what the injected OpenConversation returns,

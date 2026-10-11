@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/config"
-	slackclient "github.com/gammons/slk/internal/slack"
+	"github.com/schwagner/mtx/internal/config"
+	slackclient "github.com/schwagner/mtx/internal/slack"
 	"github.com/slack-go/slack"
 )
 

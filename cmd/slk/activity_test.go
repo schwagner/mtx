@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // The Activity closures must resolve the workspace they were asked for,

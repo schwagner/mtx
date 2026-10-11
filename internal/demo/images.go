@@ -5,8 +5,8 @@ import (
 	"image"
 	"strings"
 
-	"github.com/gammons/slk/internal/core"
-	imgpkg "github.com/gammons/slk/internal/image"
+	"github.com/schwagner/mtx/internal/core"
+	imgpkg "github.com/schwagner/mtx/internal/image"
 )
 
 type storedImage struct {

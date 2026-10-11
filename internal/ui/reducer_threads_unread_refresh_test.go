@@ -3,10 +3,10 @@ package ui
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/sidebar"
-	"github.com/gammons/slk/internal/ui/workspace"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/workspace"
 )
 
 // railRefreshApp builds an App with T1 active and T2's dot lit, then

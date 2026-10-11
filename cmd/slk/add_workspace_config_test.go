@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/config"
+	"github.com/schwagner/mtx/internal/config"
 )
 
 func TestUniqueSlug(t *testing.T) {

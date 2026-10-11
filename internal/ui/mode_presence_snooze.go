@@ -18,8 +18,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/presencemenu"
-	"github.com/gammons/slk/internal/ui/statusbar"
+	"github.com/schwagner/mtx/internal/ui/presencemenu"
+	"github.com/schwagner/mtx/internal/ui/statusbar"
 )
 
 func handlePresenceCustomSnoozeMode(a *App, msg tea.KeyMsg) tea.Cmd {

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/gammons/slk/internal/service"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/ui"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/service"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/ui"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // sectionsProviderAdapter adapts *service.SectionStore to the

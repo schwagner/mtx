@@ -7,11 +7,11 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	lipgloss "charm.land/lipgloss/v2"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/mentionpicker"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/mentionpicker"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 func TestComposeViewPlaceholder(t *testing.T) {

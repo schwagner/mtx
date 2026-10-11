@@ -5,10 +5,10 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui/searchresults"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui/searchresults"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // ---------------------------------------------------------------------

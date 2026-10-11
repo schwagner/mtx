@@ -5,7 +5,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/wintree"
+	"github.com/schwagner/mtx/internal/ui/wintree"
 )
 
 func TestStacked_WindowSplitWithThreadInFront(t *testing.T) {

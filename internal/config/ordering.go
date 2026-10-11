@@ -3,7 +3,7 @@ package config
 import (
 	"sort"
 
-	slack "github.com/gammons/slk/internal/slack"
+	slack "github.com/schwagner/mtx/internal/slack"
 )
 
 // OrderedToken is a token paired with its config-derived ordering metadata.

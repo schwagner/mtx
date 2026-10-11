@@ -7,8 +7,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/slackhttp"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/slackhttp"
 )
 
 func TestSaveWorkspaceVersionTS_UpdatesExisting(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // ThreadSummary is defined in internal/core, which the TUI shares.

@@ -8,9 +8,9 @@ import (
 	"unicode/utf8"
 
 	"charm.land/lipgloss/v2"
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // rowFor returns the rendered sidebar line containing name, failing the

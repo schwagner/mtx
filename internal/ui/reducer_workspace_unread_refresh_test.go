@@ -3,9 +3,9 @@ package ui
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/ui/sidebar"
-	"github.com/gammons/slk/internal/ui/workspace"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/workspace"
 )
 
 // TestWorkspaceReady_RefreshesRailAndTitle pins that a workspace

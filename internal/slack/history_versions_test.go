@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/slackhttp"
+	"github.com/schwagner/mtx/internal/slackhttp"
 )
 
 // Fixture values. Every one is distinct, and none is a zero value, so a

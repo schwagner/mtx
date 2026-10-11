@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 // BenchmarkViewScroll simulates j/k scrolling through a long threads list

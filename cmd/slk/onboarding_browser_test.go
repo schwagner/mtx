@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/config"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/slackdesktop"
+	"github.com/schwagner/mtx/internal/config"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/slackdesktop"
 )
 
 // Shapes of "Copy as cURL" as Chrome and Firefox produce them, trimmed to what

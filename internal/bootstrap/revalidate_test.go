@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/slack/boot"
-	"github.com/gammons/slk/internal/slack/edge"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/slack/boot"
+	"github.com/schwagner/mtx/internal/slack/edge"
 )
 
 // --- fixtures ---------------------------------------------------------

@@ -7,7 +7,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 // updateAndRender drives msg through the real Update chain and renders

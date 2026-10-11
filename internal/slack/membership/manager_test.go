@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 // fakeMemberAPI implements ConversationMemberAPI for tests.

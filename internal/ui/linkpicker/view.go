@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/overlay"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/overlay"
+	"github.com/schwagner/mtx/internal/ui/styles"
 	"github.com/muesli/reflow/truncate"
 )
 

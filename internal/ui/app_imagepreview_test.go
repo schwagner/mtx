@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui/imgrender"
-	"github.com/gammons/slk/internal/ui/messages"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui/imgrender"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // makeTestPNGBytes returns a deterministic PNG of the given size for

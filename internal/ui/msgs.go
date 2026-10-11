@@ -19,12 +19,12 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	emojiutil "github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/peerstatus"
-	"github.com/gammons/slk/internal/ui/searchresults"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/core"
+	emojiutil "github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/ui/searchresults"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // EmojiImageReadyMsg re-exports emoji.EmojiImageReadyMsg so reducers

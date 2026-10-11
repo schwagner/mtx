@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/slackhttp"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/slackhttp"
 )
 
 // seedVersionTS primes env with the build timestamp cached for teamID

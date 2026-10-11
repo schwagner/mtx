@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
-	slkemoji "github.com/gammons/slk/internal/emoji"
-	imgpkg "github.com/gammons/slk/internal/image"
+	"github.com/schwagner/mtx/internal/core"
+	slkemoji "github.com/schwagner/mtx/internal/emoji"
+	imgpkg "github.com/schwagner/mtx/internal/image"
 )
 
 func TestNewModel(t *testing.T) {

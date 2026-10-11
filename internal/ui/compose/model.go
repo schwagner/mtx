@@ -11,13 +11,13 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/channelpicker"
-	"github.com/gammons/slk/internal/ui/emojipicker"
-	"github.com/gammons/slk/internal/ui/mentionpicker"
-	"github.com/gammons/slk/internal/ui/styles"
-	"github.com/gammons/slk/internal/usergroups"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/channelpicker"
+	"github.com/schwagner/mtx/internal/ui/emojipicker"
+	"github.com/schwagner/mtx/internal/ui/mentionpicker"
+	"github.com/schwagner/mtx/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/usergroups"
 )
 
 // draftKey identifies one conversation's composer slot. It is a

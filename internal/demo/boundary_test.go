@@ -15,25 +15,25 @@ var demoBannedImports = []string{
 	"net", "net/http", "os", "os/exec", "database/sql",
 	"github.com/gorilla/websocket",
 	"modernc.org/sqlite",
-	"github.com/gammons/slk/internal/avatar",
-	"github.com/gammons/slk/internal/bootstrap",
-	"github.com/gammons/slk/internal/cache",
-	"github.com/gammons/slk/internal/config",
-	"github.com/gammons/slk/internal/editor",
-	"github.com/gammons/slk/internal/export",
-	"github.com/gammons/slk/internal/filedl",
-	"github.com/gammons/slk/internal/notify",
-	"github.com/gammons/slk/internal/service",
-	"github.com/gammons/slk/internal/wake",
+	"github.com/schwagner/mtx/internal/avatar",
+	"github.com/schwagner/mtx/internal/bootstrap",
+	"github.com/schwagner/mtx/internal/cache",
+	"github.com/schwagner/mtx/internal/config",
+	"github.com/schwagner/mtx/internal/editor",
+	"github.com/schwagner/mtx/internal/export",
+	"github.com/schwagner/mtx/internal/filedl",
+	"github.com/schwagner/mtx/internal/notify",
+	"github.com/schwagner/mtx/internal/service",
+	"github.com/schwagner/mtx/internal/wake",
 }
 
 func demoImportBanned(path string) bool {
 	// mrkdwn is pure text conversion, the same one internal/ui uses to
 	// render its optimistic send.
-	if path == "github.com/gammons/slk/internal/slack/mrkdwn" {
+	if path == "github.com/schwagner/mtx/internal/slack/mrkdwn" {
 		return false
 	}
-	if strings.HasPrefix(path, "github.com/gammons/slk/internal/slack") {
+	if strings.HasPrefix(path, "github.com/schwagner/mtx/internal/slack") {
 		return true
 	}
 	return slices.Contains(demoBannedImports, path)
@@ -64,11 +64,11 @@ func TestDemoStaysOffTheNetworkAndDisk(t *testing.T) {
 
 func TestDemoImportBanCoversSlackSubpackages(t *testing.T) {
 	for path, want := range map[string]bool{
-		"github.com/gammons/slk/internal/slack":        true,
-		"github.com/gammons/slk/internal/slackhttp":    true,
-		"github.com/gammons/slk/internal/slackdesktop": true,
-		"github.com/gammons/slk/internal/slack/mrkdwn": false,
-		"github.com/gammons/slk/internal/core":         false,
+		"github.com/schwagner/mtx/internal/slack":        true,
+		"github.com/schwagner/mtx/internal/slackhttp":    true,
+		"github.com/schwagner/mtx/internal/slackdesktop": true,
+		"github.com/schwagner/mtx/internal/slack/mrkdwn": false,
+		"github.com/schwagner/mtx/internal/core":         false,
 	} {
 		if got := demoImportBanned(path); got != want {
 			t.Errorf("demoImportBanned(%s) = %v, want %v", path, got, want)

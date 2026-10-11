@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 func fixtureWorld() *World { return newWorld(fixtureTeams(), testNow, fixedClock) }

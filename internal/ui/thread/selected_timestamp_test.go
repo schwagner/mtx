@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/charmbracelet/x/ansi"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // Tuesday 2026-09-29 16:00 LOCAL; see messages/longtimestamp_test.go.

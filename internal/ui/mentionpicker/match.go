@@ -3,7 +3,7 @@ package mentionpicker
 import (
 	"strings"
 
-	"github.com/gammons/slk/internal/text"
+	"github.com/schwagner/mtx/internal/text"
 )
 
 // matchRank describes how well a candidate name matches the query.

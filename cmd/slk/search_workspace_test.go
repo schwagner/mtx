@@ -6,8 +6,8 @@ package main
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // TestSearchWorkspaceNoActiveWorkspaceReturnsErr verifies the

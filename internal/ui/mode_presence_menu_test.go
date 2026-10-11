@@ -6,8 +6,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/presencemenu"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/presencemenu"
 )
 
 // presenceMenuAllRows is the unfiltered row count for a menu opened

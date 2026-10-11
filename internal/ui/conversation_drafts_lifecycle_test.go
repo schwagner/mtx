@@ -13,9 +13,9 @@ package ui
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // TestConversationDrafts_SwitchBetweenChannels keeps a channel draft

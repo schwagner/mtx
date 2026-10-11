@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/wintree"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/wintree"
 )
 
 // twoWindowApp returns an app with window 1 on C1 and window 2

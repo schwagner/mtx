@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // customEmojiLister is the one-method slice of *slackclient.Client that

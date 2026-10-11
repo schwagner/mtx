@@ -19,9 +19,9 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/userprofile"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/userprofile"
 )
 
 const (

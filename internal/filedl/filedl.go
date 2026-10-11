@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/gammons/slk/internal/slackhttp"
+	"github.com/schwagner/mtx/internal/slackhttp"
 )
 
 // Downloader fetches auth-gated Slack files into dir. Safe for

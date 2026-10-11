@@ -24,9 +24,9 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"golang.design/x/clipboard"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/editor"
-	"github.com/gammons/slk/internal/ids"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/editor"
+	"github.com/schwagner/mtx/internal/ids"
 )
 
 func (a *App) setThreadFetcherForTest(fn core.ThreadFetchFunc) {

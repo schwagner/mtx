@@ -6,7 +6,7 @@ import (
 	"image"
 	"testing"
 
-	imgpkg "github.com/gammons/slk/internal/image"
+	imgpkg "github.com/schwagner/mtx/internal/image"
 )
 
 func testImageStore(t *testing.T) imageStore {

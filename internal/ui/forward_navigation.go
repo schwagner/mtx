@@ -5,8 +5,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/slackurl"
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/slackurl"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // openForwardedSelected opens the original message when the selected row is

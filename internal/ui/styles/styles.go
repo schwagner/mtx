@@ -6,7 +6,7 @@ import (
 	"image/color"
 
 	"charm.land/lipgloss/v2"
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 var (

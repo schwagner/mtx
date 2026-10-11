@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gammons/slk/internal/slackhttp"
+	"github.com/schwagner/mtx/internal/slackhttp"
 )
 
 func TestDownloadWritesFile(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 	"io"
 	"sort"
 
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/debuglog"
 )
 
 // SixelPlacement is one image painted at an absolute screen position.

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/ids"
+	"github.com/schwagner/mtx/internal/ids"
 )
 
 func TestMessageServiceForward(t *testing.T) {

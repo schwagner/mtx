@@ -3,7 +3,7 @@ package ui
 import (
 	"fmt"
 
-	"github.com/gammons/slk/internal/ui/workspace"
+	"github.com/schwagner/mtx/internal/ui/workspace"
 )
 
 // computeWindowTitle builds the slk terminal-window-title string from

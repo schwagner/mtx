@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
 )
 
 // statusOf returns the Status of the DM item with the given DMUserID.

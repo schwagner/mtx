@@ -27,8 +27,8 @@ package ui
 import (
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
 )
 
 // activityRefs groups a page of activity items' (channel, ts) refs by

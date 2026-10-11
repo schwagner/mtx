@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/debuglog"
 	_ "modernc.org/sqlite"
 )
 

@@ -4,9 +4,9 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
 )
 
 // newTestAppWithThreadsView is the threads-view analogue of

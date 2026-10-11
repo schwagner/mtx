@@ -25,22 +25,22 @@ var tuiBannedImports = []string{
 	"golang.design/x/clipboard",
 	"github.com/gorilla/websocket",
 	"modernc.org/sqlite",
-	"github.com/gammons/slk/internal/slack",
-	"github.com/gammons/slk/internal/slack/boot",
-	"github.com/gammons/slk/internal/slack/edge",
-	"github.com/gammons/slk/internal/slack/membership",
-	"github.com/gammons/slk/internal/slackhttp",
-	"github.com/gammons/slk/internal/slackdesktop",
-	"github.com/gammons/slk/internal/bootstrap",
-	"github.com/gammons/slk/internal/cache",
-	"github.com/gammons/slk/internal/config",
-	"github.com/gammons/slk/internal/editor",
-	"github.com/gammons/slk/internal/export",
-	"github.com/gammons/slk/internal/filedl",
-	"github.com/gammons/slk/internal/notify",
-	"github.com/gammons/slk/internal/service",
-	"github.com/gammons/slk/internal/wake",
-	"github.com/gammons/slk/internal/avatar",
+	"github.com/schwagner/mtx/internal/slack",
+	"github.com/schwagner/mtx/internal/slack/boot",
+	"github.com/schwagner/mtx/internal/slack/edge",
+	"github.com/schwagner/mtx/internal/slack/membership",
+	"github.com/schwagner/mtx/internal/slackhttp",
+	"github.com/schwagner/mtx/internal/slackdesktop",
+	"github.com/schwagner/mtx/internal/bootstrap",
+	"github.com/schwagner/mtx/internal/cache",
+	"github.com/schwagner/mtx/internal/config",
+	"github.com/schwagner/mtx/internal/editor",
+	"github.com/schwagner/mtx/internal/export",
+	"github.com/schwagner/mtx/internal/filedl",
+	"github.com/schwagner/mtx/internal/notify",
+	"github.com/schwagner/mtx/internal/service",
+	"github.com/schwagner/mtx/internal/wake",
+	"github.com/schwagner/mtx/internal/avatar",
 }
 
 // slack-go is allowed only where its Block Kit types are the input
@@ -58,7 +58,7 @@ var tuiBannedCalls = map[string][]string{
 	"os": {"Open", "OpenFile", "Create", "ReadFile", "WriteFile", "ReadDir",
 		"Stat", "Lstat", "Mkdir", "MkdirAll", "MkdirTemp", "CreateTemp",
 		"Remove", "RemoveAll", "Rename", "Chmod", "Chdir", "StartProcess", "DirFS"},
-	"github.com/gammons/slk/internal/image": {"NewFetcher", "Fetcher", "NewCache", "Cache", "MigrateAvatars"},
+	"github.com/schwagner/mtx/internal/image": {"NewFetcher", "Fetcher", "NewCache", "Cache", "MigrateAvatars"},
 }
 
 func TestTUIReachesTheAppOnlyThroughCore(t *testing.T) {
@@ -112,7 +112,7 @@ func TestCoreDoesNotImportTUIOrDirectIO(t *testing.T) {
 		for _, imp := range f.Imports {
 			path, _ := strconv.Unquote(imp.Path.Value)
 			switch {
-			case strings.HasPrefix(path, "github.com/gammons/slk/internal/ui"),
+			case strings.HasPrefix(path, "github.com/schwagner/mtx/internal/ui"),
 				strings.HasPrefix(path, "charm.land/"),
 				path == "os", path == "os/exec", path == "net", path == "net/http", path == "database/sql":
 				t.Errorf("core/%s imports %s", rel, path)

@@ -6,9 +6,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/threadsview"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/threadsview"
 )
 
 // TestFetchThreadReplies_RacesThreadsViewRender reproduces the

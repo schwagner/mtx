@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/debuglog"
 )
 
 // statusState is one snapshot of the unread state exposed to status_command.

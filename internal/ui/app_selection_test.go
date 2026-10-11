@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/statusbar"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/statusbar"
 )
 
 func newTestAppWithMessages(t *testing.T) *App {

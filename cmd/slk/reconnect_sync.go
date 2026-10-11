@@ -6,10 +6,10 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/debuglog"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/debuglog"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // reconnectClient is the entire client surface the reconnect path is

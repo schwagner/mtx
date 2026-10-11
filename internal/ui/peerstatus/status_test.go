@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/emoji"
+	"github.com/schwagner/mtx/internal/emoji"
 )
 
 var testNow = time.Unix(1700000000, 0)

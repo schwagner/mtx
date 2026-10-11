@@ -8,13 +8,13 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/debuglog"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/slack/edge"
-	"github.com/gammons/slk/internal/ui"
-	"github.com/gammons/slk/internal/ui/peerstatus"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/debuglog"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/slack/edge"
+	"github.com/schwagner/mtx/internal/ui"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 	"github.com/slack-go/slack"
 )
 

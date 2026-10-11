@@ -6,7 +6,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/workspace"
+	"github.com/schwagner/mtx/internal/ui/workspace"
 )
 
 // modalHighlightedRow returns the plain text of the highlighted row in

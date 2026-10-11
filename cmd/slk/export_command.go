@@ -19,11 +19,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/export"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/slackdesktop"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/export"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/slackdesktop"
 	"github.com/slack-go/slack"
 )
 

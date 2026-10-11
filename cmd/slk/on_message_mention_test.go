@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 	"github.com/slack-go/slack"
 )
 

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 // manySummaries returns n distinct summaries whose timestamps are far

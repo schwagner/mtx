@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/emoji"
+	"github.com/schwagner/mtx/internal/emoji"
 )
 
 func TestInHuddle(t *testing.T) {

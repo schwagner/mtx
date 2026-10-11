@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gammons/slk/internal/config"
-	slackclient "github.com/gammons/slk/internal/slack"
+	"github.com/schwagner/mtx/internal/config"
+	slackclient "github.com/schwagner/mtx/internal/slack"
 )
 
 // listWorkspaces prints the configured workspaces with their TeamID and

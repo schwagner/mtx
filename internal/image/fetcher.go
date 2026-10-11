@@ -16,8 +16,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gammons/slk/internal/debuglog"
-	"github.com/gammons/slk/internal/slackhttp"
+	"github.com/schwagner/mtx/internal/debuglog"
+	"github.com/schwagner/mtx/internal/slackhttp"
 
 	"golang.org/x/image/draw"
 	// Register WebP decoder with the stdlib image registry. Slack's

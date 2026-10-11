@@ -14,7 +14,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/wintree"
+	"github.com/schwagner/mtx/internal/ui/wintree"
 )
 
 // commandFunc executes a named :command. args holds the

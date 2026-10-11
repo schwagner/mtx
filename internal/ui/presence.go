@@ -17,10 +17,10 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/peerstatus"
-	"github.com/gammons/slk/internal/ui/presencemenu"
-	"github.com/gammons/slk/internal/ui/statusbar"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/ui/presencemenu"
+	"github.com/schwagner/mtx/internal/ui/statusbar"
 )
 
 // peerStatusTickMsg re-checks other users' status and DND deadlines so

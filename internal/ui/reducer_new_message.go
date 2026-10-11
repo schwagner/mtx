@@ -30,8 +30,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/debuglog"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/debuglog"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 var reduceNewMessagePicker reducerFunc = func(a *App, msg tea.Msg) (tea.Cmd, bool) {

@@ -3,7 +3,7 @@ package cache
 import (
 	"fmt"
 
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/debuglog"
 )
 
 type Message struct {

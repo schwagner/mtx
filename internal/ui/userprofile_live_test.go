@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // TestUserProfile_LiveStatusUpdate: while the dialog is open, a

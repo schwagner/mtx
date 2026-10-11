@@ -5,7 +5,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // Named mode_linkpicker_test.go, not mode_link_picker_test.go: the
@@ -86,7 +86,7 @@ func TestLinkPickerModeKeys(t *testing.T) {
 				// pickerFiles. The stale "links" is harmless today
 				// because the next open always reassigns it, but the
 				// asymmetry is unexplained. Filed as
-				// https://github.com/gammons/slk/issues/194.
+				// https://github.com/schwagner/mtx/issues/194.
 				//
 				// WHEN THAT BUG IS FIXED: the links arm clears too, so
 				// flip this to want "" (and consider extending it to

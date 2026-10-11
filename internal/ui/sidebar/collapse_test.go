@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 func TestNew_DefaultCollapsesChannelsSection(t *testing.T) {

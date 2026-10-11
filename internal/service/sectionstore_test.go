@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	slk "github.com/gammons/slk/internal/slack"
+	slk "github.com/schwagner/mtx/internal/slack"
 )
 
 // fakeSectionsClient implements the subset of slk.Client SectionStore needs.

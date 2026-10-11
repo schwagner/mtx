@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gammons/slk/internal/config"
+	"github.com/schwagner/mtx/internal/config"
 )
 
 // uniqueSlug returns base if it is non-empty and not in existing,

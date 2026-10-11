@@ -12,7 +12,7 @@ import (
 	"image/color"
 	"image/draw"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // errUnavailable answers every operation the demo does not fake. The App

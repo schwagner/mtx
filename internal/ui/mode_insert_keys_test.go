@@ -7,10 +7,10 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"golang.design/x/clipboard"
 
-	"github.com/gammons/slk/internal/ui/compose"
-	"github.com/gammons/slk/internal/ui/mentionpicker"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/compose"
+	"github.com/schwagner/mtx/internal/ui/mentionpicker"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // ---------------------------------------------------------------------
@@ -952,7 +952,7 @@ func TestInsertModeKeys(t *testing.T) {
 			// breaking the line -- silently losing a draft the user
 			// meant to keep composing.
 			//
-			// Tracked as https://github.com/gammons/slk/issues/185.
+			// Tracked as https://github.com/schwagner/mtx/issues/185.
 			// WHEN THAT BUG IS FIXED: alt+enter inserts a newline, so
 			// this row must be re-characterized — wantMode becomes
 			// ModeInsert, cmd becomes nil, and the compose value
@@ -993,7 +993,7 @@ func TestInsertModeKeys(t *testing.T) {
 			// isNewline are computed once at :150-152, ABOVE the panel
 			// split, so both composes inherit the classification.
 			//
-			// Same issue, https://github.com/gammons/slk/issues/185.
+			// Same issue, https://github.com/schwagner/mtx/issues/185.
 			// WHEN THAT BUG IS FIXED: re-pin as ModeInsert / cmd nil /
 			// thread compose value "reply\n".
 			name: "alt+enter SENDS the thread reply instead of inserting a newline",

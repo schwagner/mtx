@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/gammons/slk/internal/mention"
-	"github.com/gammons/slk/internal/slackfmt"
+	"github.com/schwagner/mtx/internal/mention"
+	"github.com/schwagner/mtx/internal/slackfmt"
 	"github.com/gen2brain/beeep"
 )
 

@@ -17,19 +17,19 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/export"
-	"github.com/gammons/slk/internal/ids"
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/presencemenu"
-	"github.com/gammons/slk/internal/ui/sidebar"
-	"github.com/gammons/slk/internal/ui/statusbar"
-	"github.com/gammons/slk/internal/ui/styles"
-	"github.com/gammons/slk/internal/ui/themeswitcher"
-	"github.com/gammons/slk/internal/ui/workspace"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/export"
+	"github.com/schwagner/mtx/internal/ids"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/presencemenu"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/statusbar"
+	"github.com/schwagner/mtx/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/ui/themeswitcher"
+	"github.com/schwagner/mtx/internal/ui/workspace"
 )
 
 // Regression net for the App's collaborator seams: every place the TUI

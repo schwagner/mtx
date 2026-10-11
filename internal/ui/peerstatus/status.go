@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gammons/slk/internal/emoji"
+	"github.com/schwagner/mtx/internal/emoji"
 )
 
 // DNDGlyph marks a user in Do Not Disturb. It is a single symbol so it

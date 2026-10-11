@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // threadIn returns the TS of the first thread parent in channelID.

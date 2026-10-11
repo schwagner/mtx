@@ -6,11 +6,11 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/muesli/reflow/truncate"
 
-	slkemoji "github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/overlay"
-	"github.com/gammons/slk/internal/ui/peerstatus"
-	"github.com/gammons/slk/internal/ui/styles"
+	slkemoji "github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/overlay"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // maxBoxWidth is the box's own cap, independent of the terminal: "min(56,

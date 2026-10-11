@@ -4,9 +4,9 @@ import (
 	"context"
 	"sort"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/debuglog"
-	"github.com/gammons/slk/internal/slack/edge"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/debuglog"
+	"github.com/schwagner/mtx/internal/slack/edge"
 )
 
 // channelSearcher is edgeapi's channels/search, the endpoint that

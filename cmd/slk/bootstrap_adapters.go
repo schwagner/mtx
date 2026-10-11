@@ -23,12 +23,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gammons/slk/internal/bootstrap"
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/debuglog"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/slack/boot"
-	"github.com/gammons/slk/internal/slack/edge"
+	"github.com/schwagner/mtx/internal/bootstrap"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/debuglog"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/slack/boot"
+	"github.com/schwagner/mtx/internal/slack/edge"
 	"github.com/slack-go/slack"
 )
 

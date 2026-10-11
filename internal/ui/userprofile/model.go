@@ -18,8 +18,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
 )
 
 // Seed is the cached identity the UI already knows about a user before

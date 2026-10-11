@@ -14,8 +14,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // noProfileToast is the toast text app.go's openUserProfile sets for

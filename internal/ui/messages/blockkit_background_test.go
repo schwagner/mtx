@@ -16,9 +16,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/ui/messages/blockkit"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/ui/messages/blockkit"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 var sgrRe = regexp.MustCompile(`\x1b\[[0-9;]*m`)

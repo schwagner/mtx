@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // TestSetThreadOpensAtBottom guards that opening a thread scrolls the

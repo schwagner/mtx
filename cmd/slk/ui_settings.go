@@ -3,10 +3,10 @@ package main
 import (
 	"time"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui"
-	"github.com/gammons/slk/internal/ui/styles"
-	versionpkg "github.com/gammons/slk/internal/version"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui"
+	"github.com/schwagner/mtx/internal/ui/styles"
+	versionpkg "github.com/schwagner/mtx/internal/version"
 )
 
 // uiSettings is the display configuration run() and runDemo() both hand

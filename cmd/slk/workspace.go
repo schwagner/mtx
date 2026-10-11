@@ -5,12 +5,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/service"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/slack/edge"
-	"github.com/gammons/slk/internal/slack/membership"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/service"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/slack/edge"
+	"github.com/schwagner/mtx/internal/slack/membership"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // UnresolvedDM tracks a DM channel whose user name wasn't in the initial user list.

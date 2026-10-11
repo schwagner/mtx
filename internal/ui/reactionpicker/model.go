@@ -8,13 +8,13 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/muesli/reflow/truncate"
 
-	"github.com/gammons/slk/internal/core"
-	slkemoji "github.com/gammons/slk/internal/emoji"
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/text"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/overlay"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/core"
+	slkemoji "github.com/schwagner/mtx/internal/emoji"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/text"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/overlay"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // ReactionResult is returned when the user selects an emoji.

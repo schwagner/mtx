@@ -14,8 +14,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/debuglog"
 )
 
 // getenv returns os.Getenv(key), or def if unset/empty.

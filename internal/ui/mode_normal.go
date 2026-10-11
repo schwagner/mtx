@@ -33,8 +33,8 @@ import (
 	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/help"
-	"github.com/gammons/slk/internal/ui/themeswitcher"
+	"github.com/schwagner/mtx/internal/ui/help"
+	"github.com/schwagner/mtx/internal/ui/themeswitcher"
 )
 
 func handleNormalMode(a *App, msg tea.KeyMsg) tea.Cmd {

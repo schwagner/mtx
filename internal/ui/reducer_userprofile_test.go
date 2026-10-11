@@ -9,8 +9,8 @@ package ui
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/userprofile"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/userprofile"
 )
 
 // openUserProfileWith opens the dialog for T1/U1 via the production

@@ -14,7 +14,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 
-	imgpkg "github.com/gammons/slk/internal/image"
+	imgpkg "github.com/schwagner/mtx/internal/image"
 )
 
 // stripeGlyph is the leading character on every line inside the

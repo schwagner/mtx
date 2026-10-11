@@ -6,7 +6,7 @@ import (
 	"image"
 	"image/jpeg"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // memeJPEG is KC Green's "This is fine" (see assets/NOTICE.md). It is

@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // testDemo uses the themes scenario, which has only the base rules.

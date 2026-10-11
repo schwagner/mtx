@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/slackhttp"
+	"github.com/schwagner/mtx/internal/slackhttp"
 )
 
 // TestNewImageHTTPClientIsImageDest pins the WIRING, not the header

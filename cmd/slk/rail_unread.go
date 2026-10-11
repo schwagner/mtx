@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 // railUnreadWorkspaces returns the workspace IDs whose rail dot should

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // ConnectionState represents the WebSocket connection status.

@@ -5,9 +5,9 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // ---------------------------------------------------------------------
@@ -140,7 +140,7 @@ func TestSearchModeKeys(t *testing.T) {
 			//
 			// BUG?: a user holding shift cannot cancel the prompt.
 			// Recorded, not fixed. Tracked as
-			// https://github.com/gammons/slk/issues/186.
+			// https://github.com/schwagner/mtx/issues/186.
 			// WHEN THAT BUG IS FIXED: shift+esc cancels, so wantMode
 			// becomes ModeNormal and the search segment clears.
 			// Re-pin this row to that; do not delete it.
@@ -265,7 +265,7 @@ func TestSearchModeKeys(t *testing.T) {
 			// which the rune filter drops.
 			//
 			// BUG?: shift+enter neither submits nor types. Recorded.
-			// Same issue, https://github.com/gammons/slk/issues/186.
+			// Same issue, https://github.com/schwagner/mtx/issues/186.
 			// WHEN THAT BUG IS FIXED: shift+enter submits, so wantMode
 			// becomes ModeNormal and cmd is non-nil. Re-pin, do not
 			// delete.

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/core"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 var testNow = time.Date(2026, 9, 28, 15, 0, 0, 0, time.Local)

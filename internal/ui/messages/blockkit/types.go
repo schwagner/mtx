@@ -18,9 +18,9 @@ import (
 	"io"
 	"time"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/core/blocks"
-	imgpkg "github.com/gammons/slk/internal/image"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/core/blocks"
+	imgpkg "github.com/schwagner/mtx/internal/image"
 )
 
 // The Block Kit data types live in internal/core/blocks so the engine

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/gammons/slk/internal/avatar"
+import "github.com/schwagner/mtx/internal/avatar"
 
 // lazyAvatar is the AvatarFunc behind every author row the messages
 // and thread panes render, on the bubbletea Update goroutine. A hit is

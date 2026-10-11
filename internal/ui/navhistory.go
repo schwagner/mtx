@@ -20,8 +20,8 @@
 package ui
 
 import (
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
 )
 
 // navStack is a per-workspace browser-style back/forward history of

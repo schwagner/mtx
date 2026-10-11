@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/gammons/slk/internal/debuglog"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/debuglog"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // bootstrapPresenceAndDND fetches the user's current presence and DND

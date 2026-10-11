@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	slk "github.com/gammons/slk/internal/slack"
+	slk "github.com/schwagner/mtx/internal/slack"
 )
 
 // MutedChannelsClient is the subset of slk.Client MuteStore needs.

@@ -7,9 +7,9 @@ import (
 	"testing"
 
 	"github.com/charmbracelet/x/ansi"
-	emojiutil "github.com/gammons/slk/internal/emoji"
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui/styles"
+	emojiutil "github.com/schwagner/mtx/internal/emoji"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // Regression test for #133. A kitty image placement encodes the image

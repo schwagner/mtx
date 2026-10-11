@@ -6,7 +6,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // TestReactionSentMsgRollsBackOnFailure is the headline behavior: when the

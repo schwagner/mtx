@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	slackclient "github.com/gammons/slk/internal/slack"
+	slackclient "github.com/schwagner/mtx/internal/slack"
 )
 
 func TestRemintTokens(t *testing.T) {

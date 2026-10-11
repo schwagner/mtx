@@ -9,9 +9,9 @@ import (
 
 	"charm.land/huh/v2"
 	"charm.land/lipgloss/v2"
-	"github.com/gammons/slk/internal/config"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/slackdesktop"
+	"github.com/schwagner/mtx/internal/config"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/slackdesktop"
 	"golang.org/x/term"
 )
 

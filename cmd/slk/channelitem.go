@@ -1,12 +1,12 @@
 package main
 
 import (
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/slackfmt"
-	"github.com/gammons/slk/internal/ui/peerstatus"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/slackfmt"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 	"github.com/slack-go/slack"
 )
 

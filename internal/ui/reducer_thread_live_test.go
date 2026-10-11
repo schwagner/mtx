@@ -3,7 +3,7 @@ package ui
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // A WS thread reply must land in the open thread panel based on the

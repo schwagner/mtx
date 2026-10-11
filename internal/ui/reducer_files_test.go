@@ -3,7 +3,7 @@ package ui
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 func TestDownloadFileMsg_NoDownloader_Toasts(t *testing.T) {

@@ -3,8 +3,8 @@ package main
 import (
 	"strings"
 
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/messages/blockkit"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages/blockkit"
 	"github.com/slack-go/slack"
 )
 

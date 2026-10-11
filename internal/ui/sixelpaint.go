@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui/wintree"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui/wintree"
 )
 
 // This file contains the pure View-time sixel placement pipeline: it

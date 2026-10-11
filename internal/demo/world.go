@@ -7,11 +7,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/core/blocks"
-	"github.com/gammons/slk/internal/text"
-	"github.com/gammons/slk/internal/ui/peerstatus"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/core/blocks"
+	"github.com/schwagner/mtx/internal/text"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // TimestampFormat is the clock format every demo message is stamped with.

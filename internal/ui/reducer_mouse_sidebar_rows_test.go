@@ -7,7 +7,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // TestSidebarClickAgreesWithEnter is the invariant the sidebar's two

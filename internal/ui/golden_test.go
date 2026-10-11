@@ -12,16 +12,16 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/emoji"
-	imgpkg "github.com/gammons/slk/internal/image"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/messages/blockkit"
-	"github.com/gammons/slk/internal/ui/sidebar"
-	"github.com/gammons/slk/internal/ui/styles"
-	"github.com/gammons/slk/internal/ui/wintree"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/emoji"
+	imgpkg "github.com/schwagner/mtx/internal/image"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages/blockkit"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/ui/wintree"
 )
 
 // updateGolden re-blesses every golden file this run touches.

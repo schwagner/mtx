@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 // Pressing `a` from a channel dispatches ChannelSelectedMsg for the next

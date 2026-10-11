@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/slackhttp"
+	"github.com/schwagner/mtx/internal/slackhttp"
 )
 
 // fullViewBody is a conversations.view response shaped like the

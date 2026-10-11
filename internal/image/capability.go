@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/debuglog"
 )
 
 // Env is a snapshot of terminal-related environment variables.

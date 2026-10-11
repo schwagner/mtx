@@ -5,10 +5,10 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/export"
-	"github.com/gammons/slk/internal/ids"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/export"
+	"github.com/schwagner/mtx/internal/ids"
 )
 
 // How seams_test.go installs each collaborator on the App. The scenarios

@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/export"
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/export"
+	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/slack-go/slack"
 )
 

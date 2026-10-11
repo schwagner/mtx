@@ -6,7 +6,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/gammons/slk/internal/image"
+	"github.com/schwagner/mtx/internal/image"
 )
 
 // kittyPlaceholderPrefix is the leading byte sequence of any cell whose

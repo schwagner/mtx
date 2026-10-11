@@ -14,8 +14,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gammons/slk/internal/debuglog"
-	imgpkg "github.com/gammons/slk/internal/image"
+	"github.com/schwagner/mtx/internal/debuglog"
+	imgpkg "github.com/schwagner/mtx/internal/image"
 )
 
 const (

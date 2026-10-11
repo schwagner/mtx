@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gammons/slk/internal/avatar"
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/debuglog"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/messages/blockkit"
+	"github.com/schwagner/mtx/internal/avatar"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/debuglog"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages/blockkit"
 	"github.com/slack-go/slack"
 )
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/debuglog"
 	gosixel "github.com/mattn/go-sixel"
 	"golang.org/x/image/draw"
 )

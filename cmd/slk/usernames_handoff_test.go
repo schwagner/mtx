@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // TestNameHandoff_UIMapIsNotTheNotifyBaseline drives a real ui.App with

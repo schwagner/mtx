@@ -18,7 +18,7 @@ import (
 	"errors"
 	"io/fs"
 
-	"github.com/gammons/slk/internal/ids"
+	"github.com/schwagner/mtx/internal/ids"
 )
 
 // NewReactionService builds a ReactionService from individual

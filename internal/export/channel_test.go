@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 const testTZ = "America/New_York"

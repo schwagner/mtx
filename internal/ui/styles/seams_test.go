@@ -8,7 +8,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 
-	"github.com/gammons/slk/internal/config"
+	"github.com/schwagner/mtx/internal/config"
 )
 
 // Regression net for loading user theme files: which files register,

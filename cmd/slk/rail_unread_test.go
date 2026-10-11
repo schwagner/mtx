@@ -4,13 +4,13 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gammons/slk/internal/bootstrap"
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/config"
-	"github.com/gammons/slk/internal/service"
-	"github.com/gammons/slk/internal/slack/boot"
-	"github.com/gammons/slk/internal/ui/sidebar"
-	"github.com/gammons/slk/internal/ui/workspace"
+	"github.com/schwagner/mtx/internal/bootstrap"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/service"
+	"github.com/schwagner/mtx/internal/slack/boot"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/workspace"
 	"github.com/slack-go/slack"
 )
 

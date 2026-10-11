@@ -4,8 +4,8 @@ import (
 	"sync"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/gammons/slk/internal/slackfmt"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/slackfmt"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // userNameStore is a workspace's user ID -> display name cache on the

@@ -6,9 +6,9 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui/channelfinder"
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui/channelfinder"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 type forwardSource struct {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gammons/slk/internal/debuglog"
+	"github.com/schwagner/mtx/internal/debuglog"
 	"github.com/slack-go/slack"
 )
 

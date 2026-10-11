@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 func TestIsStale(t *testing.T) {

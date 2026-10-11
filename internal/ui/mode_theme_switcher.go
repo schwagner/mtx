@@ -16,7 +16,7 @@ package ui
 import (
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 func handleThemeSwitcherMode(a *App, msg tea.KeyMsg) tea.Cmd {

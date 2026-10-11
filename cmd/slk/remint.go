@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	slackclient "github.com/gammons/slk/internal/slack"
+	slackclient "github.com/schwagner/mtx/internal/slack"
 )
 
 // remintTokens refreshes every token's xoxc from the live desktop cookie. On

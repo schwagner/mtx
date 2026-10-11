@@ -20,9 +20,9 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/styles"
 	"github.com/muesli/reflow/truncate"
 )
 

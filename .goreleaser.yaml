@@ -122,7 +122,7 @@ nfpms:
   - id: slk
     package_name: slk
     vendor: Grant Ammons
-    homepage: https://github.com/gammons/slk
+    homepage: https://github.com/schwagner/mtx
     maintainer: Grant Ammons <grant@grant.dev>
     description: |-
       A blazingly fast Slack TUI.
@@ -171,7 +171,7 @@ release:
     pre-releases are opt-in only, and nothing you already have installed
     will move to this by itself.
 
-    - **Go:** `go install github.com/gammons/slk/cmd/slk@{{ .Tag }}`
+    - **Go:** `go install github.com/schwagner/mtx/cmd/slk@{{ .Tag }}`
     - **Linux/macOS:** download the `.tar.gz`, extract, and place `slk` in your `$PATH`
     - **Windows:** download the `.zip`, extract `slk.exe`, add to `PATH`
 
@@ -192,7 +192,7 @@ release:
     ```
 
     Please report anything you find at
-    https://github.com/gammons/slk/issues -- including "it seemed fine",
+    https://github.com/schwagner/mtx/issues -- including "it seemed fine",
     which is genuinely useful and almost never gets sent.
     {{- else }}
     **Install**
@@ -202,7 +202,7 @@ release:
     - **Fedora/RHEL:** `sudo rpm -i slk_*.rpm`
     - **Alpine:** `sudo apk add --allow-untrusted slk_*.apk`
     - **Windows:** download the `.zip`, extract `slk.exe`, add to `PATH`
-    - **Go:** `go install github.com/gammons/slk/cmd/slk@{{ .Tag }}`
+    - **Go:** `go install github.com/schwagner/mtx/cmd/slk@{{ .Tag }}`
 
     Verify downloads with `checksums.txt`.
     {{- end }}
@@ -238,11 +238,11 @@ homebrew_casks:
       name: goreleaser
       email: goreleaser@gammons.dev
     commit_msg_template: "slk: brew cask update for {{ .ProjectName }} version {{ .Tag }}"
-    homepage: https://github.com/gammons/slk
+    homepage: https://github.com/schwagner/mtx
     description: A blazingly fast, keyboard-driven Slack TUI
     # Helps `brew audit` when the homepage and the download domain differ.
     url:
-      verified: github.com/gammons/slk
+      verified: github.com/schwagner/mtx
     # Skip the prerelease tags goreleaser auto-flags so the tap only
     # tracks stable releases.
     skip_upload: auto

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/slackdesktop"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/slackdesktop"
 )
 
 // minter matches slackclient.MintToken; injected for testing.

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/gammons/slk/internal/cache"
+	"github.com/schwagner/mtx/internal/cache"
 )
 
 // The mention-count half of markChannelRead's contract. The read-state

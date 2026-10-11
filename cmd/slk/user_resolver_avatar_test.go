@@ -10,9 +10,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gammons/slk/internal/avatar"
-	"github.com/gammons/slk/internal/cache"
-	imgpkg "github.com/gammons/slk/internal/image"
+	"github.com/schwagner/mtx/internal/avatar"
+	"github.com/schwagner/mtx/internal/cache"
+	imgpkg "github.com/schwagner/mtx/internal/image"
 )
 
 // avatarPNGServer serves a 16x16 PNG at every path: the avatar CDN.

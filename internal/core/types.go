@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gammons/slk/internal/core/blocks"
-	"github.com/gammons/slk/internal/ids"
+	"github.com/schwagner/mtx/internal/core/blocks"
+	"github.com/schwagner/mtx/internal/ids"
 )
 
 // The values that cross between the engine and the TUI. Most began life

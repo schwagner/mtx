@@ -7,14 +7,14 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/ui/help"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/sidebar"
-	"github.com/gammons/slk/internal/ui/themeswitcher"
-	"github.com/gammons/slk/internal/ui/workspace"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/ui/help"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/themeswitcher"
+	"github.com/schwagner/mtx/internal/ui/workspace"
 )
 
 // ---------------------------------------------------------------------
@@ -988,7 +988,7 @@ func TestNormalModeKeys(t *testing.T) {
 		// Arm 22: ToggleSection space (mode_normal.go:174)
 		// -------------------------------------------------------------
 		{
-			// Regression guard for https://github.com/gammons/slk/issues/184.
+			// Regression guard for https://github.com/schwagner/mtx/issues/184.
 			// ToggleSection used to be declared as key.WithKeys(" "), but
 			// key.Matches compares against tea.KeyMsg.String(), and
 			// Key.String explicitly refuses to return a lone space
@@ -1189,7 +1189,7 @@ func TestNormalModeKeys(t *testing.T) {
 			// HalfPageDown arms used to wrap the call in an unreachable
 			// `if cmd != nil { return cmd }`; all four arms now return
 			// the result directly
-			// (https://github.com/gammons/slk/issues/188, item 3). This
+			// (https://github.com/schwagner/mtx/issues/188, item 3). This
 			// row pins the nil so a future change to that helper has a
 			// witness.
 			name:     "pgdown never returns a cmd: the down path has no backfill",
@@ -2087,7 +2087,7 @@ func TestNormalModeKeys(t *testing.T) {
 		},
 		// -------------------------------------------------------------
 		// Arm: Top `gg` (mode_normal.go, pendingTop chord). Regression
-		// guards for https://github.com/gammons/slk/issues/184: `g` used
+		// guards for https://github.com/schwagner/mtx/issues/184: `g` used
 		// to have no handler arm at all, so the advertised `gg` was inert.
 		// The fix models `gg` as a two-key chord like ctrl+w: the first
 		// `g` arms pendingTop and shows a transient hint, the second

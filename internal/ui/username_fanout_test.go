@@ -12,9 +12,9 @@ import (
 
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 // unresolved is a message whose author name is still the raw ID, as the

@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 func TestWorkspaceContextCustomEmojiDefaultsEmpty(t *testing.T) {

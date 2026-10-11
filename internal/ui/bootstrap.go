@@ -29,7 +29,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // loadingEntry is one workspace's row in the startup overlay.

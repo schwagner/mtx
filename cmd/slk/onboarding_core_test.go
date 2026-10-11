@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gammons/slk/internal/slackdesktop"
+	"github.com/schwagner/mtx/internal/slackdesktop"
 )
 
 func TestBuildWorkspaceTokens(t *testing.T) {

@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/gammons/slk/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/sidebar"
 )
 
 func TestWorkspacePresenceIDs(t *testing.T) {

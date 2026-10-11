@@ -18,8 +18,8 @@ import (
 	// import must move to an external boot_test package or the two-line
 	// parse must be inlined. boot.go itself deliberately imports
 	// nothing from this repo.
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/slackhttp"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/slackhttp"
 )
 
 // recordedCall is the one call UserBoot is expected to make.

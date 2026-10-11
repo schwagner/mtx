@@ -35,7 +35,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
 var reduceMouse reducerFunc = func(a *App, msg tea.Msg) (tea.Cmd, bool) {

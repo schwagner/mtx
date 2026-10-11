@@ -4,12 +4,12 @@ import (
 	"context"
 	"strings"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ids"
-	"github.com/gammons/slk/internal/slack/mrkdwn"
-	"github.com/gammons/slk/internal/text"
-	"github.com/gammons/slk/internal/ui"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ids"
+	"github.com/schwagner/mtx/internal/slack/mrkdwn"
+	"github.com/schwagner/mtx/internal/text"
+	"github.com/schwagner/mtx/internal/ui"
 )
 
 // services are the demo's implementations of the internal/core ports.

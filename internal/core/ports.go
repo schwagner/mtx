@@ -10,8 +10,8 @@ import (
 	"image"
 	"io/fs"
 
-	"github.com/gammons/slk/internal/ids"
-	imgpkg "github.com/gammons/slk/internal/image"
+	"github.com/schwagner/mtx/internal/ids"
+	imgpkg "github.com/schwagner/mtx/internal/image"
 )
 
 // ReactionService is the App's interface to the Slack reaction API

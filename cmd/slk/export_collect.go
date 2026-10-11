@@ -13,10 +13,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/gammons/slk/internal/cache"
-	"github.com/gammons/slk/internal/export"
-	slackclient "github.com/gammons/slk/internal/slack"
-	"github.com/gammons/slk/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/export"
+	slackclient "github.com/schwagner/mtx/internal/slack"
+	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/slack-go/slack"
 )
 

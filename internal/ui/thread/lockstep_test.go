@@ -22,10 +22,10 @@ import (
 	"time"
 
 	"github.com/charmbracelet/x/ansi"
-	"github.com/gammons/slk/internal/config"
-	emojiutil "github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/config"
+	emojiutil "github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // Pane geometry. 80 columns is wide enough that the fixture's long line

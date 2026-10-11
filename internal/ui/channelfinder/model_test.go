@@ -4,9 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/core"
-	"github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/peerstatus"
+	"github.com/schwagner/mtx/internal/core"
+	"github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/peerstatus"
 )
 
 func testItems() []core.ChannelFinderItem {

@@ -7,9 +7,9 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 
-	emojiutil "github.com/gammons/slk/internal/emoji"
-	"github.com/gammons/slk/internal/ui/messages"
-	"github.com/gammons/slk/internal/ui/styles"
+	emojiutil "github.com/schwagner/mtx/internal/emoji"
+	"github.com/schwagner/mtx/internal/ui/messages"
+	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
 // breadcrumbHint is the right-aligned close hint on the breadcrumb row.

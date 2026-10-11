@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gammons/slk/internal/slackdesktop"
+	"github.com/schwagner/mtx/internal/slackdesktop"
 )
 
 // A bare "file an issue" message threw away the one thing that identifies which

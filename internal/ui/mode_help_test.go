@@ -5,7 +5,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/gammons/slk/internal/ui/help"
+	"github.com/schwagner/mtx/internal/ui/help"
 )
 
 // openHelp mirrors the production open path (mode_normal.go:211-213):
