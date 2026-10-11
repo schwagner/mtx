@@ -164,6 +164,7 @@ func run() error {
 	defer b.Stop()
 	b.TimestampFormat = cfg.Appearance.TimestampFormat
 	b.DownloadDir = cfg.General.DownloadDir
+	b.RecentEmojiPath = filepath.Join(xdgData(), "recent-emoji.json")
 	if cfg.Notifications.Enabled {
 		b.Notifier = notify.New(true, cfg.Notifications.NotifyCommand)
 	}

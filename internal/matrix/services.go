@@ -54,7 +54,8 @@ func (b *Backend) Wire(app *ui.App) {
 		ListFetch: b.fetchThreads,
 	}))
 	b.wireViews(app)
-	app.SetReactionService(core.NewReactionService(b.addReaction, b.removeReaction, nil, nil))
+	recent := newRecentEmoji(b.RecentEmojiPath)
+	app.SetReactionService(core.NewReactionService(b.addReaction, b.removeReaction, recent.load, recent.record))
 	app.SetPresenceService(core.NewPresenceService(nil, b.sendTyping))
 	app.SetUnreadService(core.NewUnreadService(b.ReadStates, nil))
 	app.SetSearchService(core.NewSearchService(core.SearchServiceFuncs{
@@ -393,6 +394,11 @@ func (b *Backend) sendMessage(channelID ids.ChannelID, text string) core.Msg {
 	if err != nil {
 		return ui.MessageSendFailedMsg{ChannelID: string(channelID), Reason: err.Error()}
 	}
+	// Sending implies having read the room up to the sent message (the
+	// server counts it so); move the TUI's read cursor there too, the way
+	// Slack's channel_marked echo did, so the "new" divider doesn't sit
+	// above your own message.
+	b.emit(ui.ChannelMarkedRemoteMsg{ChannelID: string(channelID), TS: item.TS})
 	return ui.MessageSentMsg{ChannelID: string(channelID), Message: item}
 }
 

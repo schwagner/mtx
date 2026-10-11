@@ -45,6 +45,8 @@ type Backend struct {
 	Notifier        Notifier
 	// DownloadDir is where attachment downloads are saved.
 	DownloadDir string
+	// RecentEmojiPath persists the reaction picker's recently used list.
+	RecentEmojiPath string
 
 	sendMu sync.RWMutex
 	send   func(tea.Msg)
