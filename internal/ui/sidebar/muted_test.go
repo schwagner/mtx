@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // The unread blue dot is "●" (U+25CF). Muted-with-unreads channels
@@ -15,8 +15,8 @@ func TestMutedChannel_SuppressesUnreadDot(t *testing.T) {
 	m := New([]ChannelItem{
 		{ID: "C1", Name: "noisy", Type: "channel", IsMuted: true},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true}}
 	})
 	m.ToggleCollapse("Channels") // expand so the row renders
 	view := m.View(10, 30)
@@ -42,8 +42,8 @@ func TestUnmutedChannel_StillGetsUnreadDot(t *testing.T) {
 	m := New([]ChannelItem{
 		{ID: "C1", Name: "noisy", Type: "channel", IsMuted: false},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true}}
 	})
 	m.ToggleCollapse("Channels")
 	view := m.View(10, 30)
@@ -72,8 +72,8 @@ func TestAggregateBadge_ExcludesMutedChannels(t *testing.T) {
 		{ID: "C2", Name: "noisy", Type: "channel", IsMuted: true},
 		{ID: "C3", Name: "alerts", Type: "channel", IsMuted: false},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true},
 			"C2": {HasUnread: true}, // muted: must not count
 			"C3": {HasUnread: true},
@@ -98,8 +98,8 @@ func TestAggregateBadge_AllMutedDropsBadge(t *testing.T) {
 		{ID: "C1", Name: "noisy", Type: "channel", IsMuted: true},
 		{ID: "C2", Name: "spammy", Type: "channel", IsMuted: true},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true},
 			"C2": {HasUnread: true},
 		}
@@ -125,13 +125,13 @@ func TestChannelItem_IsVisiblyUnread(t *testing.T) {
 	cases := []struct {
 		name  string
 		item  ChannelItem
-		state cache.ReadState
+		state core.ReadState
 		want  bool
 	}{
-		{"unread, unmuted", ChannelItem{IsMuted: false}, cache.ReadState{HasUnread: true}, true},
-		{"unread, muted", ChannelItem{IsMuted: true}, cache.ReadState{HasUnread: true}, false},
-		{"read, unmuted", ChannelItem{IsMuted: false}, cache.ReadState{HasUnread: false}, false},
-		{"read, muted", ChannelItem{IsMuted: true}, cache.ReadState{HasUnread: false}, false},
+		{"unread, unmuted", ChannelItem{IsMuted: false}, core.ReadState{HasUnread: true}, true},
+		{"unread, muted", ChannelItem{IsMuted: true}, core.ReadState{HasUnread: true}, false},
+		{"read, unmuted", ChannelItem{IsMuted: false}, core.ReadState{HasUnread: false}, false},
+		{"read, muted", ChannelItem{IsMuted: true}, core.ReadState{HasUnread: false}, false},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -162,8 +162,8 @@ func TestUnreadChannelCount_FiltersMute(t *testing.T) {
 		{ID: "C3", Name: "c", Type: "channel", IsMuted: true},
 		{ID: "C4", Name: "d", Type: "channel", IsMuted: false},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true},  // counted
 			"C2": {HasUnread: false}, // skipped (read)
 			"C3": {HasUnread: true},  // skipped (muted)
@@ -177,7 +177,7 @@ func TestUnreadChannelCount_FiltersMute(t *testing.T) {
 
 func TestUnreadChannelCount_EmptySidebar(t *testing.T) {
 	m := New(nil)
-	m.SetReadStateReader(func() map[string]cache.ReadState { return nil })
+	m.SetReadStateReader(func() map[string]core.ReadState { return nil })
 	if got := m.UnreadChannelCount(); got != 0 {
 		t.Errorf("UnreadChannelCount with no items = %d want 0", got)
 	}

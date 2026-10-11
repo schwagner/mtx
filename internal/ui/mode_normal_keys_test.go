@@ -6,8 +6,6 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ids"
 	"github.com/schwagner/mtx/internal/ui/help"
@@ -116,8 +114,8 @@ func unreadOpts() []testOpt {
 // four in input order.
 func seedUnreads(t *testing.T, a *App) {
 	t.Helper()
-	a.setReadStateReaderForTest(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	a.setReadStateReaderForTest(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C2": {HasUnread: true},
 			"C4": {HasUnread: true},
 		}
@@ -1073,7 +1071,7 @@ func TestNormalModeKeys(t *testing.T) {
 			name: "G in the threads view opens the thread it lands on",
 			opts: append(normalOpts(),
 				withView(ViewThreads),
-				withThreadsView([]cache.ThreadSummary{
+				withThreadsView([]core.ThreadSummary{
 					{ChannelID: "C1", ThreadTS: "1.0", ParentTS: "1.0", ParentText: "first", ReplyCount: 1},
 					{ChannelID: "C1", ThreadTS: "2.0", ParentTS: "2.0", ParentText: "second", ReplyCount: 2},
 				})),

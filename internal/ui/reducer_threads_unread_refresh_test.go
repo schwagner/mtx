@@ -3,7 +3,7 @@ package ui
 import (
 	"testing"
 
-	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/sidebar"
 	"github.com/schwagner/mtx/internal/ui/workspace"
@@ -23,7 +23,7 @@ func railRefreshApp(t *testing.T) *App {
 			{ID: "T1", Name: "SWAP", Initials: "SW"},
 			{ID: "T2", Name: "Other", Initials: "OT"},
 		},
-		map[string]cache.ReadState{},
+		map[string]core.ReadState{},
 		nil,
 	)
 	unreads := []string{"T2"}
@@ -32,7 +32,7 @@ func railRefreshApp(t *testing.T) *App {
 	app.workspaceRail.SetUnreadReader(func() []string { return unreads })
 	app.activeTeamID = "T1"
 	app.notifyReadStateChanged()
-	if got, want := app.windowTitle, "slk SW +1"; got != want {
+	if got, want := app.windowTitle, "mtx SW +1"; got != want {
 		t.Fatalf("precondition: windowTitle = %q want %q", got, want)
 	}
 	unreads = nil
@@ -73,7 +73,7 @@ func TestThreadReadState_RefreshesRail(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			app := railRefreshApp(t)
 			app.Update(tc.msg)
-			if got, want := app.windowTitle, "slk SW"; got != want {
+			if got, want := app.windowTitle, "mtx SW"; got != want {
 				t.Errorf("windowTitle = %q want %q: the rail was not recomputed", got, want)
 			}
 		})
@@ -91,9 +91,9 @@ func TestThreadsListLoaded_InactiveWorkspace_RefreshesRail(t *testing.T) {
 	app := railRefreshApp(t)
 	app.Update(ThreadsListLoadedMsg{
 		TeamID:    "T2",
-		Summaries: []cache.ThreadSummary{{ChannelID: "C9", ThreadTS: "1.0", Unread: true}},
+		Summaries: []core.ThreadSummary{{ChannelID: "C9", ThreadTS: "1.0", Unread: true}},
 	})
-	if got, want := app.windowTitle, "slk SW"; got != want {
+	if got, want := app.windowTitle, "mtx SW"; got != want {
 		t.Errorf("windowTitle = %q want %q: the rail was not recomputed", got, want)
 	}
 	if n := app.sidebar.ThreadsUnreadCount(); n != 0 {
@@ -113,7 +113,7 @@ func TestThreadsListLoaded_InactiveWorkspace_RefreshesRail(t *testing.T) {
 func TestThreadsListDirty_InactiveWorkspace_RefreshesRail(t *testing.T) {
 	app := railRefreshApp(t)
 	app.Update(ThreadsListDirtyMsg{TeamID: "T2"})
-	if got, want := app.windowTitle, "slk SW"; got != want {
+	if got, want := app.windowTitle, "mtx SW"; got != want {
 		t.Errorf("windowTitle = %q want %q: the rail was not recomputed", got, want)
 	}
 	if app.threadsListFetchScheduled {
@@ -136,7 +136,7 @@ func TestThreadReply_OnScreenAndFocused_DoesNotRefreshRail(t *testing.T) {
 		ChannelID: "C1",
 		Message:   messages.MessageItem{TS: "2.0", UserID: "U2", Text: "reply", ThreadTS: "1.0"},
 	})
-	if got, want := app.windowTitle, "slk SW +1"; got != want {
+	if got, want := app.windowTitle, "mtx SW +1"; got != want {
 		t.Errorf("windowTitle = %q want %q: an on-screen, focused reply must not recompute the rail", got, want)
 	}
 }

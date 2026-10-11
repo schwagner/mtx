@@ -23,7 +23,7 @@ import (
 // docs/superpowers/specs/2026-05-21-tab-title-unread-indicator-design.md.
 func computeWindowTitle(activeTeamID, workspaceName string, activeUnreads, otherUnreads int) string {
 	if activeTeamID == "" {
-		return "slk"
+		return "mtx"
 	}
 	return formatTitle(workspace.WorkspaceInitials(workspaceName), activeUnreads, otherUnreads)
 }
@@ -32,7 +32,7 @@ func computeWindowTitle(activeTeamID, workspaceName string, activeUnreads, other
 // pieces. Separated from computeWindowTitle so the assembly format is
 // testable independent of input sourcing.
 func formatTitle(initials string, active, other int) string {
-	out := "slk " + initials
+	out := "mtx " + initials
 	if active > 0 {
 		out += fmt.Sprintf(" (%d)", active)
 	}

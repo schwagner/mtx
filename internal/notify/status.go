@@ -86,7 +86,7 @@ func (r *StatusReporter) run() {
 }
 
 // Report runs the status_command synchronously with the current unread state
-// exposed as $SLK_UNREAD, $SLK_OTHER_UNREAD, $SLK_WORKSPACE and $SLK_TITLE.
+// exposed as $MTX_UNREAD, $MTX_OTHER_UNREAD, $MTX_WORKSPACE and $MTX_TITLE.
 // Values are passed through the environment rather than interpolated into the
 // command, so a workspace name or title can't inject shell syntax. Nil-safe
 // (no-op). Production callers should go through Enqueue, which adds the
@@ -97,10 +97,10 @@ func (r *StatusReporter) Report(unread, otherUnread int, workspace, title string
 	}
 	cmd := exec.Command("sh", "-c", r.command)
 	cmd.Env = append(os.Environ(),
-		"SLK_UNREAD="+strconv.Itoa(unread),
-		"SLK_OTHER_UNREAD="+strconv.Itoa(otherUnread),
-		"SLK_WORKSPACE="+workspace,
-		"SLK_TITLE="+title,
+		"MTX_UNREAD="+strconv.Itoa(unread),
+		"MTX_OTHER_UNREAD="+strconv.Itoa(otherUnread),
+		"MTX_WORKSPACE="+workspace,
+		"MTX_TITLE="+title,
 	)
 	return cmd.Run()
 }

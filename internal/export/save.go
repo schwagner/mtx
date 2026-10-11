@@ -23,7 +23,7 @@ func SaveThread(parent messages.MessageItem, replies []messages.MessageItem, use
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return "", err
 	}
-	filename := fmt.Sprintf("slk-thread-%s-%s.md", sanitizeForFilename(channelName), time.Now().Format("2006-01-02-150405"))
+	filename := fmt.Sprintf("mtx-thread-%s-%s.md", sanitizeForFilename(channelName), time.Now().Format("2006-01-02-150405"))
 	path := filepath.Join(dir, filename)
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		return "", err

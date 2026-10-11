@@ -800,7 +800,7 @@ func NewApp() *App {
 		keys:                  DefaultKeyMap(),
 		selfSend:              newSelfSendDedup(),
 		bootstrap:             newWorkspaceBootstrap(),
-		windowTitle:           "slk",
+		windowTitle:           "mtx",
 		threadsDirtyDebounce:  defaultThreadsDirtyDebounce,
 		terminalFocused:       true,
 		inTmux:                os.Getenv("TMUX") != "",
@@ -3399,7 +3399,7 @@ func (a *App) View() tea.View {
 	// Perf instrumentation: wall-clock the main View() path so we can
 	// correlate user-visible latency (i / arrow keys / thread open-close)
 	// with the cache rebuilds logged from messages.Model.View and
-	// thread.Model.View. SLK_DEBUG=1 only; zero cost otherwise.
+	// thread.Model.View. MTX_DEBUG=1 only; zero cost otherwise.
 	var viewPerfStart time.Time
 	if debuglog.Enabled() {
 		viewPerfStart = time.Now()
@@ -3764,7 +3764,7 @@ func (a *App) tryAttachFromClipboard(target *compose.Model, pathCandidate string
 				3*time.Second,
 			)
 		}
-		filename := "slk-paste-" + time.Now().Format("2006-01-02-15-04-05") + ".png"
+		filename := "mtx-paste-" + time.Now().Format("2006-01-02-15-04-05") + ".png"
 		target.AddAttachment(core.PendingAttachment{
 			Filename: filename,
 			Bytes:    imgBytes,

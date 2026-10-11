@@ -20,10 +20,10 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
+	"github.com/muesli/reflow/truncate"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/styles"
-	"github.com/muesli/reflow/truncate"
 )
 
 // Each activity row is a two-line card (line 1: author + context + time;

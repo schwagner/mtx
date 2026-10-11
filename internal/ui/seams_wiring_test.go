@@ -4,8 +4,6 @@ import (
 	"os"
 
 	tea "charm.land/bubbletea/v2"
-
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/export"
 	"github.com/schwagner/mtx/internal/ids"
@@ -41,7 +39,7 @@ func wireWorkspaceSwitcher(a *App, fn func(teamID string) tea.Msg) {
 	a.SetWorkspaceService(core.NewWorkspaceService(func(teamID string) core.Msg { return fn(teamID) }))
 }
 
-func wireUnreadReaders(a *App, channels func() map[string]cache.ReadState, workspaces func() []string) {
+func wireUnreadReaders(a *App, channels func() map[string]core.ReadState, workspaces func() []string) {
 	a.SetUnreadService(core.NewUnreadService(channels, workspaces))
 }
 

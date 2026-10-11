@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 func TestNew_DefaultCollapsesChannelsSection(t *testing.T) {
@@ -105,8 +105,8 @@ func TestCollapsedHeader_ShowsAggregateUnreadBadge(t *testing.T) {
 	// After the read-state sync rewrite, the aggregate counts
 	// channels-with-unreads (not the sum of per-channel counts), and
 	// the DB (read via readStateReader) is the source of truth.
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true},
 			"C2": {HasUnread: true},
 		}

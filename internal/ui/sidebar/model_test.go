@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/messages"
 )
 
@@ -273,8 +273,8 @@ func TestRender_UnreadDMRow_KeepsBoldAfterPrefixReset(t *testing.T) {
 	m.SetItems([]ChannelItem{
 		{ID: "D1", Name: "alice", Type: "dm", Presence: "active"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"D1": {HasUnread: true}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"D1": {HasUnread: true}}
 	})
 
 	out := m.View(20, 40)
@@ -419,8 +419,8 @@ func TestRender_UnreadDMRow_RestoresBrightFgAfterPrefixReset(t *testing.T) {
 	m.SetItems([]ChannelItem{
 		{ID: "D1", Name: "alice", Type: "dm", Presence: "active"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"D1": {HasUnread: true}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"D1": {HasUnread: true}}
 	})
 	out := m.View(20, 40)
 
@@ -689,8 +689,8 @@ func TestView_RendersDotFromReadStateReader(t *testing.T) {
 	// per-row dots are rendered (the collapsed-header aggregate
 	// badge uses a different glyph "•").
 	m.ToggleCollapse("Channels")
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true},
 			"C2": {HasUnread: false},
 		}
@@ -773,8 +773,8 @@ func TestView_MutedChannelNoDot(t *testing.T) {
 		{ID: "C1", Name: "noisy", Type: "channel", IsMuted: true},
 	})
 	m.ToggleCollapse("Channels")
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true}}
 	})
 
 	out := m.View(20, 30)

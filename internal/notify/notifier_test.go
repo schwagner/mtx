@@ -10,8 +10,8 @@ import (
 
 func TestNew_SetsAppName(t *testing.T) {
 	New(true, "")
-	if beeep.AppName != "slk" {
-		t.Errorf("beeep.AppName = %q, want %q", beeep.AppName, "slk")
+	if beeep.AppName != "mtx" {
+		t.Errorf("beeep.AppName = %q, want %q", beeep.AppName, "mtx")
 	}
 }
 
@@ -239,7 +239,7 @@ func TestStripSlackMarkup_Truncation(t *testing.T) {
 
 func TestNotify_RunsNotifyCommand(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "out")
-	n := New(true, "printf '%s\\n%s' \"$SLK_TITLE\" \"$SLK_BODY\" >"+out)
+	n := New(true, "printf '%s\\n%s' \"$MTX_TITLE\" \"$MTX_BODY\" >"+out)
 	if err := n.Notify("the title", "the body"); err != nil {
 		t.Fatalf("Notify returned error: %v", err)
 	}
@@ -269,7 +269,7 @@ func TestNotify_CommandBodyIsNotInjected(t *testing.T) {
 	dir := t.TempDir()
 	out := filepath.Join(dir, "out")
 	pwned := filepath.Join(dir, "pwned")
-	n := New(true, "printf '%s' \"$SLK_BODY\" >"+out)
+	n := New(true, "printf '%s' \"$MTX_BODY\" >"+out)
 	if err := n.Notify("title", "; touch "+pwned); err != nil {
 		t.Fatalf("Notify returned error: %v", err)
 	}

@@ -153,7 +153,7 @@ func TestLoadConfig_DownloadDirFallsBackWhenHomeUnresolvable(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := filepath.Join(os.TempDir(), "slk-files")
+	expected := filepath.Join(os.TempDir(), "mtx-files")
 	if cfg.General.DownloadDir != expected {
 		t.Errorf("expected fallback download_dir %q, got %q", expected, cfg.General.DownloadDir)
 	}

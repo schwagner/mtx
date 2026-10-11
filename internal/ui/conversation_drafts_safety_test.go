@@ -6,8 +6,6 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/sidebar"
@@ -339,7 +337,7 @@ func TestDraftSafety_UploadInFlightRefusesEntryPoints(t *testing.T) {
 		{
 			name: "open thread from the threads view",
 			setup: func(a *App) {
-				a.threadsView.SetSummaries([]cache.ThreadSummary{{ChannelID: "C1", ThreadTS: "300.0"}})
+				a.threadsView.SetSummaries([]core.ThreadSummary{{ChannelID: "C1", ThreadTS: "300.0"}})
 				a.view = ViewThreads
 				a.focusedPanel = PanelMessages
 			},

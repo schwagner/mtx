@@ -182,7 +182,7 @@ func DefaultChannelDir(channelName string, w Window) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	name := fmt.Sprintf("slk-channel-%s-%s-to-%s", sanitizeForFilename(channelName), w.Since.Format(dateLayout), w.Until.Format(dateLayout))
+	name := fmt.Sprintf("mtx-channel-%s-%s-to-%s", sanitizeForFilename(channelName), w.Since.Format(dateLayout), w.Until.Format(dateLayout))
 	return filepath.Join(base, name), nil
 }
 

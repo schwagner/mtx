@@ -10,13 +10,13 @@ func TestFormatTitle(t *testing.T) {
 		other    int
 		want     string
 	}{
-		{"no unreads", "SW", 0, 0, "slk SW"},
-		{"active only", "SW", 3, 0, "slk SW (3)"},
-		{"other only", "SW", 0, 1, "slk SW +1"},
-		{"both", "SW", 3, 1, "slk SW (3) +1"},
-		{"max values", "SW", 99, 99, "slk SW (99) +99"},
-		{"fallback initials", "?", 0, 0, "slk ?"},
-		{"fallback initials with unreads", "?", 5, 2, "slk ? (5) +2"},
+		{"no unreads", "SW", 0, 0, "mtx SW"},
+		{"active only", "SW", 3, 0, "mtx SW (3)"},
+		{"other only", "SW", 0, 1, "mtx SW +1"},
+		{"both", "SW", 3, 1, "mtx SW (3) +1"},
+		{"max values", "SW", 99, 99, "mtx SW (99) +99"},
+		{"fallback initials", "?", 0, 0, "mtx ?"},
+		{"fallback initials with unreads", "?", 5, 2, "mtx ? (5) +2"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -43,15 +43,15 @@ func TestComputeWindowTitle(t *testing.T) {
 		otherUnreads  int
 		want          string
 	}{
-		{"pre-bootstrap (no active workspace)", "", "", 0, 0, "slk"},
-		{"pre-bootstrap ignores stray inputs", "", "Ignored", 99, 99, "slk"},
-		{"active workspace, no unreads", "T1", "SWAP", 0, 0, "slk SW"},
-		{"active workspace, with unreads", "T1", "SWAP", 3, 0, "slk SW (3)"},
-		{"active + other workspaces have unreads", "T1", "SWAP", 3, 2, "slk SW (3) +2"},
-		{"only other workspaces have unreads", "T1", "SWAP", 0, 1, "slk SW +1"},
-		{"empty workspace name yields fallback initials", "T1", "", 0, 0, "slk ?"},
-		{"single-word name uses first 2 chars", "T1", "Home", 1, 0, "slk HO (1)"},
-		{"multi-word name uses initials of first two words", "T1", "StratusGrid Eng", 5, 1, "slk SE (5) +1"},
+		{"pre-bootstrap (no active workspace)", "", "", 0, 0, "mtx"},
+		{"pre-bootstrap ignores stray inputs", "", "Ignored", 99, 99, "mtx"},
+		{"active workspace, no unreads", "T1", "SWAP", 0, 0, "mtx SW"},
+		{"active workspace, with unreads", "T1", "SWAP", 3, 0, "mtx SW (3)"},
+		{"active + other workspaces have unreads", "T1", "SWAP", 3, 2, "mtx SW (3) +2"},
+		{"only other workspaces have unreads", "T1", "SWAP", 0, 1, "mtx SW +1"},
+		{"empty workspace name yields fallback initials", "T1", "", 0, 0, "mtx ?"},
+		{"single-word name uses first 2 chars", "T1", "Home", 1, 0, "mtx HO (1)"},
+		{"multi-word name uses initials of first two words", "T1", "StratusGrid Eng", 5, 1, "mtx SE (5) +1"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
+	"github.com/muesli/reflow/truncate"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/text"
 	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/overlay"
 	"github.com/schwagner/mtx/internal/ui/peerstatus"
 	"github.com/schwagner/mtx/internal/ui/styles"
-	"github.com/muesli/reflow/truncate"
 )
 
 // nonJoinedColor is a hard-coded dim grey used for channels the user is not a

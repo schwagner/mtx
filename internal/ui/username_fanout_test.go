@@ -11,8 +11,6 @@ import (
 	"testing"
 
 	"github.com/charmbracelet/x/ansi"
-
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/messages"
 )
@@ -27,7 +25,7 @@ func screenText(a *App) string { return ansi.Strip(a.View().Content) }
 
 func TestUserResolved_ReachesThreadsList(t *testing.T) {
 	a := newTestApp(t, withSize(160, 40), withView(ViewThreads),
-		withThreadsView([]cache.ThreadSummary{{
+		withThreadsView([]core.ThreadSummary{{
 			ChannelID: "C1", ChannelName: "general", ChannelType: "channel",
 			ThreadTS: "1.0", ParentUserID: "U9", ParentText: "hello",
 			ParentTS: "1.0", ReplyCount: 1, LastReplyTS: "2.0", LastReplyBy: "U9",
@@ -76,7 +74,7 @@ func TestUserResolved_ReachesThreadPanel(t *testing.T) {
 // Every pane shows U9, so each would re-render if the patch reached it:
 // the Threads and Activity lists only bump for a user their cards show.
 func TestUserResolved_UnchangedNameIsNoOp(t *testing.T) {
-	a := newTestApp(t, withThreadsView([]cache.ThreadSummary{{
+	a := newTestApp(t, withThreadsView([]core.ThreadSummary{{
 		ChannelID: "C1", ThreadTS: "1.0", ParentUserID: "U9", ParentText: "hello", ParentTS: "1.0",
 	}}))
 	a.activityView.SetItems([]core.ActivityItem{{

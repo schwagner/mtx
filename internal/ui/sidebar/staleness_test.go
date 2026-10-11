@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 func TestIsStale(t *testing.T) {
@@ -207,7 +207,7 @@ func TestSidebar_HidesStaleChannels(t *testing.T) {
 	// Per-channel read state, mirroring what the live readStateReader
 	// (DB-backed) would return. C-stale-unread carries a HasUnread=true
 	// signal to exercise the unread-exception branch of IsStale.
-	readState := map[string]cache.ReadState{
+	readState := map[string]core.ReadState{
 		"C-fresh":         {LastReadTS: fresh},
 		"C-stale":         {LastReadTS: stale},
 		"C-stale-unread":  {LastReadTS: stale, HasUnread: true},
@@ -216,7 +216,7 @@ func TestSidebar_HidesStaleChannels(t *testing.T) {
 	}
 
 	m := New(items)
-	m.SetReadStateReader(func() map[string]cache.ReadState { return readState })
+	m.SetReadStateReader(func() map[string]core.ReadState { return readState })
 	m.SetNowFunc(func() time.Time { return now })
 	m.SetStaleThreshold(30 * 24 * time.Hour)
 	m.SetActiveChannelID("DM-stale-active")

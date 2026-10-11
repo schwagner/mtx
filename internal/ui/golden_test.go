@@ -12,7 +12,6 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/config"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/emoji"
@@ -485,7 +484,7 @@ func nameGoldenActiveChannel(a *App) {
 // to sidebar.SetReadStateReader).
 //
 // Without a reader the sidebar's readStateReader is nil, every lookup
-// returns the zero cache.ReadState, and so every row renders as read
+// returns the zero core.ReadState, and so every row renders as read
 // (sidebar/model.go:1200). That is not a neutral default: it makes the
 // entire unread half of the sidebar's row renderer unreachable — the
 // "●" dot, the bold attribute, ChannelUnread vs ChannelNormal, and the
@@ -697,8 +696,8 @@ func goldenChannels() []sidebar.ChannelItem {
 // (sidebar/staleness.go:49), which all of goldenChannels' items do. It
 // is derived from goldenClock rather than written as a literal for the
 // same reason goldenTS exists.
-func goldenReadState() map[string]cache.ReadState {
-	return map[string]cache.ReadState{
+func goldenReadState() map[string]core.ReadState {
+	return map[string]core.ReadState{
 		"C2": {LastReadTS: goldenTS(-2 * time.Hour), HasUnread: true},
 		"C3": {LastReadTS: goldenTS(-2 * time.Hour), HasUnread: true},
 	}
@@ -1163,10 +1162,10 @@ func TestNewGoldenApp_PinsSidebarStalenessClock(t *testing.T) {
 	// One day before the pinned clock: fresh against goldenClock,
 	// long stale against the real one.
 	lastRead := fmt.Sprintf("%d.000000", goldenClock().Add(-24*time.Hour).Unix())
-	readState := map[string]cache.ReadState{"C-old": {LastReadTS: lastRead}}
+	readState := map[string]core.ReadState{"C-old": {LastReadTS: lastRead}}
 
 	visible := func(a *App) bool {
-		a.sidebar.SetReadStateReader(func() map[string]cache.ReadState { return readState })
+		a.sidebar.SetReadStateReader(func() map[string]core.ReadState { return readState })
 		a.sidebar.SetStaleThreshold(30 * 24 * time.Hour)
 		for _, it := range a.sidebar.VisibleItems() {
 			if it.ID == "C-old" {

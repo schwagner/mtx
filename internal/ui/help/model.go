@@ -11,11 +11,11 @@ import (
 
 	"charm.land/bubbles/v2/key"
 	"charm.land/lipgloss/v2"
+	"github.com/muesli/reflow/truncate"
 	"github.com/schwagner/mtx/internal/text"
 	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/overlay"
 	"github.com/schwagner/mtx/internal/ui/styles"
-	"github.com/muesli/reflow/truncate"
 )
 
 // Entry is one row in the help modal: a key label and its description.

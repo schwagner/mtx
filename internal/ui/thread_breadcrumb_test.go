@@ -7,7 +7,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // updateAndRender drives msg through the real Update chain and renders
@@ -33,7 +33,7 @@ func TestThreadBreadcrumb_ThreadsViewUsesSummaryChannelType(t *testing.T) {
 	// C2 is a plain "channel" in the sidebar; the summary says private.
 	// The summary is the fresher source for a thread opened from the
 	// list, so its type must win.
-	sums := []cache.ThreadSummary{{
+	sums := []core.ThreadSummary{{
 		ChannelID: "C2", ChannelName: "random", ChannelType: "private",
 		ThreadTS: "50.0", ParentTS: "50.0", ParentUserID: "U1",
 		ParentText: "hello", ReplyCount: 1,

@@ -14,7 +14,6 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ids"
 	imgpkg "github.com/schwagner/mtx/internal/image"
@@ -671,7 +670,7 @@ func TestApp_ThreadsViewActivation(t *testing.T) {
 func TestApp_ThreadsListLoadedUpdatesUnreadBadge(t *testing.T) {
 	app := NewApp()
 	app.activeTeamID = "T1"
-	summaries := []cache.ThreadSummary{
+	summaries := []core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "1.0", Unread: true},
 		{ChannelID: "C2", ThreadTS: "2.0", Unread: false},
 	}
@@ -684,7 +683,7 @@ func TestApp_ThreadsListLoadedUpdatesUnreadBadge(t *testing.T) {
 func TestApp_ThreadsListLoadedIgnoredForOtherWorkspace(t *testing.T) {
 	app := NewApp()
 	app.activeTeamID = "T1"
-	summaries := []cache.ThreadSummary{{ChannelID: "C1", ThreadTS: "1.0", Unread: true}}
+	summaries := []core.ThreadSummary{{ChannelID: "C1", ThreadTS: "1.0", Unread: true}}
 	_, _ = app.Update(ThreadsListLoadedMsg{TeamID: "T2", Summaries: summaries})
 	if app.sidebar.ThreadsUnreadCount() != 0 {
 		t.Errorf("threads from a different team should not update the active sidebar; got %d", app.sidebar.ThreadsUnreadCount())
@@ -768,7 +767,7 @@ func TestApp_ClickOnThreadInThreadsViewOpensIt(t *testing.T) {
 		fetchedTS = string(threadTS)
 		return ThreadRepliesLoadedMsg{ThreadTS: string(threadTS), Replies: nil}
 	})
-	summaries := []cache.ThreadSummary{
+	summaries := []core.ThreadSummary{
 		{ChannelID: "C_A", ThreadTS: "1.0", ParentTS: "1.0", ParentText: "alpha"},
 		{ChannelID: "C_B", ThreadTS: "2.0", ParentTS: "2.0", ParentText: "bravo"},
 	}
@@ -839,7 +838,7 @@ func TestApp_HandleEnterInThreadsViewOpensSelectedThread(t *testing.T) {
 
 	// Seed the threads view with two summaries and select the SECOND
 	// one. This is what Enter must open.
-	summaries := []cache.ThreadSummary{
+	summaries := []core.ThreadSummary{
 		{ChannelID: "C_THREADA", ThreadTS: "1.0", ParentTS: "1.0"},
 		{ChannelID: "C_THREADB", ThreadTS: "2.0", ParentTS: "2.0"},
 	}
@@ -893,7 +892,7 @@ func TestApp_OpenSelectedThreadDedups(t *testing.T) {
 		fetched++
 		return ThreadRepliesLoadedMsg{ThreadTS: string(threadTS), Replies: nil}
 	})
-	summaries := []cache.ThreadSummary{
+	summaries := []core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "1.0"},
 		{ChannelID: "C1", ThreadTS: "2.0"},
 	}
@@ -935,7 +934,7 @@ func TestApp_WorkspaceSwitchResetsView(t *testing.T) {
 	app.view = ViewThreads
 	app.activeTeamID = "T1"
 	// Stash some summaries to confirm they're cleared.
-	app.threadsView.SetSummaries([]cache.ThreadSummary{{ChannelID: "C1", ThreadTS: "1.0", Unread: true}})
+	app.threadsView.SetSummaries([]core.ThreadSummary{{ChannelID: "C1", ThreadTS: "1.0", Unread: true}})
 	app.sidebar.SetThreadsUnreadCount(1)
 
 	app.Update(WorkspaceSwitchedMsg{TeamID: "T2", TeamName: "Other", Channels: nil})
@@ -1093,7 +1092,7 @@ func TestApp_InsertInThreadsViewFocusesThreadCompose(t *testing.T) {
 	app.activeTeamID = "T1"
 	// Simulate having activated the threads view with one summary, so
 	// the right thread panel is open.
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "1.0", ParentText: "hi"},
 	})
 	app.view = ViewThreads
@@ -1129,7 +1128,7 @@ func TestApp_BackgroundWorkspaceReadyDoesNotClobberActiveState(t *testing.T) {
 
 	// Simulate user state in the active workspace.
 	app.view = ViewThreads
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "1.0", Unread: true},
 	})
 	app.sidebar.SetThreadsUnreadCount(1)
@@ -2031,7 +2030,7 @@ func TestSmartPaste_ImagePresent_AttachesToCompose(t *testing.T) {
 	if atts[0].Mime != "image/png" {
 		t.Errorf("expected image/png, got %q", atts[0].Mime)
 	}
-	if !strings.HasPrefix(atts[0].Filename, "slk-paste-") || !strings.HasSuffix(atts[0].Filename, ".png") {
+	if !strings.HasPrefix(atts[0].Filename, "mtx-paste-") || !strings.HasSuffix(atts[0].Filename, ".png") {
 		t.Errorf("unexpected filename: %q", atts[0].Filename)
 	}
 	if atts[0].Size != int64(len(pngBytes)) {
@@ -2840,7 +2839,7 @@ func TestMessageMarkedUnreadMsg_ThreadLevel_UpdatesThreadPaneAndThreadsView(t *t
 		{TS: "R2", UserID: "U1", Text: "r2"},
 	}, "C1", "P1")
 	app.threadVisible = true
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", Unread: false},
 	})
 
@@ -2996,7 +2995,7 @@ func TestChannelMarkedRemoteMsg_InactiveChannel_OnlyUpdatesSidebar(t *testing.T)
 
 func TestThreadMarkedRemoteMsg_CursorBehindLatestFlipsRowUnread(t *testing.T) {
 	app := NewApp()
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "5.000000", Unread: false},
 	})
 
@@ -3026,7 +3025,7 @@ func TestThreadMarkedRemoteMsg_CursorBehindLatestFlipsRowUnread(t *testing.T) {
 
 func TestThreadMarkedRemoteMsg_CursorAtLatestClearsRow(t *testing.T) {
 	app := NewApp()
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "5.000000", Unread: true},
 	})
 
@@ -3090,7 +3089,7 @@ func TestThreadMarkedLocalMsg_LeavesOpenPanelBoundaryInPlace(t *testing.T) {
 		}, "C1", "P1")
 	app.threadVisible = true
 	app.threadPanel.SetUnreadBoundary("R1")
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "R2", Unread: true},
 	})
 
@@ -3187,7 +3186,7 @@ func TestThreadMarkedRemoteMsg_SelfEchoHoldsPanelBoundary(t *testing.T) {
 	// Re-flag the row so the list-state assertion below cannot pass
 	// vacuously off work the issue and local arms already did: this
 	// stands in for a threads-list refresh landing before the echo.
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "R2", Unread: true},
 	})
 
@@ -3274,7 +3273,7 @@ func TestThreadMarkedRemoteMsg_SelfEchoSuppressionIsConsumedOnce(t *testing.T) {
 // as "unread" and re-flag the thread the user was looking at.
 func TestThreadMarkedRemoteMsg_SelfReplyDoesNotReFlagUnread(t *testing.T) {
 	app := NewApp()
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "7.000000", Unread: false},
 	})
 
@@ -4564,7 +4563,7 @@ func setupAppForTitleTest(
 	t *testing.T,
 	channels []sidebar.ChannelItem,
 	workspaces []workspace.WorkspaceItem,
-	channelState map[string]cache.ReadState,
+	channelState map[string]core.ReadState,
 	workspaceUnreads []string,
 ) *App {
 	t.Helper()
@@ -4575,7 +4574,7 @@ func setupAppForTitleTest(
 		withWorkspaces(workspaces...),
 		withChannels(channels...),
 	)
-	app.setReadStateReaderForTest(func() map[string]cache.ReadState { return channelState })
+	app.setReadStateReaderForTest(func() map[string]core.ReadState { return channelState })
 	app.setWorkspaceUnreadReaderForTest(func() []string { return workspaceUnreads })
 	return app
 }
@@ -4602,7 +4601,7 @@ func TestNotifyReadStateChanged_PopulatesWindowTitle(t *testing.T) {
 			{ID: "T1", Name: "SWAP", Initials: "SW"},
 			{ID: "T2", Name: "Other", Initials: "OT"},
 		},
-		map[string]cache.ReadState{
+		map[string]core.ReadState{
 			"C1": {HasUnread: true},  // counted toward active
 			"C2": {HasUnread: true},  // muted: NOT counted toward active
 			"C3": {HasUnread: false}, // read: NOT counted
@@ -4613,7 +4612,7 @@ func TestNotifyReadStateChanged_PopulatesWindowTitle(t *testing.T) {
 
 	app.notifyReadStateChanged()
 
-	if got, want := app.windowTitle, "slk SW (1) +1"; got != want {
+	if got, want := app.windowTitle, "mtx SW (1) +1"; got != want {
 		t.Errorf("windowTitle = %q want %q", got, want)
 	}
 }
@@ -4629,7 +4628,7 @@ func TestNotifyReadStateChanged_ReadsWorkspaceUnreadsOnce(t *testing.T) {
 			{ID: "T1", Name: "SWAP", Initials: "SW"},
 			{ID: "T2", Name: "Other", Initials: "OT"},
 		},
-		map[string]cache.ReadState{},
+		map[string]core.ReadState{},
 		nil,
 	)
 	app.activeTeamID = "T1"
@@ -4641,7 +4640,7 @@ func TestNotifyReadStateChanged_ReadsWorkspaceUnreadsOnce(t *testing.T) {
 	if calls != 1 {
 		t.Errorf("workspace unread reader calls = %d want 1", calls)
 	}
-	if got, want := app.windowTitle, "slk SW +1"; got != want {
+	if got, want := app.windowTitle, "mtx SW +1"; got != want {
 		t.Errorf("windowTitle = %q want %q", got, want)
 	}
 }
@@ -4650,7 +4649,7 @@ func TestNotifyReadStateChanged_PreBootstrap(t *testing.T) {
 	app := NewApp()
 	// activeTeamID intentionally left blank
 	app.notifyReadStateChanged()
-	if got, want := app.windowTitle, "slk"; got != want {
+	if got, want := app.windowTitle, "mtx"; got != want {
 		t.Errorf("pre-bootstrap windowTitle = %q want %q", got, want)
 	}
 }
@@ -4659,14 +4658,14 @@ func TestNotifyReadStateChanged_NoUnreads(t *testing.T) {
 	app := setupAppForTitleTest(t,
 		[]sidebar.ChannelItem{{ID: "C1", Name: "general", Type: "channel"}},
 		[]workspace.WorkspaceItem{{ID: "T1", Name: "SWAP", Initials: "SW"}},
-		map[string]cache.ReadState{"C1": {HasUnread: false}},
+		map[string]core.ReadState{"C1": {HasUnread: false}},
 		nil,
 	)
 	app.activeTeamID = "T1"
 
 	app.notifyReadStateChanged()
 
-	if got, want := app.windowTitle, "slk SW"; got != want {
+	if got, want := app.windowTitle, "mtx SW"; got != want {
 		t.Errorf("windowTitle = %q want %q", got, want)
 	}
 }
@@ -4679,20 +4678,20 @@ func TestNotifyReadStateChanged_NoUnreads(t *testing.T) {
 // disables the feature.
 func TestView_PropagatesWindowTitle(t *testing.T) {
 	app := NewApp()
-	app.windowTitle = "slk SW (2) +1"
+	app.windowTitle = "mtx SW (2) +1"
 
 	// Pre-layout branch (width/height==0).
 	v := app.View()
-	if v.WindowTitle != "slk SW (2) +1" {
-		t.Errorf("pre-layout View.WindowTitle = %q want %q", v.WindowTitle, "slk SW (2) +1")
+	if v.WindowTitle != "mtx SW (2) +1" {
+		t.Errorf("pre-layout View.WindowTitle = %q want %q", v.WindowTitle, "mtx SW (2) +1")
 	}
 
 	// Main branch: give the app a real canvas size and re-render.
 	app.width = 100
 	app.height = 30
 	v = app.View()
-	if v.WindowTitle != "slk SW (2) +1" {
-		t.Errorf("main View.WindowTitle = %q want %q", v.WindowTitle, "slk SW (2) +1")
+	if v.WindowTitle != "mtx SW (2) +1" {
+		t.Errorf("main View.WindowTitle = %q want %q", v.WindowTitle, "mtx SW (2) +1")
 	}
 }
 

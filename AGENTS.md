@@ -9,63 +9,79 @@ a fourth time because the author did not know the first three existed. See
 
 ## Build, test, lint
 
-```
-go build ./...
-go test ./...                 # ~10s
-go test ./... -race           # ~47s; this is what CI runs
-go vet ./...
-golangci-lint run             # v2.13.1, config in .golangci.yml
-gofmt -l .                    # must be empty; enforced in CI
-```
+Everything needs the build tags `sqlite_fts5,goolm` (see `flake.nix`) and cgo;
+`nix develop` provides Go, a C compiler and libX11.
 
-Those two timings are wall clock with `-count=1` and a warm build cache on an
-8-core Linux box, re-measured at the end of Phase 0 (they were `~21s`/`~44s`
-before it, on unrecorded hardware — treat them as a shape, not a target).
-The shape is what matters: under `-race`, four packages are ~95% of the run —
-`internal/ui` 32s, `cmd/slk` 29s, `internal/cache` 19s, `internal/ui/messages`
-16s (they overlap, hence a 47s wall). If you are iterating, run the one package
-you are changing; `internal/ui` alone is now longer under `-race` than the whole
-suite used to be.
+```
+make build                    # bin/mtx
+make test                     # go test -tags sqlite_fts5,goolm ./... -race
+go vet -tags sqlite_fts5,goolm ./...
+gofmt -l .                    # must be empty
+nix build                     # the packaged binary; runs the test suite too
+```
 
 Tests are plain `testing.T`, stdlib only. No testify, no gomock, no golden
 libraries. White-box (`package ui`, not `package ui_test`) by convention.
 
+The Matrix engine has an end-to-end test against a real homeserver,
+`internal/matrix/integration_test.go`, skipped unless `MTX_TEST_HOMESERVER`
+is set. It needs two fresh accounts (no cross-signing yet); see the comment
+at the top of the file. A throwaway local Synapse is enough:
+`synapse_homeserver --generate-config`, then `register_new_matrix_user`.
+
 ## Architecture in one screen
 
+mtx is a fork of [slk](https://github.com/gammons/slk) (a Slack TUI) with the
+Slack engine replaced by a Matrix one. The TUI is slk's, nearly unchanged.
+
 ```
-cmd/slk/                composition root: wiring, workspace connection,
-                        WebSocket event handling, message fetch/cache pipeline
+cmd/mtx/                composition root: config, login/verification
+                        prompts, wiring the engine into the App
+internal/matrix/        the engine: gomuks' hicli (on mautrix-go) adapted to
+                        the core ports — sync events → TUI messages, history,
+                        threads, sends, reactions, media, search, invites
 internal/core/          the ports (service interfaces) the TUI calls, and the
-                        values the TUI and cmd/slk exchange through them
+                        values the TUI and the engine exchange through them
 internal/ui/            bubbletea App: reducers, mode key handlers, view regions
 internal/ui/<widget>/   self-contained sub-models (messages, thread, sidebar,
                         compose, and 14 modal packages)
-internal/slack/         Slack Web API + browser-protocol WebSocket client
-internal/slack/edge/    edgeapi: conditional revalidation, server-side search
-internal/bootstrap/     startup fetch orchestration
-internal/cache/         SQLite cache (a cache, not a source of truth)
-internal/config/        TOML config
-internal/demo/          fake workspaces + services behind the hidden
-                        `slk --demo` flag; for recording README GIFs only
+internal/config/        TOML config (slk's format)
 ```
 
-**`wiki/Architecture.md` is stale by roughly 7× and describes a service layer
-that no longer exists. Do not trust it.** Current structural documentation:
+### The Matrix engine (`internal/matrix`)
 
-- `docs/superpowers/plans/2026-09-06-architecture-refactor.md` — the active
-  refactor: measured baseline, known problems, phase sequence
-- `docs/superpowers/plans/2026-05-23-app-go-solid-refactor.md` — the completed
-  `app.go` decomposition; establishes the patterns still in use
-- `docs/superpowers/specs/` — one design doc per feature
+- **hicli owns the data.** It syncs, decrypts, stores rooms/events/receipts
+  in SQLite (`~/.local/share/mtx/mtx.db`), restores keys from key backup and
+  evaluates push rules. The engine reads that database; it keeps no cache of
+  its own beyond the TS index.
+- **Message IDs are synthetic Slack-style timestamps** (`ts.go`):
+  `<unix seconds>.<ms><rowid mod 1000>`. The TUI sorts and compares them as
+  strings and parses the seconds for dates, so they must stay fixed-width and
+  time-ordered. They are per-client (the rowid is local), so never compare
+  them across two clients. `tsIndex` maps them back to event IDs;
+  `eventForTS` falls back to the database.
+- **Sends block until the server echo arrives through sync**
+  (`sendAndWait`), so the TUI gets the final TS. Echoes are matched by
+  transaction ID, which only the sending device sees.
+- **Rows vs. modifiers.** Messages are rows; edits (`m.replace`),
+  reactions and redactions modify rows and are emitted as in-place updates
+  (`NewMessageMsg{IsEdited: true}`, `Reaction*Msg`, `WSMessageDeletedMsg`).
+  Thread replies (`m.thread`) go to the thread pane only.
+- **Late decryption** (keys from backup or another device) re-renders rows
+  in place; `recheckUndecrypted` covers the race with a history load.
+- **Threads and Activity views** are answered from the local database
+  (threads you are in; mentions/highlights), since Matrix has no
+  equivalent of Slack's thread-subscription or activity-feed APIs.
 
 ### Invariants worth knowing
 
-- **`internal/ui` does no I/O of its own.** Slack, SQLite, the filesystem, the
-  clipboard, the external editor and launching apps all go through the service
-  ports in `internal/core`, which `cmd/slk` wires. No `internal/slack`,
-  `slackhttp`, `cache`, `config`, `filedl`, `export`, `editor`, `net/http` or
-  `os/exec`; `slack-go` only in `blockkit`, as the data it renders. `internal/ui/boundary_test.go`
-  enforces this. The boundary is deliberate; do not breach it.
+- **`internal/ui` does no I/O of its own.** Matrix, SQLite, the filesystem,
+  the clipboard, the external editor and launching apps all go through the
+  service ports in `internal/core`, which `cmd/mtx` wires. No
+  `internal/matrix`, hicli, mautrix, `config`, `export`, `editor`, `net/http`
+  or `os/exec`; `slack-go` only in `blockkit`, as the data it renders.
+  `internal/ui/boundary_test.go` enforces this. The boundary is deliberate;
+  do not breach it.
 - **`App.Update` routes through a reducer chain**, not a switch. Add behavior by
   adding to a `reducer_*.go` file, not by extending `Update`. The only step
   outside the chain is the thin `Update` wrapper that records `stackFront`
@@ -74,18 +90,14 @@ that no longer exists. Do not trust it.** Current structural documentation:
   there.
 - **Per-mode key handling is a table**, `modeHandlers` in
   `internal/ui/mode_handlers.go`. One `mode_*.go` file per mode.
-- **SQLite is a cache.** Slack remains authoritative.
+- **The homeserver is authoritative**; hicli's database is its local
+  replica.
 - **A map shared across goroutines is never written.** Every map the UI holds
-  is either built for it (a copy, like `userNameStore.SnapshotForUI()` or the
-  per-message `ExternalUsers` set) or published once and never mutated
-  again (`WorkspaceContext.CustomEmoji` / `UserGroups`, swapped whole via
-  `atomic.Pointer`). A copy handed to the UI is the UI's from then on: the
-  sender must not keep reading it (the UI writes it). The same goes for maps
-  captured by a `tea.Cmd` (`saveThreadToFile` clones them). A plain map
-  written while another goroutine reads it is a `fatal error: concurrent map
-  read and map write`, which bubbletea cannot recover from; it crashed slk on
-  2026-10-02 via the user-name map (see `cmd/slk/usernames.go`). Engine state
-  several goroutines write is locked (`userNameStore`) instead.
+  is built for it (a copy, like the `UserNames` map in `WorkspaceReadyMsg`)
+  and the sender never touches it again. A plain map written while another
+  goroutine reads it is a `fatal error: concurrent map read and map write`,
+  which bubbletea cannot recover from. Engine state several goroutines touch
+  is locked (`Backend.mu`).
 
 ## Shared code — check here before writing a helper
 
@@ -112,19 +124,12 @@ scrollbars, date formatting, case folding, or ID formatting: it already exists.
 | Slack permalink parsing | `slackurl.Parse` |
 | Slack ts → `time.Time` (whole seconds, any timezone) | `export.TimeFromTS` |
 | A since/until/overlap date range in a timezone, and "is this ts in it?" | `export.NewWindow`, `export.Window.Contains` |
-| Sleep out a slack-go rate-limit error (ctx-aware) | `slackclient.WaitOutRateLimit` |
-| Page through all channel history in a ts range / a thread's replies in a ts range | `(*slackclient.Client).WalkHistory`, `GetRepliesBetween` |
 | Emoji shortcode → glyph | `emoji.Sprint`, `emoji.CodeMap`, `emoji.StripSkinTone` |
 | Does Block Kit already render the message body? | `blockkit.RendersBody(blocks)`, `messages.BlocksCarryBody(msg)` |
-| Current DND state from a Slack API result | `slack.DNDStateFromStatus` |
-| Persist a full Web API profile's custom status and huddle (including clears) | `cmd/slk/applyProfileStatus(teamID, userID, profile, db, send)` after `UpsertUser`, before any resolved-user notice or row repair; `UpsertUser` alone deliberately preserves status on conflict |
 | Peer custom status, DND and huddle rendering | `ui/peerstatus` (`Status`, glyph/expiry/summary methods); `messages.AuthorStatusSuffix` for author headers |
-| Workspace app/bot classification, from any goroutine | `WorkspaceContext.IsBotUser` / `MarkBotUser`; private synchronized set, never directly read/write a plain bot-ID map |
 | Usergroup map helpers | `usergroups.Copy`, `usergroups.Equal`, `usergroups.Display` |
-| A workspace's user ID → display name, from any goroutine in `cmd/slk` | `wctx.UserNames` (`*userNameStore`: `Get`/`Set`, `MentionedNames(text)` for one message; `lookupUserCached` / `resolveUserCached` add the SQLite fallback). Just `Set`: hand the UI the map from `SnapshotForUI()` and pass only its version to `NotifyFrom`, which makes every later new or changed name reach the UI as `UserResolvedMsg`. Never keep or read the map you handed over |
 | User IDs mentioned in message text | `slackfmt.MentionedUserIDs(text)` |
-| Slack original-avatar URL → sized CDN URL (e.g. 72px) | `avatar.SizedURL(orig, px)`; returns non-Slack-original URLs unchanged |
-| Copy text to the clipboard | `App.clipboardWrite` / `SetClipboardWriter`; `cmd/slk/newClipboardWriter` selects local macOS `pbcopy` or terminal OSC 52 |
+| Copy text to the clipboard | `App.clipboardWrite` / `SetClipboardWriter`; `cmd/mtx/newClipboardWriter` selects local macOS `pbcopy` or terminal OSC 52 |
 
 ### UI chrome
 
@@ -203,8 +208,6 @@ them as templates:
   lockstep test to tell you when you forgot — within the limits above. Note that
   `TestLockstep_ReactionHitTestFrames` is a tripwire that fires on
   *convergence*: Phase 3 must delete it, not satisfy it.
-- **`convertAndCacheHistory` / `fetchChannelMessages` / `fetchThreadReplies`** in
-  `cmd/slk/main.go` have ~85% duplicated bodies.
 
 ## Conventions
 
@@ -235,17 +238,16 @@ from 1,995 / 121 before it — Phase 0's characterization tests added ~910 of
 them). Budget roughly **220 mechanical test-line edits per 10 extractions**, and
 expect five members to dominate: `messagepane` (243), `compose` (204),
 `focusedPanel` (146), `mode` (129) and `activeChannelID` (125) are 847 of the
-total between them. Method and per-member breakdown:
-`docs/superpowers/plans/2026-09-06-architecture-refactor.md`, Phase 0 "Achieved".
+total between them (figures from slk's Phase 0 refactor).
 
 **Found a bug while refactoring?** Record it, annotate it, raise it separately.
 A refactor commit that also changes behavior cannot be reviewed.
 
 ## Workflow
 
-Per the README: brainstorm the design first, write tests, then implement.
-Designs go to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`,
-implementation plans to `docs/superpowers/plans/`.
+Design first, then tests, then implementation. Keep slk's TUI changes small
+and separate from engine changes, so upstream slk fixes stay easy to merge
+(`git remote add slk-upstream https://github.com/gammons/slk.git`).
 
-Before opening a PR: `go build ./...`, `go vet ./...`, `go test ./... -race`,
-`gofmt -l .` empty.
+Before committing: `make build`, `go vet -tags sqlite_fts5,goolm ./...`,
+`make test`, `gofmt -l .` empty.

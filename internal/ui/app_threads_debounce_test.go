@@ -1,19 +1,17 @@
 package ui
 
 import (
-	"sync/atomic"
-	"testing"
-
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ids"
+	"sync/atomic"
+	"testing"
 )
 
 // newTestAppWithThreadsView is the threads-view analogue of
 // newTestAppWithMessages (app_selection_test.go:13). Wires summaries into an
 // App, activates ViewThreads, and returns the App for the caller to drive
 // openSelectedThreadCmd / Update directly.
-func newTestAppWithThreadsView(t *testing.T, summaries []cache.ThreadSummary) *App {
+func newTestAppWithThreadsView(t *testing.T, summaries []core.ThreadSummary) *App {
 	t.Helper()
 	return newTestApp(t,
 		withSize(120, 30),
@@ -29,7 +27,7 @@ func newTestAppWithThreadsView(t *testing.T, summaries []cache.ThreadSummary) *A
 func TestThreadsViewDebouncesNetworkFetchOnRapidJK(t *testing.T) {
 	var fetchCount int32
 	var fetchedTS []string
-	a := newTestAppWithThreadsView(t, []cache.ThreadSummary{
+	a := newTestAppWithThreadsView(t, []core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "1.0", ParentText: "p1", ChannelName: "g1"},
 		{ChannelID: "C2", ThreadTS: "2.0", ParentText: "p2", ChannelName: "g2"},
 		{ChannelID: "C3", ThreadTS: "3.0", ParentText: "p3", ChannelName: "g3"},
@@ -94,7 +92,7 @@ func TestThreadsViewDebouncesNetworkFetchOnRapidJK(t *testing.T) {
 // thread content lands without artificial delay.
 func TestOpenSelectedThread_NonDebouncedPathFiresImmediately(t *testing.T) {
 	var fetched int32
-	a := newTestAppWithThreadsView(t, []cache.ThreadSummary{
+	a := newTestAppWithThreadsView(t, []core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "1.0", ParentText: "p1", ChannelName: "g1"},
 	})
 	a.setThreadFetcherForTest(func(channelID ids.ChannelID, threadTS ids.ThreadTS) core.Msg {

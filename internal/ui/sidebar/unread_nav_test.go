@@ -3,7 +3,7 @@ package sidebar
 import (
 	"testing"
 
-	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // items C1..C4; C2 and C4 are unread, C3 is unread-but-muted (excluded),
@@ -17,8 +17,8 @@ func unreadNavModel() Model {
 		{ID: "C3", Name: "muted", Type: "channel", Section: "Eng", IsMuted: true},
 		{ID: "C4", Name: "four", Type: "channel", Section: "Eng"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C2": {HasUnread: true},
 			"C3": {HasUnread: true}, // muted -> not visibly unread
 			"C4": {HasUnread: true},
@@ -80,8 +80,8 @@ func TestNextUnread_NoOtherUnread(t *testing.T) {
 		{ID: "C1", Name: "one", Type: "channel"},
 		{ID: "C2", Name: "two", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true}}
 	})
 	if _, _, _, ok := m.NextUnread("C1", 1); ok {
 		t.Fatalf("only C1 unread and it is current: want ok=false")
@@ -115,8 +115,8 @@ func TestNextUnread_UnknownAnchor_LandsOnNearestEnd(t *testing.T) {
 		{ID: "C2", Name: "two", Type: "channel", Section: "Eng"},
 		{ID: "C3", Name: "three", Type: "channel", Section: "Eng"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true},
 			"C3": {HasUnread: true},
 		}
@@ -138,8 +138,8 @@ func TestNextUnread_ReachesCollapsedSectionAndExpands(t *testing.T) {
 	m := New([]ChannelItem{
 		{ID: "C1", Name: "hidden", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true}}
 	})
 	if !m.IsCollapsed(defaultChannelsSection) {
 		t.Fatalf("precondition: Channels section should start collapsed")
@@ -161,7 +161,7 @@ func TestNextUnread_NoUnreadAtAll(t *testing.T) {
 		{ID: "C1", Name: "one", Type: "channel", Section: "Eng"},
 		{ID: "C2", Name: "two", Type: "channel", Section: "Eng"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState { return map[string]cache.ReadState{} })
+	m.SetReadStateReader(func() map[string]core.ReadState { return map[string]core.ReadState{} })
 	if _, _, _, ok := m.NextUnread("C1", 1); ok {
 		t.Fatalf("no unread channels: want ok=false from an anchored call")
 	}
@@ -176,8 +176,8 @@ func TestNextUnread_ForwardsChannelType(t *testing.T) {
 	m := New([]ChannelItem{
 		{ID: "D1", Name: "dm-peer", Type: "dm", Section: "Eng"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"D1": {HasUnread: true}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"D1": {HasUnread: true}}
 	})
 	id, name, chType, ok := m.NextUnread("", 1)
 	if !ok || id != "D1" || name != "dm-peer" || chType != "dm" {

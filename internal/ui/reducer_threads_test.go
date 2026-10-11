@@ -6,8 +6,6 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ids"
 	"github.com/schwagner/mtx/internal/ui/messages"
@@ -66,7 +64,7 @@ func TestApp_WorkspaceReadyAndActivationBothEnsureSubscriptions(t *testing.T) {
 
 func TestThreadMarkedLocalMsg_SuccessAppliesCursor(t *testing.T) {
 	app := NewApp()
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "5.000000", Unread: true},
 	})
 
@@ -81,7 +79,7 @@ func TestThreadMarkedLocalMsg_SuccessAppliesCursor(t *testing.T) {
 
 func TestThreadMarkedLocalMsg_FailureLeavesFlagAlone(t *testing.T) {
 	app := NewApp()
-	app.threadsView.SetSummaries([]cache.ThreadSummary{
+	app.threadsView.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "5.000000", Unread: true},
 	})
 
@@ -153,7 +151,7 @@ func TestThreadRepliesLoaded_BackfillsParentTimestampFromCache(t *testing.T) {
 	reply := messages.MessageItem{TS: "1700000050.000200", UserID: "U2", Text: "reply", ThreadTS: threadTS}
 
 	app := newTestApp(t,
-		withThreadsView([]cache.ThreadSummary{{
+		withThreadsView([]core.ThreadSummary{{
 			ChannelID: "C1", ThreadTS: threadTS, ParentTS: threadTS, ParentUserID: "U1", ParentText: "summary text",
 		}}),
 		withView(ViewThreads),

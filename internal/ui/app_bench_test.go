@@ -99,7 +99,7 @@ func BenchmarkAppViewIdle(b *testing.B) {
 }
 
 // makeWideScrollApp builds a NORMAL-mode app at an ultrawide terminal size
-// (477x130, matching a real user's session in slk-debug.log) with focus on
+// (477x130, matching a real user's session in mtx-debug.log) with focus on
 // the messages pane -- the j/k scroll hot path. This is the case the
 // compositor memo does NOT help: every scroll bumps messagepane.Version, so
 // the bordered top region re-renders and the screen re-composites.

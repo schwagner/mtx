@@ -3,7 +3,7 @@ package ui
 import (
 	"testing"
 
-	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/sidebar"
 	"github.com/schwagner/mtx/internal/ui/workspace"
 )
@@ -21,14 +21,14 @@ func TestWorkspaceReady_RefreshesRailAndTitle(t *testing.T) {
 			{ID: "T1", Name: "SWAP", Initials: "SW"},
 			{ID: "T2", Name: "Other", Initials: "OT"},
 		},
-		map[string]cache.ReadState{"C1": {HasUnread: true}},
+		map[string]core.ReadState{"C1": {HasUnread: true}},
 		nil,
 	)
 	workspaceUnreads := []string{"T1", "T2"}
 	app.setWorkspaceUnreadReaderForTest(func() []string { return workspaceUnreads })
 	app.activeTeamID = "T1"
 	app.notifyReadStateChanged()
-	if got, want := app.windowTitle, "slk SW (1) +1"; got != want {
+	if got, want := app.windowTitle, "mtx SW (1) +1"; got != want {
 		t.Fatalf("before T2 connects: windowTitle = %q want %q", got, want)
 	}
 
@@ -37,7 +37,7 @@ func TestWorkspaceReady_RefreshesRailAndTitle(t *testing.T) {
 	workspaceUnreads = []string{"T1"}
 	app.Update(WorkspaceReadyMsg{TeamID: "T2", TeamName: "Other"})
 
-	if got, want := app.windowTitle, "slk SW (1)"; got != want {
+	if got, want := app.windowTitle, "mtx SW (1)"; got != want {
 		t.Errorf("after T2 connects: windowTitle = %q want %q", got, want)
 	}
 	// Rail rows are 1, 3, 5, ...; see workspace.Model.ClickAt.
@@ -48,18 +48,18 @@ func TestWorkspaceReady_RefreshesRailAndTitle(t *testing.T) {
 
 // TestSectionsRefreshed_ActiveWorkspace_RefreshesTitle pins the active
 // twin of muteRefreshMsg's inactive case: a SectionsRefreshedMsg that
-// mutes an unread channel must drop it from "(N)" and $SLK_UNREAD, not
+// mutes an unread channel must drop it from "(N)" and $MTX_UNREAD, not
 // only from the sidebar's dots.
 func TestSectionsRefreshed_ActiveWorkspace_RefreshesTitle(t *testing.T) {
 	app := setupAppForTitleTest(t,
 		[]sidebar.ChannelItem{{ID: "C1", Name: "general", Type: "channel"}},
 		[]workspace.WorkspaceItem{{ID: "T1", Name: "SWAP", Initials: "SW"}},
-		map[string]cache.ReadState{"C1": {HasUnread: true}},
+		map[string]core.ReadState{"C1": {HasUnread: true}},
 		[]string{"T1"},
 	)
 	app.activeTeamID = "T1"
 	app.notifyReadStateChanged()
-	if got, want := app.windowTitle, "slk SW (1)"; got != want {
+	if got, want := app.windowTitle, "mtx SW (1)"; got != want {
 		t.Fatalf("before mute: windowTitle = %q want %q", got, want)
 	}
 
@@ -68,7 +68,7 @@ func TestSectionsRefreshed_ActiveWorkspace_RefreshesTitle(t *testing.T) {
 		Channels: []sidebar.ChannelItem{{ID: "C1", Name: "general", Type: "channel", IsMuted: true}},
 	})
 
-	if got, want := app.windowTitle, "slk SW"; got != want {
+	if got, want := app.windowTitle, "mtx SW"; got != want {
 		t.Errorf("after mute: windowTitle = %q want %q", got, want)
 	}
 }

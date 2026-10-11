@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"charm.land/lipgloss/v2"
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
-func sampleSummaries() []cache.ThreadSummary {
-	return []cache.ThreadSummary{
+func sampleSummaries() []core.ThreadSummary {
+	return []core.ThreadSummary{
 		{
 			ChannelID: "C1", ChannelName: "general", ChannelType: "channel",
 			ThreadTS: "1.000000", ParentUserID: "U1", ParentText: "hello world",
@@ -64,7 +64,7 @@ func TestSetSummaries_PreservesSelectionByThreadTS(t *testing.T) {
 	m.MoveDown() // selected: thread 2
 
 	// Re-rank: thread 2 moves to position 0, thread 1 to position 1.
-	reranked := []cache.ThreadSummary{sampleSummaries()[1], sampleSummaries()[0]}
+	reranked := []core.ThreadSummary{sampleSummaries()[1], sampleSummaries()[0]}
 	m.SetSummaries(reranked)
 
 	if m.SelectedIndex() != 0 {
@@ -127,7 +127,7 @@ func TestUnreadCount(t *testing.T) {
 // ParentText and ParentUserID are empty.
 func TestView_ParentNotLoadedFallback(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{{
+	m.SetSummaries([]core.ThreadSummary{{
 		ChannelID: "C1", ChannelName: "general", ChannelType: "channel",
 		ThreadTS: "1.000000", ParentUserID: "", ParentText: "",
 		ParentTS: "1.000000", ReplyCount: 0, LastReplyTS: "1.000000", LastReplyBy: "",
@@ -158,9 +158,9 @@ func TestView_SnapsToSelectedOnOverflow(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
 	// 10 summaries with distinct channel names so we can spot which one
 	// is on-screen.
-	var summaries []cache.ThreadSummary
+	var summaries []core.ThreadSummary
 	for i := 0; i < 10; i++ {
-		summaries = append(summaries, cache.ThreadSummary{
+		summaries = append(summaries, core.ThreadSummary{
 			ChannelID:    "C" + string(rune('0'+i)),
 			ChannelName:  "ch-" + string(rune('a'+i)),
 			ChannelType:  "channel",
@@ -279,7 +279,7 @@ func TestVersion_StableAcrossIdenticalSetCalls(t *testing.T) {
 
 func TestMarkByThreadTSUnread_FlipsFlagAndReturnsTrue(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{
+	m.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", Unread: false},
 		{ChannelID: "C1", ThreadTS: "P2", Unread: false},
 	})
@@ -300,7 +300,7 @@ func TestMarkByThreadTSUnread_FlipsFlagAndReturnsTrue(t *testing.T) {
 
 func TestMarkByThreadTSUnread_AlreadyUnread_ReturnsFalse(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{{ChannelID: "C1", ThreadTS: "P1", Unread: true}})
+	m.SetSummaries([]core.ThreadSummary{{ChannelID: "C1", ThreadTS: "P1", Unread: true}})
 
 	if m.MarkByThreadTSUnread("C1", "P1") {
 		t.Error("expected false when flag was already true")
@@ -309,7 +309,7 @@ func TestMarkByThreadTSUnread_AlreadyUnread_ReturnsFalse(t *testing.T) {
 
 func TestMarkByThreadTSUnread_NotFound_ReturnsFalse(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{{ChannelID: "C1", ThreadTS: "P1", Unread: false}})
+	m.SetSummaries([]core.ThreadSummary{{ChannelID: "C1", ThreadTS: "P1", Unread: false}})
 
 	if m.MarkByThreadTSUnread("C2", "P9") {
 		t.Error("expected false when (channel, thread) not in summaries")
@@ -318,7 +318,7 @@ func TestMarkByThreadTSUnread_NotFound_ReturnsFalse(t *testing.T) {
 
 func TestMarkByThreadTSUnread_EmptyArgs_ReturnsFalse(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{{ChannelID: "C1", ThreadTS: "P1", Unread: false}})
+	m.SetSummaries([]core.ThreadSummary{{ChannelID: "C1", ThreadTS: "P1", Unread: false}})
 
 	if m.MarkByThreadTSUnread("", "P1") {
 		t.Error("expected false for empty channelID")
@@ -423,7 +423,7 @@ func TestView_BannerVisibleWithEmptySummaries(t *testing.T) {
 
 func TestView_BannerVisibleWithSummaries(t *testing.T) {
 	m := New(map[string]string{"U2": "alice"}, "U1")
-	m.SetSummaries([]cache.ThreadSummary{
+	m.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ChannelName: "general", ThreadTS: "1.0", ParentText: "hi", LastReplyTS: "2.0", LastReplyBy: "U2"},
 	})
 	m.SetSubscriptionsAvailable(false)
@@ -530,7 +530,7 @@ func TestClickAt_AccountsForBannerRow(t *testing.T) {
 // snap yOffset down to keep the selected card visible).
 func TestClickAt_AccountsForYOffset(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	sums := []cache.ThreadSummary{
+	sums := []core.ThreadSummary{
 		{ChannelID: "C1", ChannelName: "g1", ThreadTS: "1.0", ParentText: "a", LastReplyTS: "2.0", LastReplyBy: "U2"},
 		{ChannelID: "C2", ChannelName: "g2", ThreadTS: "2.0", ParentText: "b", LastReplyTS: "3.0", LastReplyBy: "U2"},
 		{ChannelID: "C3", ChannelName: "g3", ThreadTS: "3.0", ParentText: "c", LastReplyTS: "4.0", LastReplyBy: "U2"},
@@ -573,7 +573,7 @@ func TestClickAt_AccountsForYOffset(t *testing.T) {
 
 func TestMarkByThreadTSReadAt_CursorBehindLatestSetsUnread(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{
+	m.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "5.000000", Unread: false},
 	})
 
@@ -587,7 +587,7 @@ func TestMarkByThreadTSReadAt_CursorBehindLatestSetsUnread(t *testing.T) {
 
 func TestMarkByThreadTSReadAt_CursorAtLatestClearsUnread(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{
+	m.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "5.000000", Unread: true},
 	})
 
@@ -601,7 +601,7 @@ func TestMarkByThreadTSReadAt_CursorAtLatestClearsUnread(t *testing.T) {
 
 func TestMarkByThreadTSReadAt_NoChangeReturnsFalse(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{
+	m.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "5.000000", Unread: true},
 	})
 
@@ -612,7 +612,7 @@ func TestMarkByThreadTSReadAt_NoChangeReturnsFalse(t *testing.T) {
 
 func TestMarkByThreadTSReadAt_UnknownThreadReturnsFalse(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{
+	m.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "5.000000", Unread: true},
 	})
 
@@ -626,7 +626,7 @@ func TestMarkByThreadTSReadAt_UnknownThreadReturnsFalse(t *testing.T) {
 
 func TestMarkByThreadTSReadAt_BumpsVersionOnlyOnChange(t *testing.T) {
 	m := New(map[string]string{}, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{
+	m.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "P1", LastReplyTS: "5.000000", Unread: false},
 	})
 
@@ -653,7 +653,7 @@ func TestMarkByThreadTSReadAt_BumpsVersionOnlyOnChange(t *testing.T) {
 func TestPatchUserName_BumpsVersionOnlyWhenListReferencesUser(t *testing.T) {
 	shared := map[string]string{}
 	m := New(shared, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{
+	m.SetSummaries([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "1.0", ParentUserID: "U1", LastReplyBy: "U2", ParentText: "hi"},
 		{ChannelID: "C2", ThreadTS: "2.0", ParentUserID: "U2", LastReplyBy: "U2", ParentText: "ping <@U3>"},
 	})
@@ -677,7 +677,7 @@ func TestPatchUserName_BumpsVersionOnlyWhenListReferencesUser(t *testing.T) {
 // land in the model's own map.
 func TestPatchUserName_RecordsNameInOwnMap(t *testing.T) {
 	m := New(nil, "USELF")
-	m.SetSummaries([]cache.ThreadSummary{{ChannelID: "C1", ThreadTS: "1.0", ParentUserID: "U1", ParentText: "hi"}})
+	m.SetSummaries([]core.ThreadSummary{{ChannelID: "C1", ThreadTS: "1.0", ParentUserID: "U1", ParentText: "hi"}})
 	m.PatchUserName("U1", "alice")
 	if !strings.Contains(m.View(20, 60), "alice") {
 		t.Error("View does not show the patched name")

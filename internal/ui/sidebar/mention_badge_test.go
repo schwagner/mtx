@@ -8,8 +8,8 @@ import (
 	"unicode/utf8"
 
 	"charm.land/lipgloss/v2"
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
@@ -31,19 +31,19 @@ func TestMentionBadge_Predicate(t *testing.T) {
 	tests := []struct {
 		name  string
 		item  ChannelItem
-		state cache.ReadState
+		state core.ReadState
 		want  int
 	}{
 		{
 			name:  "unread with mentions",
 			item:  ChannelItem{ID: "C1"},
-			state: cache.ReadState{HasUnread: true, MentionCount: 3},
+			state: core.ReadState{HasUnread: true, MentionCount: 3},
 			want:  3,
 		},
 		{
 			name:  "unread without mentions",
 			item:  ChannelItem{ID: "C1"},
-			state: cache.ReadState{HasUnread: true, MentionCount: 0},
+			state: core.ReadState{HasUnread: true, MentionCount: 0},
 			want:  0,
 		},
 		{
@@ -51,7 +51,7 @@ func TestMentionBadge_Predicate(t *testing.T) {
 			// outlive the unread flag that justifies it.
 			name:  "read but stale mention count",
 			item:  ChannelItem{ID: "C1"},
-			state: cache.ReadState{HasUnread: false, MentionCount: 4},
+			state: core.ReadState{HasUnread: false, MentionCount: 4},
 			want:  0,
 		},
 		{
@@ -60,7 +60,7 @@ func TestMentionBadge_Predicate(t *testing.T) {
 			// hide a direct @-mention.
 			name:  "muted with mentions still badges",
 			item:  ChannelItem{ID: "C1", IsMuted: true},
-			state: cache.ReadState{HasUnread: true, MentionCount: 2},
+			state: core.ReadState{HasUnread: true, MentionCount: 2},
 			want:  2,
 		},
 	}
@@ -79,8 +79,8 @@ func TestMentionBadge_ReplacesUnreadDot(t *testing.T) {
 		{ID: "C1", Name: "deploys", Type: "channel"},
 		{ID: "C2", Name: "general", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true, MentionCount: 3},
 			"C2": {HasUnread: true, MentionCount: 0},
 		}
@@ -107,8 +107,8 @@ func TestMentionBadge_MutedChannelStillBadges(t *testing.T) {
 	m := New([]ChannelItem{
 		{ID: "C1", Name: "noisy", Type: "channel", IsMuted: true},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true, MentionCount: 2}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true, MentionCount: 2}}
 	})
 	m.ToggleCollapse("Channels")
 	view := m.View(10, 30)
@@ -129,8 +129,8 @@ func TestMentionBadge_CapsAt99Plus(t *testing.T) {
 	m := New([]ChannelItem{
 		{ID: "C1", Name: "firehose", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true, MentionCount: 250}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true, MentionCount: 250}}
 	})
 	m.ToggleCollapse("Channels")
 	line := rowFor(t, m.View(10, 30), "firehose")
@@ -145,8 +145,8 @@ func TestMentionBadge_CapsAt99Plus(t *testing.T) {
 
 func TestMentionBadge_ExactlyNinetyNineIsNotCapped(t *testing.T) {
 	m := New([]ChannelItem{{ID: "C1", Name: "busy", Type: "channel"}})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true, MentionCount: 99}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true, MentionCount: 99}}
 	})
 	m.ToggleCollapse("Channels")
 	line := rowFor(t, m.View(10, 30), "busy")
@@ -182,8 +182,8 @@ func TestMentionBadge_WidthBudgetIsPerRow(t *testing.T) {
 	render := func(t *testing.T, mentions int) string {
 		t.Helper()
 		m := New([]ChannelItem{{ID: "C1", Name: longName, Type: "channel"}})
-		m.SetReadStateReader(func() map[string]cache.ReadState {
-			return map[string]cache.ReadState{"C1": {HasUnread: true, MentionCount: mentions}}
+		m.SetReadStateReader(func() map[string]core.ReadState {
+			return map[string]core.ReadState{"C1": {HasUnread: true, MentionCount: mentions}}
 		})
 		m.ToggleCollapse("Channels")
 		return rowFor(t, m.View(10, 24), longName[:10])
@@ -216,8 +216,8 @@ func TestMentionBadge_WidthBudgetIsPerRow(t *testing.T) {
 func TestMentionBadge_UnbadgedRowKeepsOriginalNameWidth(t *testing.T) {
 	const longName = "engineering-deployments-and-releases"
 	m := New([]ChannelItem{{ID: "C1", Name: longName, Type: "channel"}})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true, MentionCount: 0}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true, MentionCount: 0}}
 	})
 	m.ToggleCollapse("Channels")
 	plain := ansiRe.ReplaceAllString(rowFor(t, m.View(10, 24), longName[:10]), "")
@@ -461,8 +461,8 @@ func canonicalSidebarView() string {
 		{ID: "C6", Name: "bob", Type: "dm", Presence: "away"},
 		{ID: "C7", Name: "botty", Type: "app"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true, MentionCount: 42},
 			"C2": {HasUnread: true},
 			"C3": {HasUnread: true, MentionCount: 7},
@@ -519,8 +519,8 @@ func TestMentionBadge_ThemedBadgePaintsOnlyItsOwnCells(t *testing.T) {
 		{"capped count", 250, "99+"},
 	} {
 		m := New([]ChannelItem{{ID: "C1", Name: "deploys", Type: "channel"}})
-		m.SetReadStateReader(func() map[string]cache.ReadState {
-			return map[string]cache.ReadState{"C1": {HasUnread: true, MentionCount: tc.count}}
+		m.SetReadStateReader(func() map[string]core.ReadState {
+			return map[string]core.ReadState{"C1": {HasUnread: true, MentionCount: tc.count}}
 		})
 		m.ToggleCollapse("Channels")
 		row := rowFor(t, m.View(10, 30), "deploys")
@@ -583,8 +583,8 @@ func TestMentionBadge_MutedChannelUsesDimmerPill(t *testing.T) {
 	render := func(t *testing.T, muted bool) string {
 		t.Helper()
 		m := New([]ChannelItem{{ID: "C1", Name: "noisy", Type: "channel", IsMuted: muted}})
-		m.SetReadStateReader(func() map[string]cache.ReadState {
-			return map[string]cache.ReadState{"C1": {HasUnread: true, MentionCount: 4}}
+		m.SetReadStateReader(func() map[string]core.ReadState {
+			return map[string]core.ReadState{"C1": {HasUnread: true, MentionCount: 4}}
 		})
 		m.ToggleCollapse("Channels")
 		return rowFor(t, m.View(10, 30), "noisy")

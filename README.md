@@ -1,129 +1,98 @@
-# slk
+# mtx
 
-> **A blazingly fast Slack TUI.**
-> Keyboard-driven, beautifully themed, and under 20MB. One static binary. No Electron required.
->
-> Marketing site: [getslk.sh](https://getslk.sh) · Docs: [Wiki](https://github.com/gammons/slk/wiki)
+A keyboard-driven terminal client for [Matrix](https://matrix.org) with
+end-to-end encryption, built from [slk](https://github.com/gammons/slk)'s TUI.
 
-![slk demo: navigating channels, live messages, a split window and switching workspaces](docs/assets/demo/hero.gif)
+mtx keeps slk's layout and keybindings (sidebar, message pane, thread pane,
+vim-style modes, fuzzy finder, themes) and replaces the Slack engine with a
+Matrix one built on [mautrix-go](https://github.com/mautrix/go) and gomuks'
+[hicli](https://pkg.go.dev/go.mau.fi/gomuks/pkg/hicli).
 
-`slk` is a daily-driver replacement for the official Slack desktop client, built in Go with [bubbletea](https://github.com/charmbracelet/bubbletea) and [lipgloss](https://github.com/charmbracelet/lipgloss).
+## What works
 
-## Why slk?
+- Password login; device verification with your recovery key, or first-time
+  setup of cross-signing, secret storage and key backup for a new account
+- Encrypted rooms and DMs (Megolm, via mautrix's pure-Go `goolm`); history
+  from before this device existed is restored from key backup
+- Room list with unread dots and mention counts, DMs grouped separately
+- History with infinite scroll-back, day separators, the "new" divider
+- Send, edit, delete; Markdown formatting; @mentions; replies show the
+  quoted message
+- Threads (`m.thread`), in the thread pane
+- Reactions (add, remove, list)
+- Read receipts, typing indicators, desktop notifications (push rules)
+- New DM with Ctrl+N; invites appear as a toast and in the Ctrl+T finder
+- Threads view (threads you are in) and Activity view (your mentions)
+- Local full-text search of decrypted messages (`/` in a room)
+- File upload (paste or path) and download (`d`), encrypted in encrypted
+  rooms
 
-- **Fast.** Cold start in milliseconds. Render-cached messages. SQLite-backed scrollback. Real-time over WebSocket.
-- **Tiny.** ~19 MB on disk. ~60 MB RSS for a live multi-workspace session vs. 500 MB–1.5 GB for the official client. No node_modules, no Chromium, no 1Gb RAM tax.
-- **Keyboard-first.** Vim-style modal editing. `j/k`, `h/l`, `i`, `Esc`.
-- **Pretty.** 59 built-in themes, lipgloss-styled panels, true-pixel avatars on kitty (half-block fallback elsewhere), emoji shortcodes, day separators, and pill-style reactions.
-- **Multi-workspace.** All your workspaces stay connected in parallel. `1`–`9` to instantly jump between them, with live unread badges in the rail.
-- **Yours.** TOML config, custom themes, custom channel sections via glob, XDG-compliant paths.
+Not done yet: inline images, avatars, interactive emoji (SAS) verification of
+other people's devices, room creation/settings beyond DMs, spaces in the
+sidebar, workspace-wide search (Ctrl+F), presence.
 
-## Highlights
+## Install
 
-- Real-time messages, edits, deletes, reactions, typing indicators
-- Inline images (kitty graphics / sixel / half-block fallback) with full-screen preview
-- Threads side panel + a workspace-wide threads view
-- Activity feed: mentions, thread replies, reactions, and DMs in one list, like Slack's Activity tab
-- Smart paste: clipboard images, file paths, or text — multiple attachments + caption in one send
-- Slack-native sidebar sections, kept live; or glob-based config sections
-- Automatic auth from the Slack desktop app — no tokens to copy, no Slack App required
-- Vim-style modal keybindings, fuzzy channel finder, workspace picker
-- 59 themes + drop-in custom themes, live theme switcher
-- OS desktop notifications on DMs, mentions, and configurable keywords
+With Nix:
 
-Full feature breakdown: **[Features](https://github.com/gammons/slk/wiki/Features)**
-
-## Quick install
-
-**Homebrew** (macOS and Linux):
-
-```bash
-brew install --cask gammons/tap/slk
+```sh
+nix run git+file:///path/to/mtx      # or: nix build, then ./result/bin/mtx
 ```
 
-**Arch Linux** (community-maintained [AUR package](https://aur.archlinux.org/packages/slk)):
+From source (needs Go 1.26+, a C compiler; libX11 headers on Linux):
 
-```bash
-yay -S slk
+```sh
+make build && ./bin/mtx
 ```
 
-**Go:**
+The build tags `sqlite_fts5,goolm` are required; the Makefile and flake set
+them.
 
-```bash
-go install -ldflags="-s -w" -trimpath github.com/gammons/slk/cmd/slk@latest
+## First run
+
+```
+$ mtx
+Log in to Matrix.
+User ID (e.g. @you:example.com): @andrew:matrix.example.com
+Homeserver URL [https://matrix.example.com]:
+Password:
+Logged in.
+
+Verify this device with your recovery key (or security passphrase).
+Recovery key:
 ```
 
-For tarballs, `.deb` / `.rpm` / `.apk` packages, Windows, build-from-source, and the Homebrew formula→cask migration note, see the [Installation wiki page](https://github.com/gammons/slk/wiki/Installation).
+Use the recovery key Element shows under Settings → Encryption. If the account
+has no secret storage yet, mtx offers to set it up and prints a new recovery
+key: save it.
 
-## Setup
+`mtx logout` logs the device out and deletes its local data.
 
-slk reads your session directly from the **Slack desktop app** — no DevTools,
-no tokens to copy. Make sure you're signed in to the desktop app, then:
+## Files
 
-```bash
-slk --add-workspace
-```
+| Path | Contents |
+|---|---|
+| `~/.config/mtx/config.toml` | Settings (slk's format: themes, sidebar, notifications) |
+| `~/.config/mtx/themes/` | Custom themes |
+| `~/.local/share/mtx/mtx.db` | Account, encryption keys, message store |
+| `~/.local/share/mtx/pickle.key` | Key that encrypts the Olm/Megolm secrets in the database |
+| `~/.cache/mtx/mtx.log` | Client log (`MTX_DEBUG=1` for debug level) |
 
-slk lists the workspaces you're signed in to; pick the ones you want and
-you're done.
+The database holds your encryption keys. Keep the data directory private
+(it is created mode 0700) and include it in backups only if they are
+encrypted.
 
-No desktop app (a server, a container, an SSH session)? `slk --add-workspace
---browser` signs in from your browser session instead: in DevTools > Network,
-Copy as cURL any request to `/api/` on app.slack.com, and paste it. slk also
-offers this when it cannot read the desktop app's session.
+## Keys
 
-Full walkthrough: [Setup wiki page](https://github.com/gammons/slk/wiki/Setup).
+Press `?` in the app. The essentials: `i` to write, `Esc` for normal mode,
+`j`/`k` to move, `Enter` to open a thread, `r` to react, `E` edit, `D` delete,
+`Ctrl+T` switch room, `Ctrl+N` new DM, `Ctrl+A` activity, `Ctrl+C` quit.
 
-## Debugging
+## Development
 
-Set `SLK_DEBUG=1` to enable a comprehensive debug log written to
-`slk-debug.log` in the current working directory. The file is
-**truncated each run**, so reproduce the issue, quit slk, then copy
-the file before relaunching. Log lines are categorized
-(`[cache]`, `[imgfetch]`, `[imgrender]`, `[ws]`, `[general]`) so
-`grep '\[cache\]' slk-debug.log` slices to one focus area.
-
-## Documentation
-
-Everything lives in the [**wiki**](https://github.com/gammons/slk/wiki):
-
-- [Installation](https://github.com/gammons/slk/wiki/Installation) — prebuilt binaries, Go install, build from source
-- [Setup](https://github.com/gammons/slk/wiki/Setup) — desktop-app auth, adding workspaces
-- [Features](https://github.com/gammons/slk/wiki/Features) — full feature breakdown
-- [Keybindings](https://github.com/gammons/slk/wiki/Keybindings) — every key, every mode
-- [Configuration](https://github.com/gammons/slk/wiki/Configuration) — `config.toml`, custom themes, XDG paths
-- [Terminal Compatibility](https://github.com/gammons/slk/wiki/Terminal-Compatibility) — what each terminal supports, including tmux setup (inline images, unread-title forwarding)
-- [Clipboard and OSC 52](https://github.com/gammons/slk/wiki/Clipboard-and-OSC-52) — copy/paste setup notes
-- [Tradeoffs and Non-Goals](https://github.com/gammons/slk/wiki/Tradeoffs-and-Non-Goals) — roadmap, caveats, TOS notice
-- [Architecture](https://github.com/gammons/slk/wiki/Architecture) — service layout, data layer
-
-## Contributing
-
-Contributions are welcome. A few ground rules:
-
-- **AI-assisted PRs are accepted** — and in fact encouraged — but only if
-  they're driven by a **frontier model** (e.g. Claude Opus, GPT-5,
-  Gemini Pro) running with **high thinking effort**. Low-effort,
-  small-model output that nobody reviewed tends to create more work than
-  it saves, and will be closed.
-- Ideally, drive the work with the
-  [superpowers](https://github.com/obra/superpowers) framework (or an
-  equivalent skills/TDD-disciplined workflow). Brainstorm the design
-  first, write tests, then implement.
-- **For large feature additions, open an issue first.** Before sinking
-  time into a big change, file an issue to discuss the idea and approach
-  so we can agree on direction. Bug fixes and small improvements can go
-  straight to a PR.
-- Whether human- or AI-written, **you are responsible for your PR.**
-  Understand the diff, make sure it builds and passes `go vet ./...` and
-  `go test ./...`, and be ready to explain your choices in review.
-
-## Disclaimer
-
-`slk` is an independent, unofficial project. It is not affiliated with, endorsed by, or sponsored by Slack Technologies, LLC or Salesforce, Inc. "Slack" is a trademark of Slack Technologies, LLC; it is used here only to describe the service this client interoperates with.
-
-slk talks to Slack via the same internal browser protocol the official web client uses. This is unofficial and not sanctioned by Slack — see [Tradeoffs and Non-Goals](https://github.com/gammons/slk/wiki/Tradeoffs-and-Non-Goals#unofficial--tos-caveat) for details.
+See [AGENTS.md](AGENTS.md). `nix develop` gives a shell with everything needed.
 
 ## License
 
-[MIT](LICENSE) © Grant Ammons
+MIT, like slk. Copyright for the TUI belongs to slk's authors; see LICENSE.
+mautrix-go and hicli are MPL-2.0 and are used unmodified.

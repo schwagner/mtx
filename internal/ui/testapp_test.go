@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ids"
 	"github.com/schwagner/mtx/internal/ui/messages"
@@ -97,7 +96,7 @@ func TestNewTestApp_WithWindowSplit(t *testing.T) {
 }
 
 func TestNewTestApp_WithThreadsView(t *testing.T) {
-	a := newTestApp(t, withThreadsView([]cache.ThreadSummary{
+	a := newTestApp(t, withThreadsView([]core.ThreadSummary{
 		{ChannelID: "C1", ThreadTS: "1.0", ReplyCount: 2},
 	}))
 	got := a.threadsView.Summaries()
@@ -128,7 +127,7 @@ type testAppCfg struct {
 	render        bool
 	chanSvc       *core.ChannelServiceFuncs
 	splits        []wintree.Dir
-	threadSums    []cache.ThreadSummary
+	threadSums    []core.ThreadSummary
 	hasThreadSums bool
 	finderItems   []core.ChannelFinderItem
 	openFinder    bool
@@ -239,7 +238,7 @@ func withChannelFinderOpen(items ...core.ChannelFinderItem) testOpt {
 	return func(c *testAppCfg) { c.finderItems, c.openFinder = items, true }
 }
 
-func withThreadsView(sums []cache.ThreadSummary) testOpt {
+func withThreadsView(sums []core.ThreadSummary) testOpt {
 	return func(c *testAppCfg) { c.threadSums, c.hasThreadSums = sums, true }
 }
 

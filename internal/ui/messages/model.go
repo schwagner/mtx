@@ -1830,7 +1830,7 @@ func (m *Model) buildCache(width int) {
 	cs := m.buildCacheStyles(width)
 
 	// Perf instrumentation: allocate the per-sub-step stats sink when
-	// SLK_DEBUG is on so we can attribute buildCache's wall-clock across
+	// MTX_DEBUG is on so we can attribute buildCache's wall-clock across
 	// body / reactions / blockKit / legacy / attachments / borderWrap /
 	// plainLines. Aggregated into a single [perf] line after the loop
 	// to keep log volume O(1) per buildCache rather than O(N) per
@@ -3083,7 +3083,7 @@ func (m *Model) viewInternal(height, width int, applySelection bool) string {
 	case m.cache == nil || m.cacheWidth != width || m.cacheMsgLen != len(m.messages):
 		// Perf instrumentation: classify which predicate fired so we
 		// can attribute focus-flip churn vs width-resize vs new-message
-		// rebuilds in slk-debug.log. SLK_DEBUG=1 only; zero cost
+		// rebuilds in mtx-debug.log. MTX_DEBUG=1 only; zero cost
 		// otherwise (debuglog.Enabled() is an atomic.Bool load).
 		var reason string
 		if debuglog.Enabled() {

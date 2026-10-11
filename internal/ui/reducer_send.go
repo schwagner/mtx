@@ -52,7 +52,7 @@ import (
 
 	"github.com/schwagner/mtx/internal/debuglog"
 	"github.com/schwagner/mtx/internal/ids"
-	"github.com/schwagner/mtx/internal/slack/mrkdwn"
+	"github.com/schwagner/mtx/internal/mrkdwn"
 	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/statusbar"
 )

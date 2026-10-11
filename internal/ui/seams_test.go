@@ -16,8 +16,6 @@ import (
 	"time"
 
 	tea "charm.land/bubbletea/v2"
-
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/config"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/export"
@@ -319,8 +317,8 @@ func TestSeam_UnreadStateFeedsTitleAndStatusReport(t *testing.T) {
 		),
 	)
 	wireUnreadReaders(a,
-		func() map[string]cache.ReadState {
-			return map[string]cache.ReadState{
+		func() map[string]core.ReadState {
+			return map[string]core.ReadState{
 				"C1": {HasUnread: true},
 				"C2": {HasUnread: true},
 				"C3": {HasUnread: false},
@@ -340,11 +338,11 @@ func TestSeam_UnreadStateFeedsTitleAndStatusReport(t *testing.T) {
 
 	a.notifyReadStateChanged()
 
-	want := []report{{1, 1, "SWAP", "slk SW (1) +1"}}
+	want := []report{{1, 1, "SWAP", "mtx SW (1) +1"}}
 	if !reflect.DeepEqual(reports, want) {
 		t.Errorf("status reports = %+v, want %+v", reports, want)
 	}
-	if a.windowTitle != "slk SW (1) +1" {
+	if a.windowTitle != "mtx SW (1) +1" {
 		t.Errorf("window title = %q", a.windowTitle)
 	}
 }
@@ -359,8 +357,8 @@ func TestSeam_UnreadStateUnwired(t *testing.T) {
 
 	a.notifyReadStateChanged()
 
-	if a.windowTitle != "slk SW" {
-		t.Errorf("window title = %q, want %q", a.windowTitle, "slk SW")
+	if a.windowTitle != "mtx SW" {
+		t.Errorf("window title = %q, want %q", a.windowTitle, "mtx SW")
 	}
 }
 
@@ -420,7 +418,7 @@ func TestSeam_PasteImage(t *testing.T) {
 	if !bytes.Equal(atts[0].Bytes, img) || atts[0].Mime != "image/png" || atts[0].Size != int64(len(img)) {
 		t.Errorf("attachment = %+v, want the clipboard PNG", atts[0])
 	}
-	if !strings.HasPrefix(atts[0].Filename, "slk-paste-") {
+	if !strings.HasPrefix(atts[0].Filename, "mtx-paste-") {
 		t.Errorf("filename = %q", atts[0].Filename)
 	}
 }
@@ -496,11 +494,11 @@ func TestSeam_SaveThreadWritesMarkdown(t *testing.T) {
 		t.Fatalf("cmd() = %#v, want ThreadSavedMsg", cmd())
 	}
 
-	dir := filepath.Join(dataHome, "slk", "exports")
+	dir := filepath.Join(dataHome, "mtx", "exports")
 	if filepath.Dir(saved.Path) != dir {
 		t.Errorf("saved to %q, want a file in %q", saved.Path, dir)
 	}
-	if base := filepath.Base(saved.Path); !strings.HasPrefix(base, "slk-thread-dev-team-") || !strings.HasSuffix(base, ".md") {
+	if base := filepath.Base(saved.Path); !strings.HasPrefix(base, "mtx-thread-dev-team-") || !strings.HasSuffix(base, ".md") {
 		t.Errorf("file name = %q", base)
 	}
 	got, err := os.ReadFile(saved.Path)
@@ -557,7 +555,7 @@ func TestSaveThread_CmdDoesNotShareNameMaps(t *testing.T) {
 func TestSeam_SaveThreadReportsWriteFailure(t *testing.T) {
 	// A file where the exports directory should be makes MkdirAll fail.
 	dataHome := t.TempDir()
-	if err := os.WriteFile(filepath.Join(dataHome, "slk"), nil, 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(dataHome, "mtx"), nil, 0o644); err != nil {
 		t.Fatal(err)
 	}
 	t.Setenv("XDG_DATA_HOME", dataHome)
@@ -849,7 +847,7 @@ func TestSeam_EditorGetsDraftInTempFile(t *testing.T) {
 	if !a.compose.EditingExternally() {
 		t.Error("compose not locked while the editor is open")
 	}
-	files, _ := filepath.Glob(filepath.Join(tmp, "slk-compose-*.md"))
+	files, _ := filepath.Glob(filepath.Join(tmp, "mtx-compose-*.md"))
 	if len(files) != 1 {
 		t.Fatalf("temp drafts = %v, want one", files)
 	}
@@ -883,7 +881,7 @@ func TestSeam_EditorResultReplacesDraft(t *testing.T) {
 		{"never launched", &exec.Error{Name: "nope", Err: exec.ErrNotFound}, "Could not open editor: "},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			path := filepath.Join(t.TempDir(), "slk-compose-1.md")
+			path := filepath.Join(t.TempDir(), "mtx-compose-1.md")
 			if err := os.WriteFile(path, []byte("edited\n\n"), 0o600); err != nil {
 				t.Fatal(err)
 			}

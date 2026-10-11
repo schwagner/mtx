@@ -14,11 +14,11 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
+	"github.com/muesli/reflow/truncate"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/styles"
 	"github.com/schwagner/mtx/internal/usergroups"
-	"github.com/muesli/reflow/truncate"
 )
 
 // cardStride is the number of lines a single rendered thread card occupies
@@ -547,7 +547,7 @@ func (m *Model) View(height, width int) string {
 	var bannerLine string
 	bodyHeight := height
 	if !m.subscriptionsAvailable {
-		bannerText := "Threads list unavailable — Slack subscription state could not be fetched. slk will retry on the next reconnect."
+		bannerText := "Threads list unavailable — it could not be loaded from the local database."
 		if w := lipgloss.Width(bannerText); w > width {
 			// Truncate to width.
 			runes := []rune(bannerText)

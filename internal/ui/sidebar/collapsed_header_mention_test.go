@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/schwagner/mtx/internal/cache"
 	"github.com/schwagner/mtx/internal/config"
+	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/ui/styles"
 )
 
@@ -41,8 +41,8 @@ func TestCollapsedHeader_ShowsUnreadAndMentionAggregates(t *testing.T) {
 		{ID: "C1", Name: "deploys", Type: "channel"},
 		{ID: "C2", Name: "general", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true, MentionCount: 3},
 			"C2": {HasUnread: true},
 		}
@@ -67,8 +67,8 @@ func TestCollapsedHeader_NoMentionsShowsOnlyUnreadAggregate(t *testing.T) {
 		{ID: "C1", Name: "deploys", Type: "channel"},
 		{ID: "C2", Name: "general", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true},
 			"C2": {HasUnread: true},
 		}
@@ -88,8 +88,8 @@ func TestCollapsedHeader_ExpandedShowsNeitherAggregate(t *testing.T) {
 		{ID: "C1", Name: "deploys", Type: "channel"},
 		{ID: "C2", Name: "general", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true, MentionCount: 3},
 			"C2": {HasUnread: true},
 		}
@@ -116,8 +116,8 @@ func TestCollapsedHeader_MentionAggregateSumsAcrossChannels(t *testing.T) {
 		{ID: "C2", Name: "general", Type: "channel"},
 		{ID: "C3", Name: "random", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true, MentionCount: 2},
 			"C2": {HasUnread: true, MentionCount: 3},
 			"C3": {HasUnread: true},
@@ -140,8 +140,8 @@ func TestCollapsedHeader_MutedChannelFeedsMentionsNotUnreads(t *testing.T) {
 		{ID: "C1", Name: "noisy", Type: "channel", IsMuted: true},
 		{ID: "C2", Name: "general", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true, MentionCount: 4},
 			"C2": {HasUnread: true},
 		}
@@ -164,8 +164,8 @@ func TestCollapsedHeader_AllMutedShowsMentionsWithoutUnreadAggregate(t *testing.
 	m := New([]ChannelItem{
 		{ID: "C1", Name: "noisy", Type: "channel", IsMuted: true},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true, MentionCount: 4},
 		}
 	})
@@ -184,8 +184,8 @@ func TestCollapsedHeader_MentionAggregateCapsAt99Plus(t *testing.T) {
 		{ID: "C1", Name: "deploys", Type: "channel"},
 		{ID: "C2", Name: "general", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true, MentionCount: 60},
 			"C2": {HasUnread: true, MentionCount: 90},
 		}
@@ -209,8 +209,8 @@ func TestCollapsedHeader_SelectedVariantCarriesBothFigures(t *testing.T) {
 		{ID: "C1", Name: "deploys", Type: "channel"},
 		{ID: "C2", Name: "general", Type: "channel"},
 	})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{
 			"C1": {HasUnread: true, MentionCount: 3},
 			"C2": {HasUnread: true},
 		}
@@ -256,8 +256,8 @@ func TestCollapsedHeader_ThemedMentionBadgePaintsOnlyItsOwnCells(t *testing.T) {
 	}
 
 	m := New([]ChannelItem{{ID: "C1", Name: "deploys", Type: "channel"}})
-	m.SetReadStateReader(func() map[string]cache.ReadState {
-		return map[string]cache.ReadState{"C1": {HasUnread: true, MentionCount: 42}}
+	m.SetReadStateReader(func() map[string]core.ReadState {
+		return map[string]core.ReadState{"C1": {HasUnread: true, MentionCount: 42}}
 	})
 	header := rowFor(t, m.View(10, 30), "Channels")
 

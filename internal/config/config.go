@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/schwagner/mtx/internal/core"
 	toml "github.com/pelletier/go-toml/v2"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 type Config struct {
@@ -277,7 +277,7 @@ func Load(path string) (Config, error) {
 	if expanded, err := expandHome(cfg.General.DownloadDir); err == nil {
 		cfg.General.DownloadDir = expanded
 	} else {
-		cfg.General.DownloadDir = filepath.Join(os.TempDir(), "slk-files")
+		cfg.General.DownloadDir = filepath.Join(os.TempDir(), "mtx-files")
 	}
 
 	return cfg, nil

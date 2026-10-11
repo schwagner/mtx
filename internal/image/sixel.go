@@ -7,8 +7,8 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/schwagner/mtx/internal/debuglog"
 	gosixel "github.com/mattn/go-sixel"
+	"github.com/schwagner/mtx/internal/debuglog"
 	"golang.org/x/image/draw"
 )
 

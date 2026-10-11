@@ -91,7 +91,7 @@ var reduceWorkspace reducerFunc = func(a *App, msg tea.Msg) (tea.Cmd, bool) {
 		if m.TeamID == a.activeTeamID {
 			a.SetChannels(m.Channels)
 			// The new list carries new IsMuted flags, and "(N)",
-			// $SLK_UNREAD and the rail derive from those, not just
+			// $MTX_UNREAD and the rail derive from those, not just
 			// the sidebar's dots. SetChannels only swaps the items;
 			// without this a channel muted while unread lost its
 			// sidebar dot but stayed counted in the title until the

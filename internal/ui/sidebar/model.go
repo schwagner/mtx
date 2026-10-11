@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"charm.land/lipgloss/v2"
+	"github.com/muesli/reflow/truncate"
 	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/debuglog"
 	emojiutil "github.com/schwagner/mtx/internal/emoji"
@@ -14,7 +15,6 @@ import (
 	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/peerstatus"
 	"github.com/schwagner/mtx/internal/ui/styles"
-	"github.com/muesli/reflow/truncate"
 )
 
 // Default section names used when an item has no custom Section assigned.

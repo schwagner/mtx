@@ -5,16 +5,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/schwagner/mtx/internal/cache"
+	"github.com/schwagner/mtx/internal/core"
 )
 
 // manySummaries returns n distinct summaries whose timestamps are far
 // enough in the past that formatRelTime ("Nd ago") is stable across the
 // two renders a test compares.
-func manySummaries(n int) []cache.ThreadSummary {
-	out := make([]cache.ThreadSummary, n)
+func manySummaries(n int) []core.ThreadSummary {
+	out := make([]core.ThreadSummary, n)
 	for i := range out {
-		out[i] = cache.ThreadSummary{
+		out[i] = core.ThreadSummary{
 			ChannelID:    fmt.Sprintf("C%04d", i),
 			ChannelName:  fmt.Sprintf("ch-%04d", i),
 			ChannelType:  []string{"channel", "private", "dm"}[i%3],

@@ -482,7 +482,7 @@ func TestDefaultChannelDir(t *testing.T) {
 		t.Fatalf("DefaultChannelDir: %v", err)
 	}
 	// Named for the requested range, not the overlap-widened one.
-	want := filepath.Join("/data", "slk", "exports", "slk-channel-project-alpha-2026-04-01-to-2026-07-01")
+	want := filepath.Join("/data", "mtx", "exports", "mtx-channel-project-alpha-2026-04-01-to-2026-07-01")
 	if got != want {
 		t.Errorf("dir = %q, want %q", got, want)
 	}

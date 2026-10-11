@@ -4,11 +4,11 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
+	"github.com/muesli/reflow/truncate"
 	"github.com/schwagner/mtx/internal/text"
 	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/overlay"
 	"github.com/schwagner/mtx/internal/ui/styles"
-	"github.com/muesli/reflow/truncate"
 )
 
 // WorkspaceResult is returned when the user selects a workspace.

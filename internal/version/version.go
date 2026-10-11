@@ -14,9 +14,9 @@ func osc8(url string) string {
 // ModalFooter returns the single attribution line shown at the bottom
 // of the TUI help modal, e.g.:
 //
-//	slk dev - Made with ❤️ by Grant Ammons (https://grant.dev)
+//	mtx dev - built on slk by Grant Ammons (https://github.com/gammons/slk)
 //
 // The URL is OSC-8 wrapped so supporting terminals make it clickable.
 func ModalFooter(version string) string {
-	return "slk " + version + " - Made with \u2764\ufe0f by Grant Ammons (" + osc8("https://grant.dev") + ")"
+	return "mtx " + version + " - built on slk by Grant Ammons (" + osc8("https://github.com/gammons/slk") + ")"
 }

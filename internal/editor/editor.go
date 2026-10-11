@@ -13,7 +13,7 @@ import (
 
 // WriteDraft saves text to a new temp file and returns its path.
 func WriteDraft(text string) (string, error) {
-	f, err := os.CreateTemp("", "slk-compose-*.md")
+	f, err := os.CreateTemp("", "mtx-compose-*.md")
 	if err != nil {
 		return "", err
 	}

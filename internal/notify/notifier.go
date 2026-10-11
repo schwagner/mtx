@@ -6,9 +6,9 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/gen2brain/beeep"
 	"github.com/schwagner/mtx/internal/mention"
 	"github.com/schwagner/mtx/internal/slackfmt"
-	"github.com/gen2brain/beeep"
 )
 
 // Notifier sends OS-level desktop notifications.
@@ -24,7 +24,7 @@ type Notifier struct {
 func New(enabled bool, command string) *Notifier {
 	// beeep's default app name is "DefaultAppName"; brand the notification
 	// as slk so the notification daemon attributes it correctly.
-	beeep.AppName = "slk"
+	beeep.AppName = "mtx"
 	return &Notifier{enabled: enabled, command: command}
 }
 
@@ -42,14 +42,14 @@ func (n *Notifier) Notify(title, body string) error {
 }
 
 // runCommand runs the configured notify_command via `sh -c`, exposing the
-// notification's title and body as $SLK_TITLE and $SLK_BODY. They are passed
+// notification's title and body as $MTX_TITLE and $MTX_BODY. They are passed
 // through the environment rather than interpolated into the command string, so
 // arbitrary message text (e.g. a body containing "; rm -rf ~") cannot inject
 // shell syntax. Notify is already called from its own goroutine, so a
 // synchronous Run — which also reaps the child — is fine.
 func (n *Notifier) runCommand(title, body string) error {
 	cmd := exec.Command("sh", "-c", n.command)
-	cmd.Env = append(os.Environ(), "SLK_TITLE="+title, "SLK_BODY="+body)
+	cmd.Env = append(os.Environ(), "MTX_TITLE="+title, "MTX_BODY="+body)
 	return cmd.Run()
 }
 
