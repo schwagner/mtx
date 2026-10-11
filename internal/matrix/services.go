@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"go.mau.fi/gomuks/pkg/hicli/database"
+	"go.mau.fi/gomuks/pkg/hicli/jsoncmd"
+	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
 
@@ -30,13 +32,15 @@ const (
 // Wire installs the backend's services on the App.
 func (b *Backend) Wire(app *ui.App) {
 	app.SetChannelService(core.NewChannelService(core.ChannelServiceFuncs{
-		Fetch:       b.fetchChannel,
-		FetchOlder:  b.fetchOlder,
-		ReadCache:   b.readCache,
-		MarkRead:    b.markRead,
-		Lookup:      b.lookup,
-		Join:        b.join,
-		RecordVisit: b.recordVisit,
+		Fetch:            b.fetchChannel,
+		FetchOlder:       b.fetchOlder,
+		ReadCache:        b.readCache,
+		MarkRead:         b.markRead,
+		Lookup:           b.lookup,
+		Join:             b.join,
+		RecordVisit:      b.recordVisit,
+		OpenConversation: b.openConversation,
+		SearchRemote:     b.pendingInvites,
 	}))
 	app.SetMessageService(core.NewMessageService(core.MessageServiceFuncs{
 		Send:   b.sendMessage,
@@ -47,7 +51,9 @@ func (b *Backend) Wire(app *ui.App) {
 		Fetch:     b.fetchThread,
 		CacheRead: b.threadCache,
 		SendReply: b.sendReply,
+		ListFetch: b.fetchThreads,
 	}))
+	b.wireViews(app)
 	app.SetReactionService(core.NewReactionService(b.addReaction, b.removeReaction, nil, nil))
 	app.SetPresenceService(core.NewPresenceService(nil, b.sendTyping))
 	app.SetUnreadService(core.NewUnreadService(b.ReadStates, nil))
@@ -111,7 +117,16 @@ func (b *Backend) fetchChannel(channelID ids.ChannelID, _ string) core.Msg {
 	if items == nil {
 		items = []messages.MessageItem{}
 	}
+	b.recheckUndecrypted(roomID, evts)
 	lastRead := b.lastReadTS(ctx, roomID)
+	// Having sent a message implies having read up to it, even when the
+	// read receipt lags behind (e.g. sent from another client).
+	me := string(b.UserID())
+	for _, item := range items {
+		if item.UserID == me && item.TS > lastRead {
+			lastRead = item.TS
+		}
+	}
 	var marked string
 	if n := len(items); n > 0 {
 		marked = items[n-1].TS
@@ -138,11 +153,55 @@ func (b *Backend) fetchOlder(channelID ids.ChannelID, oldestTS ids.MessageTS) co
 	if err != nil {
 		return ui.ToastMsg{Text: "Loading history failed: " + err.Error()}
 	}
+	b.recheckUndecrypted(roomID, evts)
 	return ui.OlderMessagesLoadedMsg{
 		ChannelID: string(channelID),
 		AnchorTS:  string(oldestTS),
 		Messages:  b.convert(ctx, roomID, evts),
 	}
+}
+
+// recheckUndecrypted closes a race between history loads and background
+// decryption (keys arriving from key backup or another device): an
+// EventsDecrypted update that lands before the TUI has applied the page
+// is overwritten by the page's stale placeholder. A short while after the
+// page is handed over, re-read its undecryptable rows and push any that
+// have since been decrypted.
+func (b *Backend) recheckUndecrypted(roomID id.RoomID, evts []*database.Event) {
+	var pending []database.EventRowID
+	for _, evt := range evts {
+		if effectiveType(evt) == event.EventEncrypted.Type {
+			pending = append(pending, evt.RowID)
+		}
+	}
+	if len(pending) == 0 {
+		return
+	}
+	go func() {
+		for _, delay := range []time.Duration{time.Second, 4 * time.Second} {
+			time.Sleep(delay)
+			ctx := b.ctx()
+			fresh, err := b.cli.DB.Event.GetByRowIDs(ctx, pending...)
+			if err != nil {
+				return
+			}
+			var decrypted []*database.Event
+			pending = pending[:0]
+			for _, evt := range fresh {
+				if effectiveType(evt) == event.EventEncrypted.Type {
+					pending = append(pending, evt.RowID)
+				} else {
+					decrypted = append(decrypted, evt)
+				}
+			}
+			if len(decrypted) > 0 {
+				b.handleDecrypted(&jsoncmd.EventsDecrypted{RoomID: roomID, Events: decrypted})
+			}
+			if len(pending) == 0 {
+				return
+			}
+		}
+	}()
 }
 
 // readCache serves the latest page straight from the local database so a
@@ -217,11 +276,31 @@ func (b *Backend) recordVisit(channelID ids.ChannelID) {
 // join accepts an invite (or joins a public room by ID).
 func (b *Backend) join(channelID ids.ChannelID, name string) core.Msg {
 	ctx := b.ctx()
+	inviter, direct := b.directInviter(id.RoomID(channelID))
 	_, err := b.cli.Client.JoinRoomByID(ctx, id.RoomID(channelID))
 	if err != nil {
 		return ui.ChannelJoinFailedMsg{ID: string(channelID), Name: name, Err: err}
 	}
-	return ui.ChannelJoinedMsg{ID: string(channelID), Name: strings.TrimSuffix(name, " (invite)")}
+	if direct {
+		// The inviter's client records the DM in their m.direct; record
+		// it in ours too so it is listed with direct messages.
+		if err := b.cli.ConvertToDM(ctx, id.RoomID(channelID), inviter); err != nil {
+			b.log.Warn().Err(err).Msg("marking joined room as DM")
+		}
+	}
+	if i := strings.Index(name, " (invite from "); i >= 0 {
+		name = name[:i]
+	}
+	// Wait for the joined room to arrive through sync so it is known
+	// when the TUI opens it.
+	for deadline := time.Now().Add(15 * time.Second); time.Now().Before(deadline); {
+		if r := b.room(id.RoomID(channelID)); r != nil {
+			name = roomName(r)
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+	return ui.ChannelJoinedMsg{ID: string(channelID), Name: name}
 }
 
 // ---------------------------------------------------------------------------
@@ -412,4 +491,59 @@ func (b *Backend) sendTyping(channelID string) {
 	go func() {
 		_ = b.cli.SetTyping(b.ctx(), roomID, 6*time.Second)
 	}()
+}
+
+// openConversation opens (or creates) an encrypted DM with userIDs.
+// Several users get an encrypted group DM.
+func (b *Backend) openConversation(userIDs []string, requestID uint64) core.Cmd {
+	return func() core.Msg {
+		ctx := b.ctx()
+		if len(userIDs) == 0 {
+			return ui.NewMessageFailedMsg{RequestID: requestID, Err: fmt.Errorf("no recipients")}
+		}
+		invite := make([]id.UserID, len(userIDs))
+		for i, u := range userIDs {
+			invite[i] = id.UserID(u)
+		}
+		if len(invite) == 1 {
+			b.mu.Lock()
+			var existing id.RoomID
+			for _, r := range b.rooms {
+				if r.DMUserID != nil && *r.DMUserID == invite[0] && r.Tombstone == nil {
+					existing = r.ID
+					break
+				}
+			}
+			b.mu.Unlock()
+			if existing != "" {
+				return ui.NewMessageOpenedMsg{ChannelID: string(existing), AlreadyOpen: true, UserIDs: userIDs, RequestID: requestID}
+			}
+		}
+		resp, err := b.cli.Client.CreateRoom(ctx, &mautrix.ReqCreateRoom{
+			Preset:   "trusted_private_chat",
+			IsDirect: true,
+			Invite:   invite,
+			InitialState: []*event.Event{{
+				Type:    event.StateEncryption,
+				Content: event.Content{Parsed: &event.EncryptionEventContent{Algorithm: id.AlgorithmMegolmV1}},
+			}},
+		})
+		if err != nil {
+			return ui.NewMessageFailedMsg{RequestID: requestID, Err: err}
+		}
+		if len(invite) == 1 {
+			if err := b.cli.ConvertToDM(ctx, resp.RoomID, invite[0]); err != nil {
+				b.log.Warn().Err(err).Msg("marking new room as DM")
+			}
+		}
+		// Wait for the room to arrive through sync so lookups (header
+		// name, type) and the first send find it.
+		for deadline := time.Now().Add(15 * time.Second); time.Now().Before(deadline); {
+			if b.room(resp.RoomID) != nil {
+				break
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
+		return ui.NewMessageOpenedMsg{ChannelID: string(resp.RoomID), UserIDs: userIDs, RequestID: requestID}
+	}
 }

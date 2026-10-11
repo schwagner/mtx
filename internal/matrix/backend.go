@@ -152,6 +152,14 @@ func (b *Backend) emit(msg tea.Msg) {
 	}
 }
 
+// HasRooms reports whether the database already holds rooms, i.e. this
+// is not the first start after login.
+func (b *Backend) HasRooms(ctx context.Context) bool {
+	var exists bool
+	err := b.cli.DB.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM room)`).Scan(&exists)
+	return err == nil && exists
+}
+
 // WaitSynced blocks until the first sync after startup has been
 // processed, or ctx ends.
 func (b *Backend) WaitSynced(ctx context.Context) error {
@@ -200,15 +208,19 @@ func (b *Backend) handleEvent(evt any) {
 func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 	ctx := b.ctx()
 	me := b.UserID()
-	var newRooms []*database.Room
-	readChanged := false
+	var newRooms, changedRooms []*database.Room
+	readChanged, listChanged := false, false
 
 	b.mu.Lock()
 	for _, roomID := range sc.LeftRooms {
 		delete(b.rooms, roomID)
 		delete(b.invites, roomID)
 	}
+	var newInvites []*database.InvitedRoom
 	for _, inv := range sc.InvitedRooms {
+		if _, seen := b.invites[inv.ID]; !seen {
+			newInvites = append(newInvites, inv)
+		}
 		b.invites[inv.ID] = inv
 	}
 	for roomID, sr := range sc.Rooms {
@@ -220,9 +232,25 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 		b.rooms[roomID] = sr.Meta
 		if !existed {
 			newRooms = append(newRooms, sr.Meta)
-		} else if old.UnreadCounts != sr.Meta.UnreadCounts {
+			continue
+		}
+		if old.UnreadCounts != sr.Meta.UnreadCounts || !ptrEq(old.MarkedUnread, sr.Meta.MarkedUnread) {
 			readChanged = true
 		}
+		oldItem, oldOK := b.channelItem(old)
+		newItem, newOK := b.channelItem(sr.Meta)
+		if oldOK != newOK || oldItem != newItem {
+			// Renamed, became a DM, got tombstoned...: the sidebar
+			// upserts by ID, and a full refresh drops vanished rows.
+			if newOK && oldOK {
+				changedRooms = append(changedRooms, sr.Meta)
+			} else {
+				listChanged = true
+			}
+		}
+	}
+	if len(sc.LeftRooms) > 0 {
+		listChanged = true
 	}
 	b.mu.Unlock()
 
@@ -251,7 +279,11 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 		b.notify(n)
 	}
 
-	for _, room := range newRooms {
+	for _, inv := range newInvites {
+		name, inviter := b.inviteInfo(inv)
+		b.emit(ui.ToastMsg{Text: fmt.Sprintf("%s invited you to %s. Ctrl+T, search for it and press Enter to join.", inviter, name)})
+	}
+	for _, room := range append(newRooms, changedRooms...) {
 		if item, ok := b.channelItem(room); ok {
 			b.emit(ui.ConversationOpenedMsg{
 				TeamID:     string(me),
@@ -259,6 +291,9 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 				FinderItem: finderItem(item, true),
 			})
 		}
+	}
+	if listChanged {
+		b.emit(ui.SectionsRefreshedMsg{TeamID: string(me), Channels: b.channelList()})
 	}
 	if readChanged || len(newRooms) > 0 {
 		b.emit(ui.ReadStateChangedMsg{WorkspaceID: string(me)})
@@ -742,6 +777,37 @@ func (b *Backend) loadRooms(ctx context.Context) error {
 	return nil
 }
 
+// channelList returns the sidebar rows, most recently active first.
+func (b *Backend) channelList() []sidebar.ChannelItem {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return b.channelListLocked()
+}
+
+func (b *Backend) channelListLocked() []sidebar.ChannelItem {
+	rooms := make([]*database.Room, 0, len(b.rooms))
+	for _, r := range b.rooms {
+		rooms = append(rooms, r)
+	}
+	sort.Slice(rooms, func(i, j int) bool {
+		return rooms[i].SortingTimestamp.After(rooms[j].SortingTimestamp.Time)
+	})
+	var items []sidebar.ChannelItem
+	for _, r := range rooms {
+		if item, ok := b.channelItem(r); ok {
+			items = append(items, item)
+		}
+	}
+	return items
+}
+
+func ptrEq[T comparable](a, b *T) bool {
+	if a == nil || b == nil {
+		return a == b
+	}
+	return *a == *b
+}
+
 // Workspace builds the TUI's initial workspace snapshot.
 func (b *Backend) Workspace(ctx context.Context) (ui.WorkspaceReadyMsg, error) {
 	if err := b.loadRooms(ctx); err != nil {
@@ -750,37 +816,17 @@ func (b *Backend) Workspace(ctx context.Context) (ui.WorkspaceReadyMsg, error) {
 	me := b.UserID()
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	var channels []sidebar.ChannelItem
+	channels := b.channelListLocked()
 	var finder []core.ChannelFinderItem
-	type sortable struct {
-		item sidebar.ChannelItem
-		ts   int64
-	}
-	var all []sortable
-	for _, r := range b.rooms {
-		if item, ok := b.channelItem(r); ok {
-			all = append(all, sortable{item, r.SortingTimestamp.UnixMilli()})
-		}
-	}
-	sort.Slice(all, func(i, j int) bool { return all[i].ts > all[j].ts })
 	var lastChannel string
-	for _, s := range all {
-		channels = append(channels, s.item)
-		finder = append(finder, finderItem(s.item, true))
+	for _, item := range channels {
+		finder = append(finder, finderItem(item, true))
 		if lastChannel == "" {
-			lastChannel = s.item.ID
+			lastChannel = item.ID
 		}
 	}
 	for _, inv := range b.invites {
-		name := string(inv.ID)
-		for _, st := range inv.InviteState {
-			if st.Type == event.StateRoomName {
-				if n, ok := st.Content.Raw["name"].(string); ok && n != "" {
-					name = n
-				}
-			}
-		}
-		finder = append(finder, core.ChannelFinderItem{ID: string(inv.ID), Name: name + " (invite)", Type: "channel"})
+		finder = append(finder, b.inviteFinderItem(inv))
 	}
 	userNames := make(map[string]string, len(b.names))
 	for k, v := range b.names {
@@ -812,6 +858,83 @@ func (b *Backend) ReadStates() map[string]core.ReadState {
 		out[string(roomID)] = core.ReadState{
 			HasUnread:    r.UnreadMessages > 0 || (r.MarkedUnread != nil && *r.MarkedUnread),
 			MentionCount: mentions,
+		}
+	}
+	return out
+}
+
+// directInviter returns who invited the user to roomID if the invite is
+// marked as a direct chat.
+func (b *Backend) directInviter(roomID id.RoomID) (id.UserID, bool) {
+	b.mu.Lock()
+	inv := b.invites[roomID]
+	b.mu.Unlock()
+	if inv == nil {
+		return "", false
+	}
+	me := string(b.UserID())
+	for _, st := range inv.InviteState {
+		if st.Type == event.StateMember && st.StateKey != nil && *st.StateKey == me {
+			if d, ok := st.Content.Raw["is_direct"].(bool); ok && d {
+				return st.Sender, true
+			}
+		}
+	}
+	return "", false
+}
+
+// inviteInfo returns an invite's display name and the inviter's name.
+// Callers may hold b.mu.
+func (b *Backend) inviteInfo(inv *database.InvitedRoom) (name, inviter string) {
+	me := string(b.UserID())
+	isDirect := false
+	for _, st := range inv.InviteState {
+		switch {
+		case st.Type == event.StateRoomName:
+			if n, ok := st.Content.Raw["name"].(string); ok {
+				name = n
+			}
+		case st.Type == event.StateMember && st.StateKey != nil && *st.StateKey == me:
+			inviter = string(st.Sender)
+			if d, ok := st.Content.Raw["is_direct"].(bool); ok && d {
+				isDirect = true
+			}
+		}
+	}
+	if inviter != "" {
+		if n, ok := b.names[id.UserID(inviter)]; ok && n != "" {
+			inviter = n
+		} else if local, _, err := id.UserID(inviter).Parse(); err == nil {
+			inviter = local
+		}
+	} else {
+		inviter = "Someone"
+	}
+	if name == "" {
+		if isDirect {
+			name = "a direct chat with " + inviter
+		} else {
+			name = string(inv.ID)
+		}
+	}
+	return name, inviter
+}
+
+func (b *Backend) inviteFinderItem(inv *database.InvitedRoom) core.ChannelFinderItem {
+	name, inviter := b.inviteInfo(inv)
+	return core.ChannelFinderItem{ID: string(inv.ID), Name: name + " (invite from " + inviter + ")", Type: "channel"}
+}
+
+// pendingInvites returns finder items for invites matching query.
+func (b *Backend) pendingInvites(query string) []core.ChannelFinderItem {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	q := strings.ToLower(query)
+	var out []core.ChannelFinderItem
+	for _, inv := range b.invites {
+		item := b.inviteFinderItem(inv)
+		if q == "" || strings.Contains(strings.ToLower(item.Name), q) {
+			out = append(out, item)
 		}
 	}
 	return out

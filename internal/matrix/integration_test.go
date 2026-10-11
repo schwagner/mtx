@@ -309,4 +309,42 @@ func TestIntegration(t *testing.T) {
 	if ws.UserNames[string(u1)] == "" {
 		t.Errorf("alice's name missing from user names")
 	}
+
+	// --- threads and activity views ---
+	tl := bob.b.fetchThreads(ids.TeamID(u2)).(ui.ThreadsListLoadedMsg)
+	if len(tl.Summaries) != 1 || tl.Summaries[0].ThreadTS != rootTS || tl.Summaries[0].ReplyCount != 1 {
+		t.Errorf("threads list = %+v", tl.Summaries)
+	}
+	act := bob.b.fetchActivity(ids.TeamID(u2), 50, false).(ui.ActivityListLoadedMsg)
+	if len(act.Items) == 0 || act.Items[0].TS != rootTS {
+		t.Errorf("activity (mentions) = %+v", act.Items)
+	}
+
+	// --- direct messages ---
+	opened := alice.b.openConversation([]string{string(u2)}, 7)().(ui.NewMessageOpenedMsg)
+	if opened.AlreadyOpen || opened.ChannelID == "" {
+		t.Fatalf("open DM: %+v", opened)
+	}
+	dm := id.RoomID(opened.ChannelID)
+	alice.await("alice's DM marked direct", func(tea.Msg) bool {
+		r := alice.b.room(dm)
+		return r != nil && roomType(r) == "dm"
+	})
+	bob.await("DM invite", func(tea.Msg) bool { return bob.b.hasInvite(dm) })
+	if inv := bob.b.pendingInvites(""); len(inv) != 1 || inv[0].ID != string(dm) {
+		t.Errorf("pending invites = %+v", inv)
+	}
+	if j, ok := bob.b.join(ids.ChannelID(dm), "").(ui.ChannelJoinedMsg); !ok {
+		t.Fatalf("join DM failed")
+	} else if j.Name == "" {
+		t.Errorf("joined DM has no name")
+	}
+	bob.await("DM marked direct", func(tea.Msg) bool {
+		r := bob.b.room(dm)
+		return r != nil && roomType(r) == "dm"
+	})
+	again := alice.b.openConversation([]string{string(u2)}, 8)().(ui.NewMessageOpenedMsg)
+	if !again.AlreadyOpen || again.ChannelID != string(dm) {
+		t.Errorf("reopening DM created a new room: %+v", again)
+	}
 }

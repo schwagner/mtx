@@ -156,9 +156,6 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("loading config: %w", err)
 	}
-	styles.LoadCustomThemes(os.DirFS(filepath.Join(xdgConfig(), "themes")))
-	styles.Apply(cfg.Appearance.Theme, cfg.Theme)
-	emojiwidth.SetImageMode(false, cfg.Appearance.EmojiCells)
 
 	b, err := openBackend()
 	if err != nil {
@@ -171,6 +168,9 @@ func run() error {
 		b.Notifier = notify.New(true, cfg.Notifications.NotifyCommand)
 	}
 
+	// Login and verification prompt on the plain terminal, so they run
+	// before anything that queries the terminal: those queries read
+	// replies from stdin and would swallow typed input.
 	ctx := context.Background()
 	userID, err := b.Load(ctx)
 	if err != nil {
@@ -186,6 +186,10 @@ func run() error {
 	if err := verify(ctx, b, p, password); err != nil {
 		return err
 	}
+
+	styles.LoadCustomThemes(os.DirFS(filepath.Join(xdgConfig(), "themes")))
+	styles.Apply(cfg.Appearance.Theme, cfg.Theme)
+	emojiwidth.SetImageMode(false, cfg.Appearance.EmojiCells)
 
 	clipboardOK := true
 	useWayland := false
@@ -240,11 +244,14 @@ func run() error {
 	prog := tea.NewProgram(app)
 	b.SetSender(prog.Send)
 	go func() {
-		// The first sync after login can take a while on big accounts;
-		// rooms already in the database show immediately on restarts.
-		waitCtx, cancel := context.WithTimeout(ctx, 2*time.Minute)
-		_ = b.WaitSynced(waitCtx)
-		cancel()
+		// Restarts show the rooms already in the database right away.
+		// After a fresh login there are none until the initial sync,
+		// which can take a while on big accounts.
+		if !b.HasRooms(ctx) {
+			waitCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+			_ = b.WaitSynced(waitCtx)
+			cancel()
+		}
 		ready, err := b.Workspace(ctx)
 		if err != nil {
 			log.Printf("building workspace: %v", err)
@@ -256,4 +263,3 @@ func run() error {
 	_, err = prog.Run()
 	return err
 }
-
