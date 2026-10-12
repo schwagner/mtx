@@ -63,6 +63,10 @@ func (b *Backend) fetchThreads(teamID ids.TeamID) core.Msg {
 		}
 	}
 	rows.Close()
+	if len(roots) == 0 {
+		// hicli's multi-row queries panic on an empty ID list.
+		return ui.ThreadsListLoadedMsg{TeamID: string(teamID), SubscriptionsAvailable: true}
+	}
 	rootEvts, err := b.cli.DB.Event.GetByRowIDs(ctx, roots...)
 	if err != nil {
 		return ui.ToastMsg{Text: "Loading threads failed: " + err.Error()}
