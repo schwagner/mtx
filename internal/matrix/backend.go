@@ -852,14 +852,25 @@ func (b *Backend) ReadStates() map[string]core.ReadState {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	out := make(map[string]core.ReadState, len(b.rooms))
+	now := time.Now()
 	for roomID, r := range b.rooms {
 		mentions := r.UnreadHighlights
 		if r.DMUserID != nil {
 			mentions = r.UnreadNotifications
 		}
+		// The sidebar hides conversations whose LastReadTS is older than
+		// hide_inactive_after_days, and treats an empty one on a DM as a
+		// closed Slack conversation. Matrix has no closed DMs, so report
+		// the room's last activity: a read room was last read no earlier
+		// than that, and an unread one is never hidden.
+		last := r.SortingTimestamp.Time
+		if r.SortingTimestamp.UnixMilli() <= 0 {
+			last = now // no events yet: a new room, not an abandoned one
+		}
 		out[string(roomID)] = core.ReadState{
 			HasUnread:    r.UnreadMessages > 0 || (r.MarkedUnread != nil && *r.MarkedUnread),
 			MentionCount: mentions,
+			LastReadTS:   fmt.Sprintf("%d.000000", last.Unix()),
 		}
 	}
 	return out

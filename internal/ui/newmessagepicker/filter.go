@@ -1,6 +1,7 @@
 package newmessagepicker
 
 import (
+	"slices"
 	"sort"
 	"strings"
 )
@@ -19,7 +20,9 @@ import (
 // Empty query: include all users (minus self) sorted by Recency DESC
 // then DisplayName ASC.
 func (m *Model) filter() {
+	m.dropTyped()
 	m.filtered = m.filtered[:0]
+	defer m.addTyped()
 	q := strings.ToLower(m.query)
 
 	if q == "" {
@@ -113,4 +116,42 @@ func (m *Model) lessNoQuery(ai, bi int) bool {
 		return a.Recency > b.Recency
 	}
 	return strings.ToLower(a.DisplayName) < strings.ToLower(b.DisplayName)
+}
+
+// typedID reports whether q is a complete Matrix user ID
+// ("@localpart:server"), which may be messaged without being known.
+func typedID(q string) bool {
+	local, server, ok := strings.Cut(q, ":")
+	return ok && len(local) > 1 && local[0] == '@' && server != "" &&
+		!strings.ContainsAny(q, " \t")
+}
+
+// dropTyped removes the synthesized typed-ID row unless it has been
+// selected as a pill, in which case it becomes an ordinary user.
+func (m *Model) dropTyped() {
+	if m.typed < 0 {
+		return
+	}
+	if _, kept := m.selected[m.users[m.typed].ID]; !kept {
+		m.users = m.users[:m.typed]
+	}
+	m.typed = -1
+}
+
+// addTyped puts the user whose ID is the query at the top of the
+// list, synthesizing a row for an ID the picker has not seen.
+func (m *Model) addTyped() {
+	q := strings.TrimSpace(m.query)
+	if !typedID(q) || q == m.currentUserID {
+		return
+	}
+	idx := slices.IndexFunc(m.users, func(u User) bool { return u.ID == q })
+	if idx < 0 {
+		// Clip so the append never writes into the caller's array.
+		m.users = append(slices.Clip(m.users), User{ID: q, DisplayName: q, Username: q[1:]})
+		idx = len(m.users) - 1
+		m.typed = idx
+	}
+	m.filtered = slices.DeleteFunc(m.filtered, func(i int) bool { return i == idx })
+	m.filtered = slices.Insert(m.filtered, 0, idx)
 }

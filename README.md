@@ -21,7 +21,11 @@ Matrix one built on [mautrix-go](https://github.com/mautrix/go) and gomuks'
 - Threads (`m.thread`), in the thread pane
 - Reactions (add, remove, list)
 - Read receipts, typing indicators, desktop notifications (push rules)
-- New DM with Ctrl+N; invites appear as a toast and in the Ctrl+T finder
+- New DM with Ctrl+N: pick someone you share a room with, or type a full
+  `@user:server` ID; invites appear as a toast and in the Ctrl+T finder
+- Rooms with no activity for 30 days drop out of the sidebar (Ctrl+T still
+  finds them); set `hide_inactive_after_days = 0` under `[sidebar]` in
+  `~/.config/mtx/config.toml` to keep everything listed
 - Threads view (threads you are in) and Activity view (your mentions)
 - Local full-text search of decrypted messages (`/` in a room)
 - File upload (paste or path) and download (`d`), encrypted in encrypted

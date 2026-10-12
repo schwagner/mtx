@@ -44,6 +44,10 @@ type Model struct {
 	highlight     int                 // index into filtered
 	visible       bool
 	currentUserID string
+	// typed is the index in users of the row synthesized from a typed
+	// user ID (see typedID), or -1. It is always the last element and
+	// is dropped on the next filter unless it was selected as a pill.
+	typed int
 }
 
 // New constructs an empty picker. SetUsers and (optionally)
@@ -51,6 +55,7 @@ type Model struct {
 func New() Model {
 	return Model{
 		selected: map[string]struct{}{},
+		typed:    -1,
 	}
 }
 
@@ -58,6 +63,7 @@ func New() Model {
 // Does not trigger a re-filter; that happens on Open.
 func (m *Model) SetUsers(users []User) {
 	m.users = users
+	m.typed = -1
 }
 
 // Users returns the user list most recently set via SetUsers. Used
