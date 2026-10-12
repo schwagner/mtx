@@ -20,7 +20,6 @@ import (
 	"go.mau.fi/gomuks/pkg/hicli"
 	"go.mau.fi/gomuks/pkg/hicli/database"
 	"go.mau.fi/gomuks/pkg/hicli/jsoncmd"
-	"go.mau.fi/util/dbutil"
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
 
@@ -79,7 +78,7 @@ type sendResult struct {
 // Open opens (creating if needed) the client database at dbPath. pickleKey
 // encrypts the Olm/Megolm secrets at rest.
 func Open(dbPath string, pickleKey []byte, log zerolog.Logger) (*Backend, error) {
-	rawDB, err := dbutil.NewWithDialect(dbPath, "sqlite3-fk-wal")
+	rawDB, err := openDB(dbPath)
 	if err != nil {
 		return nil, fmt.Errorf("opening database: %w", err)
 	}
@@ -300,7 +299,10 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 	if readChanged || len(newRooms) > 0 {
 		b.emit(ui.ReadStateChangedMsg{WorkspaceID: string(me)})
 	}
-	b.syncedOnce.Do(func() { close(b.synced) })
+	b.syncedOnce.Do(func() {
+		close(b.synced)
+		go b.retryStoredSessions(ctx)
+	})
 }
 
 func (b *Backend) learnMember(evt *database.Event) {
@@ -429,6 +431,49 @@ func (b *Backend) handleDecrypted(ed *jsoncmd.EventsDecrypted) {
 			item.IsEdited = true
 			b.emit(ui.NewMessageMsg{ChannelID: string(ed.RoomID), Message: item})
 		}
+	}
+}
+
+// retryStoredSessions re-runs decryption for undecryptable events whose
+// megolm session is already in the crypto store. hicli retries only at
+// the moment a session arrives; if that retry is lost (the process exits
+// first, or the save fails) the events stay undecryptable for good.
+// Handing each such session back to hicli's received-session hook redoes
+// it, and the result arrives as EventsDecrypted like any other.
+func (b *Backend) retryStoredSessions(ctx context.Context) {
+	if b.cli.Crypto == nil {
+		return
+	}
+	type pending struct {
+		room    id.RoomID
+		session id.SessionID
+	}
+	rows, err := b.cli.DB.Query(ctx, `
+		SELECT DISTINCT e.room_id, e.megolm_session_id FROM event e
+		JOIN crypto_megolm_inbound_session s
+		  ON s.room_id = e.room_id AND s.session_id = e.megolm_session_id
+		WHERE e.decryption_error IS NOT NULL AND s.session IS NOT NULL`)
+	if err != nil {
+		b.log.Warn().Err(err).Msg("finding undecrypted events with stored sessions")
+		return
+	}
+	var todo []pending
+	for rows.Next() {
+		var p pending
+		if rows.Scan(&p.room, &p.session) == nil {
+			todo = append(todo, p)
+		}
+	}
+	rows.Close()
+	for _, p := range todo {
+		sess, err := b.cli.Crypto.CryptoStore.GetGroupSession(ctx, p.room, p.session)
+		if err != nil || sess == nil {
+			continue
+		}
+		b.cli.Crypto.MarkSessionReceived(ctx, p.room, p.session, sess.Internal.FirstKnownIndex())
+	}
+	if len(todo) > 0 {
+		b.log.Info().Int("sessions", len(todo)).Msg("retried decryption with stored sessions")
 	}
 }
 
