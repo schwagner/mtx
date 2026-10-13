@@ -57,7 +57,8 @@ func (b *Backend) Wire(app *ui.App) {
 	recent := newRecentEmoji(b.RecentEmojiPath)
 	app.SetReactionService(core.NewReactionService(b.addReaction, b.removeReaction, recent.load, recent.record))
 	app.SetPresenceService(core.NewPresenceService(nil, b.sendTyping))
-	app.SetUnreadService(core.NewUnreadService(b.ReadStates, nil))
+	app.SetUnreadService(core.NewUnreadService(b.ReadStates, b.UnreadWorkspaces))
+	app.SetWorkspaceService(core.NewWorkspaceService(b.switchWorkspace))
 	app.SetSearchService(core.NewSearchService(core.SearchServiceFuncs{
 		SearchChannel: b.searchChannel,
 	}))

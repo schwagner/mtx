@@ -26,14 +26,18 @@ Matrix one built on [mautrix-go](https://github.com/mautrix/go) and gomuks'
 - Rooms with no activity for 30 days drop out of the sidebar (Ctrl+T still
   finds them); set `hide_inactive_after_days = 0` under `[sidebar]` in
   `~/.config/mtx/config.toml` to keep everything listed
-- Threads view (threads you are in) and Activity view (your mentions)
+- Spaces in the left rail, like Cinny: Home (rooms in no space) first, then
+  each top-level space, e.g. a bridge's "Slack (Techs)" or "Signal". Switch
+  with 1–9, a click, or the workspace finder; subspaces fold into their
+  top-level space
+- Threads view (threads you are in) and Activity view (your mentions), for
+  the current space
 - Local full-text search of decrypted messages (`/` in a room)
 - File upload (paste or path) and download (`d`), encrypted in encrypted
   rooms
 
 Not done yet: inline images, avatars, interactive emoji (SAS) verification of
-other people's devices, room creation/settings beyond DMs, spaces in the
-sidebar, workspace-wide search (Ctrl+F), presence.
+other people's devices, room creation/settings beyond DMs, workspace-wide search (Ctrl+F), presence.
 
 ## Install
 

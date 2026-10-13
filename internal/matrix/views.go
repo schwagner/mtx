@@ -19,6 +19,7 @@ import (
 // are answered from the local database: Threads lists the threads the user
 // started or replied to, and Activity lists events that highlighted the
 // user (mentions and keyword pushes, as evaluated by hicli's push rules).
+// Both are limited to the rooms of the workspace (space) they're asked for.
 
 const viewLimit = 100
 
@@ -80,7 +81,7 @@ func (b *Backend) fetchThreads(teamID ids.TeamID) core.Msg {
 	var summaries []core.ThreadSummary
 	for _, root := range rootEvts {
 		room := b.room(root.RoomID)
-		if room == nil {
+		if room == nil || !b.inWorkspace(root.RoomID, string(teamID)) {
 			continue
 		}
 		replies, err := b.cli.DB.Event.GetRelatedEvents(ctx, root.RoomID, root.ID, "m.thread", "")
@@ -113,7 +114,9 @@ func (b *Backend) fetchActivity(teamID ids.TeamID, limit int, unreadOnly bool) c
 	if limit <= 0 || limit > viewLimit {
 		limit = viewLimit
 	}
-	evts, err := b.cli.DB.Event.GetMentions(ctx, time.Now().Add(time.Minute), database.UnreadTypeHighlight, limit, "")
+	// Fetch the most there is to fill the page from this workspace's
+	// rooms.
+	evts, err := b.cli.DB.Event.GetMentions(ctx, time.Now().Add(time.Minute), database.UnreadTypeHighlight, viewLimit, "")
 	if err != nil {
 		return ui.ToastMsg{Text: "Loading activity failed: " + err.Error()}
 	}
@@ -121,7 +124,10 @@ func (b *Backend) fetchActivity(teamID ids.TeamID, limit int, unreadOnly bool) c
 	lastRead := map[id.RoomID]string{}
 	var items []core.ActivityItem
 	for _, evt := range evts {
-		if evt.Sender == me || !isTimelineMessage(evt) {
+		if len(items) >= limit {
+			break
+		}
+		if evt.Sender == me || !isTimelineMessage(evt) || !b.inWorkspace(evt.RoomID, string(teamID)) {
 			continue
 		}
 		ts := b.idx.put(evt)

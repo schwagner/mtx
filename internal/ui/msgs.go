@@ -25,6 +25,7 @@ import (
 	"github.com/schwagner/mtx/internal/ui/peerstatus"
 	"github.com/schwagner/mtx/internal/ui/searchresults"
 	"github.com/schwagner/mtx/internal/ui/sidebar"
+	"github.com/schwagner/mtx/internal/ui/workspace"
 )
 
 // EmojiImageReadyMsg re-exports emoji.EmojiImageReadyMsg so reducers
@@ -434,6 +435,13 @@ type (
 	}
 	WorkspaceFailedMsg struct {
 		TeamName string
+	}
+	// WorkspacesChangedMsg replaces the workspace rail's entries after
+	// startup (mtx: a space was joined, left or renamed). The active
+	// workspace stays selected; switching away from one that vanished is
+	// the sender's job.
+	WorkspacesChangedMsg struct {
+		Items []workspace.WorkspaceItem
 	}
 	// RemoteChannelsFoundMsg carries the answer to one debounced
 	// channels/search request: the public channels matching Query,

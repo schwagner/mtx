@@ -229,7 +229,6 @@ func run() error {
 		app.SetComposeEditor(ed)
 	}
 	app.SetSettingsService(core.NewSettingsService(func(string, core.ThemeScope) {}, func(int) {}))
-	app.SetWorkspaceService(core.NewWorkspaceService(func(string) core.Msg { return nil }))
 	app.SetAvatarService(core.NewAvatarService(func(string) string { return "" }))
 	b.Wire(app)
 
@@ -259,6 +258,9 @@ func run() error {
 			prog.Send(ui.WorkspaceFailedMsg{TeamName: server})
 			return
 		}
+		// The rail lists Home and the spaces, known now that the rooms
+		// are loaded.
+		prog.Send(ui.WorkspacesChangedMsg{Items: b.RailItems()})
 		prog.Send(ready)
 	}()
 	_, err = prog.Run()

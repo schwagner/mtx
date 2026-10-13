@@ -58,6 +58,13 @@ type Backend struct {
 	// notify.
 	activeRoom id.RoomID
 	typingSent map[id.RoomID]time.Time
+	// spaces are the top-level spaces, in rail order; roomSpaces maps a
+	// room to the top-level spaces it is in (none: Home). activeWS is
+	// the workspace the TUI shows ("" until a switch: Home). See
+	// spaces.go.
+	spaces     []id.RoomID
+	roomSpaces map[id.RoomID][]id.RoomID
+	activeWS   string
 
 	// Sends block until the server echo of the event arrives through
 	// sync, so the TUI gets the event's real timestamp-derived TS.
@@ -213,6 +220,7 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 	readChanged, listChanged := false, false
 
 	b.mu.Lock()
+	railBefore := b.railItemsLocked()
 	for _, roomID := range sc.LeftRooms {
 		delete(b.rooms, roomID)
 		delete(b.invites, roomID)
@@ -284,17 +292,40 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 		name, inviter := b.inviteInfo(inv)
 		b.emit(ui.ToastMsg{Text: fmt.Sprintf("%s invited you to %s. Ctrl+T, search for it and press Enter to join.", inviter, name)})
 	}
-	for _, room := range append(newRooms, changedRooms...) {
-		if item, ok := b.channelItem(room); ok {
-			b.emit(ui.ConversationOpenedMsg{
-				TeamID:     string(me),
-				Item:       item,
-				FinderItem: finderItem(item, true),
-			})
+	// hicli reports space graph changes (and new top-level spaces) with
+	// the sync that caused them; a joined or left room may also be a
+	// space or in one.
+	if len(sc.SpaceEdges) > 0 || len(sc.TopLevelSpaces) > 0 || len(newRooms) > 0 || len(sc.LeftRooms) > 0 {
+		if _, roomsChanged, err := b.loadSpaces(ctx); err != nil {
+			b.log.Warn().Err(err).Msg("loading spaces")
+		} else if roomsChanged {
+			listChanged = true
 		}
 	}
-	if listChanged {
-		b.emit(ui.SectionsRefreshedMsg{TeamID: string(me), Channels: b.channelList()})
+	b.mu.Lock()
+	rail := b.railItemsLocked()
+	active := b.activeWorkspaceLocked()
+	activeGone := !b.knownWorkspaceLocked(active)
+	b.mu.Unlock()
+	if !slices.Equal(rail, railBefore) {
+		b.emit(ui.WorkspacesChangedMsg{Items: rail})
+	}
+	if activeGone {
+		// The user left the space they were looking at.
+		b.emit(b.switchWorkspace(b.homeWorkspace()))
+	} else {
+		for _, room := range append(newRooms, changedRooms...) {
+			if item, ok := b.channelItem(room); ok && b.inWorkspace(room.ID, active) {
+				b.emit(ui.ConversationOpenedMsg{
+					TeamID:     active,
+					Item:       item,
+					FinderItem: finderItem(item, true),
+				})
+			}
+		}
+		if listChanged {
+			b.emit(ui.SectionsRefreshedMsg{TeamID: active, Channels: b.channelList(active)})
+		}
 	}
 	if readChanged || len(newRooms) > 0 {
 		b.emit(ui.ReadStateChangedMsg{WorkspaceID: string(me)})
@@ -316,7 +347,9 @@ func (b *Backend) learnMember(evt *database.Event) {
 	b.names[userID] = content.Displayname
 	b.mu.Unlock()
 	if !known || old != content.Displayname {
-		b.emit(ui.UserResolvedMsg{TeamID: string(b.UserID()), UserID: string(userID), DisplayName: content.Displayname})
+		// Names are account-wide; the TUI takes them for its active
+		// workspace.
+		b.emit(ui.UserResolvedMsg{TeamID: b.activeWorkspace(), UserID: string(userID), DisplayName: content.Displayname})
 	}
 }
 
@@ -824,17 +857,20 @@ func (b *Backend) loadRooms(ctx context.Context) error {
 	return nil
 }
 
-// channelList returns the sidebar rows, most recently active first.
-func (b *Backend) channelList() []sidebar.ChannelItem {
+// channelList returns workspace ws's sidebar rows, most recently active
+// first. ws "" lists every room.
+func (b *Backend) channelList(ws string) []sidebar.ChannelItem {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	return b.channelListLocked()
+	return b.channelListLocked(ws)
 }
 
-func (b *Backend) channelListLocked() []sidebar.ChannelItem {
+func (b *Backend) channelListLocked(ws string) []sidebar.ChannelItem {
 	rooms := make([]*database.Room, 0, len(b.rooms))
 	for _, r := range b.rooms {
-		rooms = append(rooms, r)
+		if ws == "" || b.inWorkspaceLocked(r.ID, ws) {
+			rooms = append(rooms, r)
+		}
 	}
 	sort.Slice(rooms, func(i, j int) bool {
 		return rooms[i].SortingTimestamp.After(rooms[j].SortingTimestamp.Time)
@@ -860,33 +896,28 @@ func (b *Backend) Workspace(ctx context.Context) (ui.WorkspaceReadyMsg, error) {
 	if err := b.loadRooms(ctx); err != nil {
 		return ui.WorkspaceReadyMsg{}, err
 	}
-	me := b.UserID()
+	if _, _, err := b.loadSpaces(ctx); err != nil {
+		return ui.WorkspaceReadyMsg{}, fmt.Errorf("loading spaces: %w", err)
+	}
+	ws := b.initialWorkspace()
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	channels := b.channelListLocked()
-	var finder []core.ChannelFinderItem
+	b.activeWS = ws
+	channels := b.channelListLocked(ws)
 	var lastChannel string
-	for _, item := range channels {
-		finder = append(finder, finderItem(item, true))
-		if lastChannel == "" {
-			lastChannel = item.ID
-		}
+	if len(channels) > 0 {
+		lastChannel = channels[0].ID
 	}
-	for _, inv := range b.invites {
-		finder = append(finder, b.inviteFinderItem(inv))
-	}
-	userNames := make(map[string]string, len(b.names))
-	for k, v := range b.names {
-		userNames[string(k)] = v
-	}
-	_, server, _ := me.Parse()
+	_, server, _ := b.UserID().Parse()
 	return ui.WorkspaceReadyMsg{
-		TeamID:        string(me),
+		TeamID: ws,
+		// TeamName names the startup overlay's entry, which is the
+		// homeserver whichever workspace opens first.
 		TeamName:      server,
 		Channels:      channels,
-		FinderItems:   finder,
-		UserNames:     userNames,
-		UserID:        string(me),
+		FinderItems:   b.finderItemsLocked(),
+		UserNames:     b.userNamesLocked(),
+		UserID:        string(b.UserID()),
 		InitialActive: true,
 		LastChannelID: lastChannel,
 	}, nil
@@ -913,12 +944,17 @@ func (b *Backend) ReadStates() map[string]core.ReadState {
 			last = now // no events yet: a new room, not an abandoned one
 		}
 		out[string(roomID)] = core.ReadState{
-			HasUnread:    r.UnreadMessages > 0 || (r.MarkedUnread != nil && *r.MarkedUnread),
+			HasUnread:    roomUnread(r),
 			MentionCount: mentions,
 			LastReadTS:   fmt.Sprintf("%d.000000", last.Unix()),
 		}
 	}
 	return out
+}
+
+// roomUnread reports whether a room shows as unread.
+func roomUnread(r *database.Room) bool {
+	return r.UnreadMessages > 0 || (r.MarkedUnread != nil && *r.MarkedUnread)
 }
 
 // directInviter returns who invited the user to roomID if the invite is

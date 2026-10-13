@@ -69,6 +69,12 @@ internal/config/        TOML config (slk's format)
   Thread replies (`m.thread`) go to the thread pane only.
 - **Late decryption** (keys from backup or another device) re-renders rows
   in place; `recheckUndecrypted` covers the race with a history load.
+- **Workspaces are spaces** (`spaces.go`). The rail lists Home (rooms in
+  no space; its workspace ID is the user ID) and each top-level space (ID
+  = the space's room ID), from hicli's `space_edge` table. A room belongs
+  to every top-level space above it. Events the TUI gates on `TeamID`
+  carry the *active* workspace (`activeWorkspace`), and only for rooms in
+  it; the channel finder lists every room whichever is active.
 - **Threads and Activity views** are answered from the local database
   (threads you are in; mentions/highlights), since Matrix has no
   equivalent of Slack's thread-subscription or activity-feed APIs.

@@ -13,6 +13,9 @@
 //	                          channels/users/emoji, open the first
 //	                          channel. Always fires an initial
 //	                          threads-list fetch.
+//	WorkspacesChangedMsg    - the rail's entries changed after
+//	                          startup. Replace them, keeping the
+//	                          active workspace selected.
 //	WorkspaceSwitchedMsg    - user picked a different workspace.
 //	                          Tear down per-workspace transient
 //	                          state (threads view, edit, selection,
@@ -70,6 +73,13 @@ var reduceWorkspace reducerFunc = func(a *App, msg tea.Msg) (tea.Cmd, bool) {
 
 	case WorkspaceSwitchedMsg:
 		return reduceWorkspaceSwitched(a, m), true
+
+	case WorkspacesChangedMsg:
+		a.SetWorkspaces(m.Items)
+		a.workspaceRail.SelectByID(a.activeTeamID)
+		// The rail's dots and the title's "+N" count workspaces.
+		a.notifyReadStateChanged()
+		return nil, true
 
 	case ConversationOpenedMsg:
 		if m.TeamID == a.activeTeamID {
