@@ -21,7 +21,6 @@ import (
 	"github.com/schwagner/mtx/internal/editor"
 	emojiwidth "github.com/schwagner/mtx/internal/emoji"
 	"github.com/schwagner/mtx/internal/export"
-	imgpkg "github.com/schwagner/mtx/internal/image"
 	"github.com/schwagner/mtx/internal/matrix"
 	"github.com/schwagner/mtx/internal/notify"
 	"github.com/schwagner/mtx/internal/ui"
@@ -78,6 +77,7 @@ Files:
   ~/.config/mtx/config.toml   Settings and themes (same format as slk)
   ~/.local/share/mtx/         Account, encryption keys and message cache
   ~/.cache/mtx/mtx.log        Client log
+  ~/.cache/mtx/images/        Image cache (decrypted)
 `)
 }
 
@@ -146,6 +146,7 @@ func logout() error {
 	for _, name := range []string{"mtx.db", "mtx.db-wal", "mtx.db-shm", "pickle.key"} {
 		_ = os.Remove(filepath.Join(dataDir, name))
 	}
+	_ = os.RemoveAll(imageCacheDir())
 	fmt.Println("Logged out and removed local data.")
 	return nil
 }
@@ -211,7 +212,7 @@ func run() error {
 		ColoredUsernames: cfg.Appearance.ColoredUsernames,
 		ThemeOverrides:   cfg.Theme,
 	})
-	app.SetImageProtocol(imgpkg.ProtoOff)
+	images := setupImages(cfg, app, b)
 	app.SetClipboardAvailable(clipboardOK)
 	app.SetClipboardWriter(newClipboardWriter(runtime.GOOS, os.Getenv, writeMacOSClipboard))
 	desktop := core.DesktopServiceFuncs{
@@ -241,8 +242,10 @@ func run() error {
 		Initials: workspace.WorkspaceInitials(server),
 	}})
 
-	prog := tea.NewProgram(app)
+	prog := tea.NewProgram(app, tea.WithOutput(images.output))
 	b.SetSender(prog.Send)
+	// Fetched images report back to the program, which exists only now.
+	app.SetImageContext(images.context(prog.Send))
 	go func() {
 		// Restarts show the rooms already in the database right away.
 		// After a fresh login there are none until the initial sync,

@@ -158,24 +158,9 @@ func (b *Backend) download(ctx context.Context, ref, name string) (string, error
 	if content == nil {
 		return "", fmt.Errorf("unreadable attachment event")
 	}
-	var mxc id.ContentURIString
-	if content.File != nil {
-		mxc = content.File.URL
-	} else {
-		mxc = content.URL
-	}
-	uri, err := mxc.Parse()
-	if err != nil {
-		return "", fmt.Errorf("bad media URL: %w", err)
-	}
-	data, err := b.cli.Client.DownloadBytes(ctx, uri)
+	data, _, err := b.downloadMedia(ctx, content, false)
 	if err != nil {
 		return "", err
-	}
-	if content.File != nil {
-		if err := content.File.DecryptInPlace(data); err != nil {
-			return "", fmt.Errorf("decrypting: %w", err)
-		}
 	}
 	dir := b.DownloadDir
 	if dir == "" {
@@ -189,6 +174,71 @@ func (b *Backend) download(ctx context.Context, ref, name string) (string, error
 		return "", err
 	}
 	return path, nil
+}
+
+// FetchImage downloads (and decrypts) the image a media ref from
+// imageThumbs names, returning its bytes and MIME type. It is the image
+// fetcher's downloader.
+func (b *Backend) FetchImage(ctx context.Context, ref string) ([]byte, string, error) {
+	roomID, evtID, thumb, ok := parseMediaRef(ref)
+	if !ok {
+		return nil, "", fmt.Errorf("not a Matrix image: %s", ref)
+	}
+	evt, err := b.cli.DB.Event.GetByID(ctx, roomID, evtID)
+	if err != nil || evt == nil {
+		return nil, "", fmt.Errorf("image event not found")
+	}
+	content := parseMessage(evt)
+	if content == nil {
+		return nil, "", fmt.Errorf("unreadable image event")
+	}
+	return b.downloadMedia(ctx, content, thumb)
+}
+
+// downloadMedia fetches the media of a message, or its thumbnail, and
+// decrypts it if it is encrypted.
+func (b *Backend) downloadMedia(ctx context.Context, content *event.MessageEventContent, thumb bool) ([]byte, string, error) {
+	mxc, file, mimeType := mediaSource(content, thumb)
+	uri, err := mxc.Parse()
+	if err != nil {
+		return nil, "", fmt.Errorf("bad media URL: %w", err)
+	}
+	data, err := b.cli.Client.DownloadBytes(ctx, uri)
+	if err != nil {
+		return nil, "", err
+	}
+	if file != nil {
+		if err := file.DecryptInPlace(data); err != nil {
+			return nil, "", fmt.Errorf("decrypting: %w", err)
+		}
+	}
+	return data, mimeType, nil
+}
+
+// mediaSource picks where a message's media (or, with thumb, its
+// thumbnail) lives: its mxc URL, the decryption info when encrypted,
+// and the MIME type the event states. A thumbnail the event lacks falls
+// back to the full media.
+func mediaSource(content *event.MessageEventContent, thumb bool) (id.ContentURIString, *event.EncryptedFileInfo, string) {
+	info := content.Info
+	if thumb && info != nil && (info.ThumbnailFile != nil || info.ThumbnailURL != "") {
+		var mimeType string
+		if info.ThumbnailInfo != nil {
+			mimeType = info.ThumbnailInfo.MimeType
+		}
+		if f := info.ThumbnailFile; f != nil {
+			return f.URL, f, mimeType
+		}
+		return info.ThumbnailURL, nil, mimeType
+	}
+	var mimeType string
+	if info != nil {
+		mimeType = info.MimeType
+	}
+	if f := content.File; f != nil {
+		return f.URL, f, mimeType
+	}
+	return content.URL, nil, mimeType
 }
 
 // uniquePath appends " (n)" before the extension until path is unused.

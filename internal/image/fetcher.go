@@ -105,6 +105,23 @@ type Fetcher struct {
 	// files.slack.com fetch (per-team map + Slack Connect fallback
 	// retry + learned foreign-team mapping).
 	resolver *slackhttp.AuthResolver
+
+	// downloader, when set, replaces the HTTP download (see
+	// SetDownloader).
+	downloader Downloader
+}
+
+// Downloader returns the raw bytes and MIME type of the image a
+// FetchRequest's URL names.
+type Downloader func(ctx context.Context, url string) (body []byte, contentType string, err error)
+
+// SetDownloader routes every download through d instead of HTTP, for
+// sources a URL alone cannot fetch, such as Matrix media that needs the
+// client's credentials and decryption. Caching, decoding, downscaling
+// and prerendering are unchanged. Call once at startup, before any
+// Fetch.
+func (f *Fetcher) SetDownloader(d Downloader) {
+	f.downloader = d
 }
 
 // fetchConcurrencyLimit caps the number of in-flight HTTP fetches.
@@ -242,7 +259,11 @@ func (f *Fetcher) fetchInner(ctx context.Context, req FetchRequest) (FetchResult
 	debuglog.ImgFetch("disk-cache: key=%s req_id=%d result=%s", req.Key, req.ReqID, diskResult)
 	if !hit {
 		dlStart := time.Now()
-		body, ct, err := f.download(ctx, req.URL)
+		download := f.download
+		if f.downloader != nil {
+			download = f.downloader
+		}
+		body, ct, err := download(ctx, req.URL)
 		if err != nil {
 			debuglog.ImgFetch("download-err: key=%s req_id=%d dur_ms=%d err=%v",
 				req.Key, req.ReqID, time.Since(dlStart).Milliseconds(), err)

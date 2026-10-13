@@ -1,6 +1,8 @@
 package matrix
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"regexp"
 	"strings"
@@ -190,19 +192,65 @@ func attachmentsFor(evt *database.Event, content *event.MessageEventContent) []m
 	// Downloads go through FileService.Download, which resolves this
 	// reference back to the event so it can fetch and decrypt the media.
 	ref := eventRef(evt.RoomID, evt.ID)
-	return []messages.Attachment{{
+	att := messages.Attachment{
 		Kind:        "file",
 		Name:        name,
 		URL:         ref,
 		DownloadURL: ref,
 		Size:        size,
-	}}
+	}
+	if content.MsgType == event.MsgImage {
+		att.Kind = "image"
+		att.FileID = imageFileID(evt.ID)
+		att.Thumbs = imageThumbs(ref, content.Info)
+		if content.Info != nil {
+			att.Mime = content.Info.MimeType
+		}
+	}
+	return []messages.Attachment{att}
+}
+
+// imageFileID keys an image in the TUI's image cache, which uses it as a
+// file name, so it is a hash of the event ID rather than the ID itself
+// (event IDs may contain '/').
+func imageFileID(evtID id.EventID) string {
+	sum := sha256.Sum256([]byte(evtID))
+	return "mx-" + hex.EncodeToString(sum[:12])
+}
+
+// imageThumbs lists the sizes an image can be fetched at, ascending:
+// the event's own thumbnail, then the full image. The URLs are media
+// refs for Backend.FetchImage. A size the event does not state is left
+// out; with none at all the TUI cannot lay the image out and shows a
+// link line instead.
+func imageThumbs(ref string, info *event.FileInfo) []messages.ThumbSpec {
+	if info == nil || info.Width <= 0 || info.Height <= 0 {
+		return nil
+	}
+	var thumbs []messages.ThumbSpec
+	if ti := info.ThumbnailInfo; ti != nil && ti.Width > 0 && ti.Height > 0 &&
+		(info.ThumbnailURL != "" || info.ThumbnailFile != nil) &&
+		max(ti.Width, ti.Height) < max(info.Width, info.Height) {
+		thumbs = append(thumbs, messages.ThumbSpec{URL: ref + thumbnailSuffix, W: ti.Width, H: ti.Height})
+	}
+	return append(thumbs, messages.ThumbSpec{URL: ref, W: info.Width, H: info.Height})
 }
 
 const eventRefPrefix = "mtx-event:"
 
 func eventRef(room id.RoomID, evtID id.EventID) string {
 	return eventRefPrefix + string(room) + "/" + string(evtID)
+}
+
+// thumbnailSuffix on an event ref names the event's thumbnail rather
+// than its full media.
+const thumbnailSuffix = "#thumbnail"
+
+// parseMediaRef parses an image URL from imageThumbs.
+func parseMediaRef(ref string) (room id.RoomID, evt id.EventID, thumb bool, ok bool) {
+	ref, thumb = strings.CutSuffix(ref, thumbnailSuffix)
+	room, evt, ok = parseEventRef(ref)
+	return room, evt, thumb, ok
 }
 
 func parseEventRef(ref string) (id.RoomID, id.EventID, bool) {

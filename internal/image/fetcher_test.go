@@ -455,3 +455,33 @@ func TestFetcher_HTTPErrorPropagates(t *testing.T) {
 		t.Fatal("expected error")
 	}
 }
+
+// A downloader set with SetDownloader replaces the HTTP path, so a
+// source that is not a plain URL (an encrypted Matrix event's media)
+// can feed the same cache, decode and downscale pipeline.
+func TestFetcher_DownloaderReplacesHTTP(t *testing.T) {
+	pngBytes := tinyPNG(t, 100, 100, imgcolor.RGBA{200, 0, 0, 255})
+
+	cache, _ := NewCache(t.TempDir(), 10)
+	f := NewFetcher(cache, http.DefaultClient)
+	var urls []string
+	f.SetDownloader(func(_ context.Context, url string) ([]byte, string, error) {
+		urls = append(urls, url)
+		return pngBytes, "image/png", nil
+	})
+
+	req := FetchRequest{Key: "k1", URL: "mtx-event:!r:x/$e", Target: image.Pt(20, 20)}
+	res, err := f.Fetch(context.Background(), req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.Img.Bounds().Dx() != 20 || res.Mime != "image/png" {
+		t.Errorf("got %v %q, want a 20px-wide image/png", res.Img.Bounds(), res.Mime)
+	}
+	if _, err := f.Fetch(context.Background(), req); err != nil {
+		t.Fatal(err)
+	}
+	if len(urls) != 1 || urls[0] != req.URL {
+		t.Errorf("downloader calls = %q, want one for %q", urls, req.URL)
+	}
+}

@@ -75,6 +75,11 @@ internal/config/        TOML config (slk's format)
   to every top-level space above it. Events the TUI gates on `TeamID`
   carry the *active* workspace (`activeWorkspace`), and only for rooms in
   it; the channel finder lists every room whichever is active.
+- **Inline images** (`m.image`) reach the TUI as `Kind: "image"`
+  attachments whose thumb URLs are `mtx-event:` refs (`imageThumbs`);
+  slk's image fetcher downloads them through `Backend.FetchImage`
+  (`Fetcher.SetDownloader`), which fetches and decrypts the media.
+  `cmd/mtx/images.go` detects the protocol and wires the pipeline.
 - **Threads and Activity views** are answered from the local database
   (threads you are in; mentions/highlights), since Matrix has no
   equivalent of Slack's thread-subscription or activity-feed APIs.
