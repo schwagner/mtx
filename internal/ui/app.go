@@ -226,6 +226,10 @@ type App struct {
 	// by ui.ResolveEditor (editor.go). Nil means unconfigured.
 	composeEditor []string
 
+	// composeVim gives the composers a vi normal mode
+	// (ModeComposeNormal); see mode_compose_normal.go.
+	composeVim bool
+
 	// editor hands Ctrl+E's draft to composeEditor and back. A no-op
 	// until wired.
 	editor core.EditorService
@@ -2141,9 +2145,11 @@ func (a *App) SetMode(mode Mode) {
 		a.pendingTop = false
 		a.statusbar.SetHelpHint(a.defaultHelpHint())
 	}
-	if mode == ModeInsert {
+	if mode.composing() {
 		a.clearSelections()
 	}
+	a.compose.SetVimNormal(mode == ModeComposeNormal)
+	a.threadCompose.SetVimNormal(mode == ModeComposeNormal)
 	// Leaving command mode by ANY path — including global intercepts
 	// (ctrl+c quit-confirm) and async reducers that force a mode —
 	// must drop the ':' prompt, or the statusbar keeps rendering a
@@ -2701,6 +2707,12 @@ func (a *App) SetClipboardAvailable(ok bool) {
 // SetComposeEditor sets Ctrl+E's resolved editor argv (see editor.go).
 func (a *App) SetComposeEditor(editor []string) {
 	a.composeEditor = editor
+}
+
+// SetComposeVimMode turns on the composers' vi normal mode
+// (compose.vim_mode).
+func (a *App) SetComposeVimMode(on bool) {
+	a.composeVim = on
 }
 
 // SetEditorService wires Ctrl+E's temp file and editor process. nil

@@ -33,13 +33,13 @@ func (a *App) renderThreadRegion(frame panelLayoutFrame, themeVer int64) string 
 	threadWidth := frame.ThreadWidth
 	threadBorder := frame.ThreadBorder
 
-	threadFocused := a.focusedPanel == PanelThread && a.mode != ModeInsert
+	threadFocused := a.focusedPanel == PanelThread && !a.mode.composing()
 	// Push focus into the thread panel so the selected-reply "▌"
 	// border dims when unfocused. MUST happen BEFORE the
 	// panelCache hit-check (the cache key includes Version, which
 	// SetFocused bumps via dirty()).
 	a.threadPanel.SetFocused(threadFocused)
-	threadComposeFocused := a.mode == ModeInsert && a.focusedPanel == PanelThread
+	threadComposeFocused := a.mode.composing() && a.focusedPanel == PanelThread
 	threadLayoutKey := themeVer<<2 | boolToInt(threadFocused)<<1 | boolToInt(threadComposeFocused)
 	a.threadCompose.SetWidth(threadWidth - 2)
 

@@ -36,6 +36,7 @@ func TestEveryModeHasAHandler(t *testing.T) {
 		ModeThemeSwitcher, ModePresenceMenu, ModePresenceCustomSnooze,
 		ModeConfirm, ModeHelp, ModeNewMessage, ModeReactionsView,
 		ModeLinkPicker, ModeWorkspaceSearch, ModeUserProfile,
+		ModeComposeNormal,
 	}
 	if len(modeHandlers) != len(all) {
 		t.Errorf("modeHandlers has %d entries, want %d", len(modeHandlers), len(all))

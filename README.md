@@ -96,6 +96,33 @@ Press `?` in the app. The essentials: `i` to write, `Esc` for normal mode,
 `j`/`k` to move, `Enter` to open a thread, `r` to react, `E` edit, `D` delete,
 `Ctrl+T` switch room, `Ctrl+N` new DM, `Ctrl+A` activity, `Ctrl+C` quit.
 
+### Vi editing in the composer
+
+slk's `Esc` leaves the composer. With
+
+```toml
+[compose]
+vim_mode = true
+```
+
+`Esc` puts the composer in vi normal mode instead (`COMPOSE` in the status
+bar, steady cursor) and a second `Esc` leaves it; an empty composer still
+leaves on the first. In normal mode:
+
+| Keys | |
+|---|---|
+| `h j k l` `w b e W B E` `0 ^ $` `gg G` `{ }` `%` `f t F T ; ,` | motions, with counts |
+| `d c y` `gu gU g~` + motion or text object | operators: `dd`, `d3w`, `c$`, `yy`, `gUiw` |
+| `iw aw iW aW` `i" a" i' a'` `` i` a` `` `i( a( ib` `i[ a[` `i{ a{ iB` `i< a<` | text objects |
+| `x X D C s S Y r ~ J p P` | the usual shorthands |
+| `i a I A o O` | back to insert (`3ia<Esc>` repeats) |
+| `u` `Ctrl+R` `.` | undo, redo, repeat |
+| `Enter` | send (or save an edit), as in insert mode |
+| `Ctrl+E` | edit in `$EDITOR` |
+
+Not yet: visual mode, named registers and the system clipboard (`"+y`),
+`:` commands inside the composer.
+
 ## Development
 
 See [AGENTS.md](AGENTS.md). `nix develop` gives a shell with everything needed.

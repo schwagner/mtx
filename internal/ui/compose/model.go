@@ -17,6 +17,7 @@ import (
 	"github.com/schwagner/mtx/internal/ui/emojipicker"
 	"github.com/schwagner/mtx/internal/ui/mentionpicker"
 	"github.com/schwagner/mtx/internal/ui/styles"
+	"github.com/schwagner/mtx/internal/ui/vimedit"
 	"github.com/schwagner/mtx/internal/usergroups"
 )
 
@@ -122,6 +123,11 @@ type Model struct {
 	// editingExternally is true while Ctrl+E's editor is open. Update()
 	// refuses all key input while set.
 	editingExternally bool
+
+	// vim is the vi normal-mode engine (compose.vim_mode). Its history
+	// belongs to the visible text, so it is reset whenever that text is
+	// replaced wholesale (send, draft swap, SetValue).
+	vim vimedit.Editor
 
 	// version increments on every Update / state mutation. Used by App's
 	// panel-cache layer so the wrapped compose panel only re-renders when
@@ -259,6 +265,7 @@ func (m *Model) Value() string {
 
 func (m *Model) SetValue(s string) {
 	m.input.SetValue(s)
+	m.vim.Reset(s)
 	m.dirty()
 }
 
@@ -958,6 +965,7 @@ func (m *Model) saveVisibleDraft() {
 func (m *Model) clearVisibleDraft() {
 	m.input.Reset()
 	m.input.SetHeight(1)
+	m.vim.Reset("")
 	m.closePickers()
 	m.pending = nil
 	m.uploading = false
@@ -969,6 +977,7 @@ func (m *Model) clearVisibleDraft() {
 // takes ownership of its attachment slice.
 func (m *Model) restoreDraft(d draft) {
 	m.input.SetValue(d.text)
+	m.vim.Reset(d.text)
 	m.pending = d.attachments
 	// Recompute the visible height for the restored text; SetValue
 	// already recalcs internally, but autoGrow enforces our row cap.

@@ -63,13 +63,13 @@ func (a *App) renderMessagesRegion(frame panelLayoutFrame, themeVer int64, previ
 	msgWidth := frame.MsgWidth
 	msgBorder := frame.MsgBorder
 
-	msgFocused := a.focusedPanel == PanelMessages && a.mode != ModeInsert
+	msgFocused := a.focusedPanel == PanelMessages && !a.mode.composing()
 	// Push focus into the messages pane so the selected-message "▌"
 	// border dims when unfocused. MUST happen BEFORE the cache
 	// hit-check (the cache key includes Version, which SetFocused
 	// bumps on a flip).
 	a.messagepane.SetFocused(msgFocused)
-	composeFocused := a.mode == ModeInsert && a.focusedPanel != PanelThread
+	composeFocused := a.mode.composing() && a.focusedPanel != PanelThread
 	// Mix the view-mode bit into the layout key so a Channels<->
 	// Threads switch invalidates the cached output (the cache is
 	// otherwise indistinguishable across views at the same

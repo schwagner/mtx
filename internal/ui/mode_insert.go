@@ -13,6 +13,9 @@
 //     first, else cancel the edit.
 //   - Esc otherwise              -> close any open compose picker
 //     first, else exit insert mode.
+//   - With compose.vim_mode, Esc that would cancel the edit or leave
+//     a non-empty composer goes to vi normal mode instead
+//     (ModeComposeNormal, mode_compose_normal.go).
 //   - Ctrl+V                     -> smartPaste (clipboard image /
 //     file path / verbatim text).
 //   - Ctrl+U                     -> clear compose (text +
@@ -79,6 +82,10 @@ func handleInsertMode(a *App, msg tea.KeyMsg) tea.Cmd {
 				return nil
 			}
 		}
+		if a.composeVim {
+			a.enterComposeNormal()
+			return nil
+		}
 		a.cancelEdit()
 		return nil
 	}
@@ -110,6 +117,10 @@ func handleInsertMode(a *App, msg tea.KeyMsg) tea.Cmd {
 				a.compose.CloseChannel()
 				return nil
 			}
+		}
+		if a.composeVim && a.activeComposer().Value() != "" {
+			a.enterComposeNormal()
+			return nil
 		}
 		a.SetMode(ModeNormal)
 		a.compose.Blur()

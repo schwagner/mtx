@@ -140,6 +140,7 @@ scrollbars, date formatting, case folding, or ID formatting: it already exists.
 | Peer custom status, DND and huddle rendering | `ui/peerstatus` (`Status`, glyph/expiry/summary methods); `messages.AuthorStatusSuffix` for author headers |
 | Usergroup map helpers | `usergroups.Copy`, `usergroups.Equal`, `usergroups.Display` |
 | User IDs mentioned in message text | `slackfmt.MentionedUserIDs(text)` |
+| Vi normal-mode editing of a text buffer (motions, operators, text objects, undo, `.`) | `vimedit.Editor` (pure; takes text + row/col, returns the result); the composer glue is `compose.Model.VimKey` / `VimEndInsert` |
 | Copy text to the clipboard | `App.clipboardWrite` / `SetClipboardWriter`; `cmd/mtx/newClipboardWriter` selects local macOS `pbcopy` or terminal OSC 52 |
 
 ### UI chrome

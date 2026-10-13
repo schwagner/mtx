@@ -21,7 +21,16 @@ const (
 	ModeLinkPicker
 	ModeWorkspaceSearch
 	ModeUserProfile
+	// ModeComposeNormal is vi normal mode inside a composer
+	// (compose.vim_mode): keys edit the draft instead of navigating.
+	ModeComposeNormal
 )
+
+// composing reports whether keys go to a composer: typed in insert
+// mode, or as vi commands in compose-normal mode.
+func (m Mode) composing() bool {
+	return m == ModeInsert || m == ModeComposeNormal
+}
 
 // IsModalOverlay reports whether the mode is a full-screen modal
 // overlay that captures input (channel finder, pickers, help,
@@ -88,6 +97,8 @@ func (m Mode) String() string {
 		return "WS-SEARCH"
 	case ModeUserProfile:
 		return "PROFILE"
+	case ModeComposeNormal:
+		return "COMPOSE"
 	default:
 		return "UNKNOWN"
 	}

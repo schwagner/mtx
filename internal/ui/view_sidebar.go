@@ -34,7 +34,7 @@ import (
 // As a side effect, pushes the resolved sidebar height back into
 // a.layout (used by panelAt for mouse hit-testing).
 func (a *App) renderSidebar(sidebarWidth, sidebarBorder, contentHeight int, themeVer int64) string {
-	sbFocused := a.focusedPanel == PanelSidebar && a.mode != ModeInsert
+	sbFocused := a.focusedPanel == PanelSidebar && !a.mode.composing()
 	// Push focus into the sidebar so the cursor "▌" glyph dims
 	// when the panel is unfocused. MUST happen BEFORE the
 	// panelCache hit-check below: SetFocused bumps Version on a

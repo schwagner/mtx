@@ -229,6 +229,7 @@ func run() error {
 	if ed, ok := ui.ResolveEditor(cfg.Compose.Editor); ok {
 		app.SetComposeEditor(ed)
 	}
+	app.SetComposeVimMode(cfg.Compose.VimMode)
 	app.SetSettingsService(core.NewSettingsService(func(string, core.ThemeScope) {}, func(int) {}))
 	app.SetAvatarService(core.NewAvatarService(func(string) string { return "" }))
 	b.Wire(app)
