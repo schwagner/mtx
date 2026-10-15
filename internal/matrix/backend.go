@@ -54,6 +54,9 @@ type Backend struct {
 	rooms   map[id.RoomID]*database.Room
 	invites map[id.RoomID]*database.InvitedRoom
 	names   map[id.UserID]string
+	// avatars are users' avatar mxc URLs, like names: the first room
+	// that states one wins until a member event changes it.
+	avatars map[id.UserID]id.ContentURIString
 	// activeRoom is the room the user is looking at; its events don't
 	// notify.
 	activeRoom id.RoomID
@@ -95,6 +98,7 @@ func Open(dbPath string, pickleKey []byte, log zerolog.Logger) (*Backend, error)
 		rooms:   make(map[id.RoomID]*database.Room),
 		invites: make(map[id.RoomID]*database.InvitedRoom),
 		names:   make(map[id.UserID]string),
+		avatars: make(map[id.UserID]id.ContentURIString),
 		waiters: make(map[string]chan sendResult),
 		echoed:  make(map[string]*database.Event),
 		synced:  make(chan struct{}),
@@ -338,10 +342,18 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 
 func (b *Backend) learnMember(evt *database.Event) {
 	var content event.MemberEventContent
-	if json.Unmarshal(evt.Content, &content) != nil || content.Displayname == "" {
+	if json.Unmarshal(evt.Content, &content) != nil {
 		return
 	}
 	userID := id.UserID(*evt.StateKey)
+	if content.AvatarURL != "" {
+		b.mu.Lock()
+		b.avatars[userID] = content.AvatarURL
+		b.mu.Unlock()
+	}
+	if content.Displayname == "" {
+		return
+	}
 	b.mu.Lock()
 	old, known := b.names[userID]
 	b.names[userID] = content.Displayname
@@ -538,6 +550,12 @@ func (b *Backend) notify(n jsoncmd.SyncNotification) {
 
 // ---------------------------------------------------------------------------
 // conversion
+
+// DisplayName is userID's display name, or its localpart when it has
+// none.
+func (b *Backend) DisplayName(userID string) string {
+	return b.displayName(id.UserID(userID))
+}
 
 func (b *Backend) displayName(userID id.UserID) string {
 	b.mu.Lock()
@@ -820,8 +838,10 @@ func (b *Backend) loadRooms(ctx context.Context) error {
 		}
 	}
 	names := map[id.UserID]string{}
+	avatars := map[id.UserID]id.ContentURIString{}
 	rows, err := b.cli.DB.Query(ctx, `
-		SELECT cs.state_key, json_extract(e.content, '$.displayname')
+		SELECT cs.state_key, json_extract(e.content, '$.displayname'),
+			json_extract(e.content, '$.avatar_url')
 		FROM current_state cs JOIN event e ON e.rowid = cs.event_rowid
 		WHERE cs.event_type = 'm.room.member' AND cs.membership = 'join'`)
 	if err != nil {
@@ -829,11 +849,15 @@ func (b *Backend) loadRooms(ctx context.Context) error {
 	}
 	for rows.Next() {
 		var userID id.UserID
-		var name *string
-		if rows.Scan(&userID, &name) == nil && name != nil && *name != "" {
-			if _, seen := names[userID]; !seen {
-				names[userID] = *name
-			}
+		var name, avatar *string
+		if rows.Scan(&userID, &name, &avatar) != nil {
+			continue
+		}
+		if _, seen := names[userID]; !seen && name != nil && *name != "" {
+			names[userID] = *name
+		}
+		if _, seen := avatars[userID]; !seen && avatar != nil && *avatar != "" {
+			avatars[userID] = id.ContentURIString(*avatar)
 		}
 	}
 	rows.Close()
@@ -848,6 +872,11 @@ func (b *Backend) loadRooms(ctx context.Context) error {
 	for k, v := range names {
 		if _, ok := b.names[k]; !ok {
 			b.names[k] = v
+		}
+	}
+	for k, v := range avatars {
+		if _, ok := b.avatars[k]; !ok {
+			b.avatars[k] = v
 		}
 	}
 	for _, inv := range invites {

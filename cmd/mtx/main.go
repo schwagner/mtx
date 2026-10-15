@@ -24,6 +24,7 @@ import (
 	"github.com/schwagner/mtx/internal/matrix"
 	"github.com/schwagner/mtx/internal/notify"
 	"github.com/schwagner/mtx/internal/ui"
+	"github.com/schwagner/mtx/internal/ui/messages"
 	"github.com/schwagner/mtx/internal/ui/styles"
 	"github.com/schwagner/mtx/internal/ui/workspace"
 )
@@ -231,7 +232,7 @@ func run() error {
 	}
 	app.SetComposeVimMode(cfg.Compose.VimMode)
 	app.SetSettingsService(core.NewSettingsService(func(string, core.ThemeScope) {}, func(int) {}))
-	app.SetAvatarService(core.NewAvatarService(func(string) string { return "" }))
+	avatars := setupAvatars(app, b, images.fetcher, images.proto)
 	b.Wire(app)
 
 	me := b.UserID()
@@ -245,6 +246,9 @@ func run() error {
 
 	prog := tea.NewProgram(app, tea.WithOutput(images.output))
 	b.SetSender(prog.Send)
+	if avatars != nil {
+		avatars.SetOnReady(func(userID string) { prog.Send(messages.AvatarReadyMsg{UserID: userID}) })
+	}
 	// Fetched images report back to the program, which exists only now.
 	app.SetImageContext(images.context(prog.Send))
 	go func() {

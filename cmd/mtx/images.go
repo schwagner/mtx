@@ -33,6 +33,10 @@ type inlineImages struct {
 	// context builds the TUI's image context; send delivers fetch
 	// completions to the program.
 	context func(send func(tea.Msg)) imgrender.ImageContext
+	// fetcher downloads Matrix media through the engine; nil when
+	// images are off.
+	fetcher *imgpkg.Fetcher
+	proto   imgpkg.Protocol
 }
 
 // setupImages detects the terminal's image protocol and wires inline
@@ -85,7 +89,7 @@ func setupImages(cfg config.Config, app *ui.App, b *matrix.Backend) inlineImages
 		}
 	}
 	app.SetImageContext(ctx(nil))
-	return inlineImages{output: output, context: ctx}
+	return inlineImages{output: output, context: ctx, fetcher: fetcher, proto: proto}
 }
 
 // detectImageProtocol picks the protocol from the config and the

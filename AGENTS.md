@@ -80,6 +80,13 @@ internal/config/        TOML config (slk's format)
   slk's image fetcher downloads them through `Backend.FetchImage`
   (`Fetcher.SetDownloader`), which fetches and decrypts the media.
   `cmd/mtx/images.go` detects the protocol and wires the pipeline.
+- **Avatars** beside message authors come from member events
+  (`Backend.AvatarURL`, an `mxc://` URL that `FetchImage` fetches as a
+  server-side thumbnail) and render through slk's `internal/avatar`
+  cache (kitty, else half-block); `cmd/mtx/avatars.go` wires it and
+  shows a colored initial tile for users with no avatar, while one
+  loads, and when images are off. An avatar changed mid-session shows
+  after a restart.
 - **Threads and Activity views** are answered from the local database
   (threads you are in; mentions/highlights), since Matrix has no
   equivalent of Slack's thread-subscription or activity-feed APIs.

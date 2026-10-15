@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"mime"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 
 	"go.mau.fi/gomuks/pkg/hicli/database"
 	"go.mau.fi/gomuks/pkg/hicli/jsoncmd"
+	"maunium.net/go/mautrix"
 	"maunium.net/go/mautrix/crypto/attachment"
 	"maunium.net/go/mautrix/event"
 	"maunium.net/go/mautrix/id"
@@ -176,10 +178,26 @@ func (b *Backend) download(ctx context.Context, ref, name string) (string, error
 	return path, nil
 }
 
+// AvatarURL returns the URL of userID's avatar for FetchImage, or ""
+// when the user has none.
+func (b *Backend) AvatarURL(userID string) string {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	return string(b.avatars[id.UserID(userID)])
+}
+
+// avatarThumbPx is the server-side thumbnail size fetched for avatars:
+// about twice the 4x2-cell slot at a typical cell size.
+const avatarThumbPx = 64
+
 // FetchImage downloads (and decrypts) the image a media ref from
-// imageThumbs names, returning its bytes and MIME type. It is the image
-// fetcher's downloader.
+// imageThumbs names, or a thumbnail of an avatar URL from AvatarURL,
+// returning its bytes and MIME type. It is the image fetcher's
+// downloader.
 func (b *Backend) FetchImage(ctx context.Context, ref string) ([]byte, string, error) {
+	if strings.HasPrefix(ref, "mxc://") {
+		return b.downloadThumbnail(ctx, id.ContentURIString(ref))
+	}
 	roomID, evtID, thumb, ok := parseMediaRef(ref)
 	if !ok {
 		return nil, "", fmt.Errorf("not a Matrix image: %s", ref)
@@ -254,4 +272,24 @@ func uniquePath(path string) string {
 			return candidate
 		}
 	}
+}
+
+// downloadThumbnail fetches a cropped square thumbnail of unencrypted
+// media, such as an avatar.
+func (b *Backend) downloadThumbnail(ctx context.Context, mxc id.ContentURIString) ([]byte, string, error) {
+	uri, err := mxc.Parse()
+	if err != nil {
+		return nil, "", fmt.Errorf("bad media URL: %w", err)
+	}
+	resp, err := b.cli.Client.DownloadThumbnail(ctx, uri, avatarThumbPx, avatarThumbPx,
+		mautrix.DownloadThumbnailExtra{Method: "crop"})
+	if err != nil {
+		return nil, "", err
+	}
+	defer resp.Body.Close()
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, "", err
+	}
+	return data, resp.Header.Get("Content-Type"), nil
 }
