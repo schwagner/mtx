@@ -118,8 +118,11 @@ func htmlToSlack(html string, names func(id.UserID) string) string {
 			}
 			return "[spoiler]"
 		},
-		TextConverter: func(s string, _ format.Context) string {
-			return slackEscaper.Replace(s)
+		TextConverter: func(s string, ctx format.Context) string {
+			if ctx.TagStack.Has("a") || ctx.TagStack.Has("code") || ctx.TagStack.Has("pre") {
+				return slackEscaper.Replace(s)
+			}
+			return linkify(s)
 		},
 	}
 	return strings.TrimSpace(parser.Parse(html, format.NewContext(nil)))
@@ -146,8 +149,55 @@ func wrapInline(s, marker string) string {
 var mdBoldRe = regexp.MustCompile(`\*\*([^*\n]+)\*\*`)
 
 func plainToSlack(body string) string {
-	body = slackEscaper.Replace(body)
-	return mdBoldRe.ReplaceAllString(body, "*$1*")
+	var b strings.Builder
+	last := 0
+	for _, loc := range mdCodeRe.FindAllStringIndex(body, -1) {
+		b.WriteString(linkify(body[last:loc[0]]))
+		b.WriteString(slackEscaper.Replace(body[loc[0]:loc[1]]))
+		last = loc[1]
+	}
+	b.WriteString(linkify(body[last:]))
+	return mdBoldRe.ReplaceAllString(b.String(), "*$1*")
+}
+
+// mdCodeRe matches markdown code blocks and spans, whose URLs stay text.
+var mdCodeRe = regexp.MustCompile("```[\\s\\S]*?```|`[^`\\n]+`")
+
+// bareURLRe matches a URL written out in message text.
+var bareURLRe = regexp.MustCompile(`https?://[^\s<>"]+`)
+
+// linkify escapes text for the Slack-markup renderer and wraps the bare
+// URLs in it as <url> links, which the renderer makes clickable.
+// Punctuation that more likely ends the sentence than the URL (a
+// trailing period, an unbalanced closing parenthesis, markdown emphasis
+// markers) is left outside the link.
+func linkify(s string) string {
+	var b strings.Builder
+	last := 0
+	for _, loc := range bareURLRe.FindAllStringIndex(s, -1) {
+		url := trimURLTail(s[loc[0]:loc[1]])
+		if strings.HasSuffix(url, "://") {
+			continue
+		}
+		b.WriteString(slackEscaper.Replace(s[last:loc[0]]))
+		b.WriteString("<" + url + ">")
+		last = loc[0] + len(url)
+	}
+	b.WriteString(slackEscaper.Replace(s[last:]))
+	return b.String()
+}
+
+func trimURLTail(url string) string {
+	for {
+		trimmed := strings.TrimRight(url, ".,;:!?'*_~")
+		if strings.HasSuffix(trimmed, ")") && strings.Count(trimmed, "(") < strings.Count(trimmed, ")") {
+			trimmed = trimmed[:len(trimmed)-1]
+		}
+		if trimmed == url {
+			return url
+		}
+		url = trimmed
+	}
 }
 
 // messageText renders a message event's content as TUI text.

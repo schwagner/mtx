@@ -1263,6 +1263,21 @@ func (m *Model) absoluteLineAt(viewportY int) int {
 	return abs
 }
 
+// LinkAt returns the URL of the hyperlink drawn at the pane-local
+// coordinates (viewportY, x), or "" when the cell is not part of a link.
+// Mirrors messages.Model.LinkAt.
+func (m *Model) LinkAt(viewportY, x int) string {
+	contentY := viewportY - m.chromeHeight
+	if contentY < 0 {
+		return ""
+	}
+	entry, start, _, ok := m.selectionEntryAt(contentY + m.vp.YOffset())
+	if !ok {
+		return ""
+	}
+	return messages.LinkAt(entry.linesNormal, contentY+m.vp.YOffset()-start, x)
+}
+
 // selectionEntryAt returns the rendered message entry containing absLine.
 // Parent lines begin at zero; reply lines use parent-inclusive offsets.
 func (m *Model) selectionEntryAt(absLine int) (*viewEntry, int, string, bool) {
@@ -1573,6 +1588,8 @@ func (m *Model) View(height, width int) string {
 			BorderForeground(styles.Background).BorderBackground(styles.Background).
 			Render(parentContent)
 	}
+	// The drawn lines, for LinkAt's hit-test.
+	m.parentEntry.linesNormal = strings.Split(parentContent, "\n")
 	parentSeparator := lipgloss.NewStyle().
 		Width(width).
 		Background(styles.Background).

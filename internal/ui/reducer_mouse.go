@@ -338,6 +338,7 @@ func reduceMouseClick(a *App, m tea.MouseClickMsg) tea.Cmd {
 		// plain click (no drag) should open the message's thread
 		// (mirrors pressing Enter on the selected message).
 		a.drag.SetClickedMessage(a.messagepane.ClickAt(py))
+		a.drag.SetLink(a.messagepane.LinkAt(py, px))
 		return nil
 
 	case a.threadVisible && x < a.layout.ThreadEnd():
@@ -359,6 +360,7 @@ func reduceMouseClick(a *App, m tea.MouseClickMsg) tea.Cmd {
 		a.drag.Begin(PanelThread, px, py)
 		a.threadPanel.BeginSelectionAt(py, px)
 		a.threadPanel.ClickAt(py)
+		a.drag.SetLink(a.threadPanel.LinkAt(py, px))
 		return nil
 	}
 	return nil

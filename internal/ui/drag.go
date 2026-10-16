@@ -44,6 +44,10 @@ import (
 // plain-click finalization: if a plain click landed on a message, that
 // message's thread is opened (mirrors the Enter keypress).
 //
+// link is the URL of the hyperlink under the press, if any. A plain
+// click on a link opens it instead of selecting/opening the message;
+// a drag that starts on a link still selects text.
+//
 // autoScrollActive is the once-claim guard for the edge-autoscroll
 // tea.Tick chain; ClaimAutoScroll returns true exactly once until
 // ClearAutoScroll resets it.
@@ -64,6 +68,7 @@ type dragState struct {
 	moved            bool
 	autoScrollActive bool
 	clickedMessage   bool
+	link             string
 
 	pendingX, pendingY int
 	hasPending         bool
@@ -99,6 +104,9 @@ func (d *dragState) Begin(panel Panel, px, py int) {
 // PanelMessages.
 func (d *dragState) SetClickedMessage(b bool) { d.clickedMessage = b }
 
+// SetLink records the hyperlink under the press ("" for none).
+func (d *dragState) SetLink(url string) { d.link = url }
+
 // Extend updates the cursor position to (px, py) and marks the drag
 // as moved. If panel doesn't match the originating drag panel, the
 // position is clamped to the previous lastX/lastY (pinning extension
@@ -131,10 +139,11 @@ func (d *dragState) ClearAutoScroll() { d.autoScrollActive = false }
 
 // Finish returns the captured release context and resets the state
 // to idle. Called from MouseReleaseMsg.
-func (d *dragState) Finish() (moved bool, panel Panel, clickedMessage bool) {
+func (d *dragState) Finish() (moved bool, panel Panel, clickedMessage bool, link string) {
 	moved = d.moved
 	panel = d.panel
 	clickedMessage = d.clickedMessage
+	link = d.link
 	*d = dragState{}
 	return
 }
@@ -336,7 +345,18 @@ func (d *dragState) Handle(a *App, msg tea.Msg) (tea.Cmd, bool) {
 			}
 			d.hasPending = false
 		}
-		moved, panel, clickedMessage := d.Finish()
+		moved, panel, clickedMessage, link := d.Finish()
+		if !moved && link != "" {
+			// Plain click on a hyperlink: open it, through the same
+			// route as the `o` key.
+			switch panel {
+			case PanelMessages:
+				a.messagepane.ClearSelection()
+			case PanelThread:
+				a.threadPanel.ClearSelection()
+			}
+			return func() tea.Msg { return OpenLinkMsg{URL: link} }, true
+		}
 		if !moved {
 			// Plain click -- drop any previous pinned selection.
 			switch panel {

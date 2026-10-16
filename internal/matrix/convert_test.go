@@ -117,3 +117,34 @@ func TestParseMediaRef(t *testing.T) {
 		t.Error("an http URL parsed as a media ref")
 	}
 }
+
+func TestPlainToSlackLinksBareURLs(t *testing.T) {
+	cases := []struct{ in, want string }{
+		{"see https://example.com/a?b=1&c=2.", "see <https://example.com/a?b=1&c=2>."},
+		{"(https://en.wikipedia.org/wiki/Go_(game))", "(<https://en.wikipedia.org/wiki/Go_(game)>)"},
+		{"**https://x.org** and http://y.net/", "*<https://x.org>* and <http://y.net/>"},
+		{"a < b https://z.io", "a &lt; b <https://z.io>"},
+		{"`https://code.example` and\n```\nhttps://block.example\n```", "`https://code.example` and\n```\nhttps://block.example\n```"},
+		{"no links here", "no links here"},
+	}
+	for _, c := range cases {
+		if got := plainToSlack(c.in); got != c.want {
+			t.Errorf("plainToSlack(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}
+
+func TestHTMLToSlackLinksBareURLs(t *testing.T) {
+	names := func(id.UserID) string { return "" }
+	cases := []struct{ in, want string }{
+		{"see https://example.com <b>now</b>", "see <https://example.com> *now*"},
+		{`<a href="https://example.com">https://example.com</a>`, "<https://example.com>"},
+		{`<a href="https://example.com">label https://x.org</a>`, "<https://example.com|label https://x.org>"},
+		{"<code>https://code.example</code>", "`https://code.example`"},
+	}
+	for _, c := range cases {
+		if got := htmlToSlack(c.in, names); got != c.want {
+			t.Errorf("htmlToSlack(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}

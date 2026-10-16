@@ -2691,6 +2691,22 @@ func (m *Model) HitTestReaction(row, col int) (msgIdx int, emoji string, ok bool
 	return 0, "", false
 }
 
+// LinkAt returns the URL of the hyperlink drawn at the pane-local
+// coordinates (viewportY, x) -- App.panelAt's frame, chrome included, as
+// for ClickAt -- or "" when the cell is not part of a link. Reads the
+// cache built by the most recent View().
+func (m *Model) LinkAt(viewportY, x int) string {
+	contentY := viewportY - m.chromeHeight
+	if contentY < 0 {
+		return ""
+	}
+	idx, within, ok := m.entryAndOffsetForLine(contentY + m.yOffset)
+	if !ok || idx >= len(m.cache) {
+		return ""
+	}
+	return LinkAt(m.cache[idx].linesNormal, within, x)
+}
+
 var thickLeftBorder = lipgloss.Border{Left: "▌"}
 
 // absoluteLineAt returns the global line index in the flattened cache for a

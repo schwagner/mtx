@@ -142,6 +142,8 @@ scrollbars, date formatting, case folding, or ID formatting: it already exists.
 | Slack mrkdwn → plain text | `messages.FlattenMrkdwn`, `messages.FlattenMrkdwnWithUserGroups` |
 | Search-term highlighting (ANSI/OSC-safe) | `messages.HighlightSearchTerms`, `messages.SearchHighlightSGR` |
 | Extract links from message text | `messages.ExtractLinks` |
+| Which OSC 8 hyperlink is drawn at a cell of rendered lines (mouse hit-test) | `messages.LinkAt(lines, row, col)`; per pane `messages.Model.LinkAt` / `thread.Model.LinkAt` |
+| Wrap bare URLs in Matrix message text as `<url>` links (engine side) | `linkify` in `internal/matrix/convert.go` |
 | Does message text mention the current user? | `mention.InText(text, selfUserID)` |
 | Reaction pill rendering | `messages.ReactionPillText` |
 | Delivery indicator after a header timestamp | `messages.DeliveryMark(d)`; status rules `core.Delivery.Update` / `.Read` |
