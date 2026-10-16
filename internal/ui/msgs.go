@@ -127,6 +127,21 @@ type (
 		ChannelID string
 		Message   messages.MessageItem
 	}
+	// MessageDeliveryMsg reports a new delivery status for one of the
+	// user's own messages (see core.Delivery.Update).
+	MessageDeliveryMsg struct {
+		ChannelID string
+		TS        string
+		Delivery  core.Delivery
+	}
+	// MessagesReadMsg reports that a recipient has read the channel up
+	// to and including the message ThroughTS: every own message at or
+	// before it that was sent or delivered becomes read
+	// (core.Delivery.Read).
+	MessagesReadMsg struct {
+		ChannelID string
+		ThroughTS string
+	}
 	SendMessageMsg struct {
 		ChannelID string
 		Text      string

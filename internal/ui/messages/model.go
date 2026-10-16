@@ -1153,6 +1153,44 @@ func (m *Model) UpdateMessageInPlace(ts, newText string) bool {
 	return false
 }
 
+// SetDelivery applies a delivery report to the message ts (see
+// core.Delivery.Update). Returns true if its indicator changed.
+func (m *Model) SetDelivery(ts string, d core.Delivery) bool {
+	for i, msg := range m.messages {
+		if msg.TS == ts {
+			next := msg.Delivery.Update(d)
+			if next == msg.Delivery {
+				return false
+			}
+			m.messages[i].Delivery = next
+			m.cache = nil
+			m.dirty()
+			return true
+		}
+	}
+	return false
+}
+
+// MarkReadThrough marks every message at or before ts read (see
+// core.Delivery.Read). Returns true if any indicator changed.
+func (m *Model) MarkReadThrough(ts string) bool {
+	changed := false
+	for i, msg := range m.messages {
+		if msg.TS > ts {
+			continue
+		}
+		if next := msg.Delivery.Read(); next != msg.Delivery {
+			m.messages[i].Delivery = next
+			changed = true
+		}
+	}
+	if changed {
+		m.cache = nil
+		m.dirty()
+	}
+	return changed
+}
+
 // RemoveMessageByTS removes a message with the given TS, adjusting the
 // selected index so it remains valid. Returns true if the message was
 // found and removed. Invalidates the render cache.
@@ -2236,6 +2274,7 @@ func (m *Model) renderMessagePlain(msg MessageItem, width int, avatarStr string,
 	if msg.IsEdited {
 		editedMark = " " + styles.Timestamp.Render("(edited)")
 	}
+	editedMark += DeliveryMark(msg.Delivery)
 
 	// Pre-attachment row count, so attachment rows can compute their
 	// absolute row index (used as the sixelRows key).

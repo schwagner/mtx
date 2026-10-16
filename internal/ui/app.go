@@ -968,6 +968,7 @@ func (a *App) update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		a.typing,
 		a.bootstrap,
 		reduceReactions,
+		reduceDelivery,
 		reduceThreads,
 		reduceActivity,
 		reduceFocus,

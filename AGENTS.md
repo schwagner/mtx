@@ -87,6 +87,15 @@ internal/config/        TOML config (slk's format)
   shows a colored initial tile for users with no avatar, while one
   loads, and when images are off. An avatar changed mid-session shows
   after a restart.
+- **Delivery indicators** (`delivery.go`) on own messages, only in
+  portals whose bridge advertises `read_receipts` in
+  `com.beeper.room_features` (Signal, Google Messages; not Slack):
+  ✓ sent, ✓✓ delivered, ✓✓ in the accent color once read, ✗ failed.
+  Read comes from recipients' (ghosts') read receipts, never the bridge
+  bot's; delivered and failed from the bot's
+  `com.beeper.message_send_status` events, which a bridge sends only
+  with `message_status_events: true`. Live changes arrive as
+  `MessageDeliveryMsg` / `MessagesReadMsg`.
 - **Threads and Activity views** are answered from the local database
   (threads you are in; mentions/highlights), since Matrix has no
   equivalent of Slack's thread-subscription or activity-feed APIs.
@@ -135,6 +144,7 @@ scrollbars, date formatting, case folding, or ID formatting: it already exists.
 | Extract links from message text | `messages.ExtractLinks` |
 | Does message text mention the current user? | `mention.InText(text, selfUserID)` |
 | Reaction pill rendering | `messages.ReactionPillText` |
+| Delivery indicator after a header timestamp | `messages.DeliveryMark(d)`; status rules `core.Delivery.Update` / `.Read` |
 | Date label from a Slack ts | `messages.DateFromTS`, `messages.FormatDateSeparator`, `messages.FormatShortDate` (compact form for a message header: "Today", "Jan 2") |
 | Date-qualified timestamp for the selected message header | `messages.LongTimestamp(ts, short)`, `messages.SelectedHeader(rendered, header, ts, short, maxWidth)`; any other header timestamp swap that must fit the width budget: `messages.ReplaceHeaderTimestamp(rendered, header, short, replacement, maxWidth)` |
 | mpdm channel name → human name | `slackfmt.FormatMPDMName` |

@@ -10,6 +10,7 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
+	"github.com/schwagner/mtx/internal/core"
 	"github.com/schwagner/mtx/internal/debuglog"
 	emojiutil "github.com/schwagner/mtx/internal/emoji"
 
@@ -567,6 +568,58 @@ func (m *Model) UpdateMessageInPlace(ts, newText string) bool {
 		}
 	}
 	return false
+}
+
+// SetDelivery applies a delivery report to the parent or reply ts (see
+// core.Delivery.Update). Returns true if its indicator changed.
+func (m *Model) SetDelivery(ts string, d core.Delivery) bool {
+	msg := m.messageByTS(ts)
+	if msg == nil {
+		return false
+	}
+	next := msg.Delivery.Update(d)
+	if next == msg.Delivery {
+		return false
+	}
+	msg.Delivery = next
+	m.InvalidateCache()
+	return true
+}
+
+// MarkReadThrough marks the parent and every reply at or before ts read
+// (see core.Delivery.Read). Returns true if any indicator changed.
+func (m *Model) MarkReadThrough(ts string) bool {
+	changed := false
+	mark := func(msg *messages.MessageItem) {
+		if msg.TS == "" || msg.TS > ts {
+			return
+		}
+		if next := msg.Delivery.Read(); next != msg.Delivery {
+			msg.Delivery = next
+			changed = true
+		}
+	}
+	mark(&m.parent)
+	for i := range m.replies {
+		mark(&m.replies[i])
+	}
+	if changed {
+		m.InvalidateCache()
+	}
+	return changed
+}
+
+// messageByTS is the parent or reply with TS ts, or nil.
+func (m *Model) messageByTS(ts string) *messages.MessageItem {
+	if m.parent.TS == ts {
+		return &m.parent
+	}
+	for i := range m.replies {
+		if m.replies[i].TS == ts {
+			return &m.replies[i]
+		}
+	}
+	return nil
 }
 
 // RemoveMessageByTS removes a reply by TS, adjusting the selected
@@ -2039,6 +2092,7 @@ func (m *Model) blockkitContext(msg messages.MessageItem, userNames, channelName
 
 func (m *Model) renderThreadMessage(msg messages.MessageItem, width int, userNames map[string]string, channelNames map[string]string, isSelected bool) (string, []func(io.Writer) error, []reactionEntryHit, string, int) {
 	line := styles.Username(msg.UserID, m.coloredUsernames).Render(msg.UserName) + messages.AuthorStatusSuffix(m.userStatuses, msg.UserID, time.Now()) + lipgloss.NewStyle().Background(styles.Background).Render("  ") + styles.Timestamp.Render(msg.Timestamp)
+	line += messages.DeliveryMark(msg.Delivery)
 
 	contentWidth := width - 4
 	if contentWidth < 20 {

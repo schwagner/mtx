@@ -283,6 +283,9 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 			evt.TimelineRowID = tuple.Timeline
 			b.handleTimelineEvent(ctx, roomID, evt)
 		}
+		if len(sr.Receipts) > 0 {
+			b.handleReceipts(ctx, roomID, sr.Receipts)
+		}
 	}
 
 	for n := range sc.Notifications {
@@ -383,6 +386,9 @@ func (b *Backend) handleTimelineEvent(ctx context.Context, roomID id.RoomID, evt
 	case event.EventRedaction.Type:
 		b.handleRedaction(ctx, roomID, evt)
 		return
+	case event.BeeperMessageStatus.Type:
+		b.handleSendStatus(ctx, roomID, evt)
+		return
 	}
 	if evt.RelationType == event.RelReplace {
 		b.emitEdit(ctx, roomID, evt)
@@ -462,7 +468,8 @@ func (b *Backend) handleDecrypted(ed *jsoncmd.EventsDecrypted) {
 	ctx := b.ctx()
 	for _, evt := range ed.Events {
 		switch {
-		case effectiveType(evt) == event.EventReaction.Type:
+		case effectiveType(evt) == event.EventReaction.Type,
+			effectiveType(evt) == event.BeeperMessageStatus.Type:
 			b.handleTimelineEvent(ctx, ed.RoomID, evt)
 		case evt.RelationType == event.RelReplace:
 			b.emitEdit(ctx, ed.RoomID, evt)
@@ -630,6 +637,7 @@ func (b *Backend) convert(ctx context.Context, roomID id.RoomID, evts []*databas
 	if err != nil {
 		b.log.Warn().Err(err).Msg("loading reactions")
 	}
+	delivery := b.deliveryStatuses(ctx, roomID, evts)
 
 	items := make([]messages.MessageItem, 0, len(ids))
 	for _, evt := range evts {
@@ -657,6 +665,7 @@ func (b *Backend) convert(ctx context.Context, roomID id.RoomID, evts []*databas
 		if r := reactions[evt.ID]; r != nil {
 			item.Reactions = reactionItems(r, me)
 		}
+		item.Delivery = delivery[evt.ID]
 		items = append(items, item)
 	}
 	return items

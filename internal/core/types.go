@@ -32,6 +32,10 @@ type MessageItem struct {
 	Reactions   []ReactionItem
 	Attachments []Attachment
 	IsEdited    bool
+	// Delivery is how far one of the user's own messages has got, on
+	// services that report it (bridged networks such as Signal). The
+	// zero value shows nothing.
+	Delivery Delivery
 	// Subtype mirrors Slack's `subtype` field on a message event.
 	// Currently we only act on "thread_broadcast" (a thread reply that
 	// was also sent to the channel) so we can render a label above it.
@@ -45,6 +49,37 @@ type MessageItem struct {
 	// `attachments` field (color stripe + title + fields style bot
 	// cards). Rendered after Blocks.
 	LegacyAttachments []blocks.LegacyAttachment
+}
+
+// Delivery is the progress of an own message toward its recipients.
+type Delivery uint8
+
+const (
+	DeliveryNone      Delivery = iota // not reported: no indicator
+	DeliverySent                      // accepted by the server
+	DeliveryDelivered                 // reached a recipient's device
+	DeliveryRead                      // a recipient has read it
+	DeliveryFailed                    // the service rejected it
+)
+
+// Update is d after a status report of next. Reports normally only
+// advance a message, but a bridge may report failure after "sent" (or
+// success after a retry), so they replace d — except that nothing
+// undoes a read, which reports for earlier stages can arrive after.
+func (d Delivery) Update(next Delivery) Delivery {
+	if d == DeliveryRead || next == DeliveryNone {
+		return d
+	}
+	return next
+}
+
+// Read is d once a recipient has read past the message. A message with
+// no status, or one that failed, is unaffected.
+func (d Delivery) Read() Delivery {
+	if d == DeliverySent || d == DeliveryDelivered {
+		return DeliveryRead
+	}
+	return d
 }
 
 // Attachment represents a file or image attached to a message.
