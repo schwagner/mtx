@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"slices"
 	"sort"
 	"strings"
@@ -57,6 +58,8 @@ type Backend struct {
 	// avatars are users' avatar mxc URLs, like names: the first room
 	// that states one wins until a member event changes it.
 	avatars map[id.UserID]id.ContentURIString
+	// mutes are rooms' com.beeper.mute muted_until (see mute.go).
+	mutes map[id.RoomID]int64
 	// activeRoom is the room the user is looking at; its events don't
 	// notify.
 	activeRoom id.RoomID
@@ -99,6 +102,7 @@ func Open(dbPath string, pickleKey []byte, log zerolog.Logger) (*Backend, error)
 		invites: make(map[id.RoomID]*database.InvitedRoom),
 		names:   make(map[id.UserID]string),
 		avatars: make(map[id.UserID]id.ContentURIString),
+		mutes:   make(map[id.RoomID]int64),
 		waiters: make(map[string]chan sendResult),
 		echoed:  make(map[string]*database.Event),
 		synced:  make(chan struct{}),
@@ -225,6 +229,8 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 
 	b.mu.Lock()
 	railBefore := b.railItemsLocked()
+	mutedBefore := b.mutedSetLocked()
+	b.learnMutesLocked(sc)
 	for _, roomID := range sc.LeftRooms {
 		delete(b.rooms, roomID)
 		delete(b.invites, roomID)
@@ -263,6 +269,11 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 		}
 	}
 	if len(sc.LeftRooms) > 0 {
+		listChanged = true
+	}
+	// A mute set or lifted (or a timed one run out) restyles rows the
+	// room metadata says nothing about.
+	if !maps.Equal(mutedBefore, b.mutedSetLocked()) {
 		listChanged = true
 	}
 	b.mu.Unlock()
@@ -323,6 +334,7 @@ func (b *Backend) handleSync(sc *jsoncmd.SyncComplete) {
 	} else {
 		for _, room := range append(newRooms, changedRooms...) {
 			if item, ok := b.channelItem(room); ok && b.inWorkspace(room.ID, active) {
+				item.IsMuted = b.muted(room.ID)
 				b.emit(ui.ConversationOpenedMsg{
 					TeamID:     active,
 					Item:       item,
@@ -537,7 +549,7 @@ func (b *Backend) notify(n jsoncmd.SyncNotification) {
 	active := b.activeRoom
 	room := b.rooms[n.Event.RoomID]
 	b.mu.Unlock()
-	if n.Event.RoomID == active {
+	if n.Event.RoomID == active || (!n.Highlight && b.muted(n.Event.RoomID)) {
 		return
 	}
 	title := b.displayName(n.Event.Sender)
@@ -913,9 +925,11 @@ func (b *Backend) channelListLocked(ws string) []sidebar.ChannelItem {
 	sort.Slice(rooms, func(i, j int) bool {
 		return rooms[i].SortingTimestamp.After(rooms[j].SortingTimestamp.Time)
 	})
+	now := time.Now()
 	var items []sidebar.ChannelItem
 	for _, r := range rooms {
 		if item, ok := b.channelItem(r); ok {
+			item.IsMuted = b.mutedLocked(r.ID, now)
 			items = append(items, item)
 		}
 	}
@@ -932,6 +946,9 @@ func ptrEq[T comparable](a, b *T) bool {
 // Workspace builds the TUI's initial workspace snapshot.
 func (b *Backend) Workspace(ctx context.Context) (ui.WorkspaceReadyMsg, error) {
 	if err := b.loadRooms(ctx); err != nil {
+		return ui.WorkspaceReadyMsg{}, err
+	}
+	if err := b.loadMutes(ctx); err != nil {
 		return ui.WorkspaceReadyMsg{}, err
 	}
 	if _, _, err := b.loadSpaces(ctx); err != nil {
@@ -969,7 +986,9 @@ func (b *Backend) ReadStates() map[string]core.ReadState {
 	now := time.Now()
 	for roomID, r := range b.rooms {
 		mentions := r.UnreadHighlights
-		if r.DMUserID != nil {
+		if r.DMUserID != nil && !b.mutedLocked(roomID, now) {
+			// Every message in a DM is for the user, unless it is
+			// muted.
 			mentions = r.UnreadNotifications
 		}
 		// The sidebar hides conversations whose LastReadTS is older than

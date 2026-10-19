@@ -96,6 +96,12 @@ internal/config/        TOML config (slk's format)
   `com.beeper.message_send_status` events, which a bridge sends only
   with `message_status_events: true`. Live changes arrive as
   `MessageDeliveryMsg` / `MessagesReadMsg`.
+- **Mutes** (`mute.go`): a room is muted by `com.beeper.mute` room
+  account data (how bridgev2 bridges such as mautrix-slack mirror a
+  remote mute on Beeper) or by a non-notifying room push rule / room-ID
+  override rule (bridgev2 elsewhere, gomuks, Element). Muted rooms get
+  `ChannelItem.IsMuted`, stay off the rail's dots and notify only for
+  mentions; a change in a sync refreshes the sidebar.
 - **Threads and Activity views** are answered from the local database
   (threads you are in; mentions/highlights), since Matrix has no
   equivalent of Slack's thread-subscription or activity-feed APIs.

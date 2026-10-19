@@ -5,6 +5,7 @@ import (
 	"maps"
 	"slices"
 	"strings"
+	"time"
 	"unicode"
 
 	"go.mau.fi/gomuks/pkg/hicli/database"
@@ -170,14 +171,15 @@ func (b *Backend) railItemsLocked() []workspace.WorkspaceItem {
 	return items
 }
 
-// UnreadWorkspaces returns the workspaces with an unread room, for the
-// rail's dots.
+// UnreadWorkspaces returns the workspaces with an unread room that is
+// not muted (what the sidebar shows as unread), for the rail's dots.
 func (b *Backend) UnreadWorkspaces() []string {
 	b.mu.Lock()
 	defer b.mu.Unlock()
+	now := time.Now()
 	set := map[string]bool{}
 	for roomID, r := range b.rooms {
-		if _, ok := b.channelItem(r); !ok || !roomUnread(r) {
+		if _, ok := b.channelItem(r); !ok || !roomUnread(r) || b.mutedLocked(roomID, now) {
 			continue
 		}
 		for _, ws := range b.workspacesOfLocked(roomID) {
