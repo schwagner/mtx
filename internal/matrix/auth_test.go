@@ -145,3 +145,18 @@ func TestNeedsApproval(t *testing.T) {
 		t.Error("non-401 errors must not ask for approval")
 	}
 }
+
+func TestSessionEnded(t *testing.T) {
+	invalidGrant := mautrix.HTTPError{Response: &http.Response{StatusCode: http.StatusBadRequest},
+		RespError: &mautrix.RespError{ErrCode: "invalid_grant", OAuth: true}}
+	if err := sessionEnded(invalidGrant); err != nil {
+		t.Errorf("refresh refused: err = %v, want nil (session is gone)", err)
+	}
+	if err := sessionEnded(nil); !errors.Is(err, ErrSessionNotEnded) {
+		t.Errorf("refresh succeeded: err = %v, want ErrSessionNotEnded", err)
+	}
+	other := errors.New("connection refused")
+	if err := sessionEnded(other); !errors.Is(err, other) {
+		t.Errorf("network error: err = %v, want it wrapped", err)
+	}
+}

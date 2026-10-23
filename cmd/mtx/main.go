@@ -137,13 +137,23 @@ func logout() error {
 	if err != nil {
 		return err
 	}
-	if userID != "" {
-		if err := b.Logout(ctx); err != nil {
-			fmt.Fprintf(os.Stderr, "warning: server logout failed: %v\n", err)
+	dataDir := xdgData()
+	if userID == "" {
+		b.Stop()
+		fmt.Printf("Not logged in (no account in %s).\n", dataDir)
+		return nil
+	}
+	// The local data is the only way to end the session from here, so
+	// it stays until the server has ended it.
+	if err := b.Logout(ctx); err != nil {
+		b.Stop()
+		hint := "remove the session in another client"
+		if u := b.AccountManagementURL(ctx); u != "" {
+			hint = "remove the session at " + u
 		}
+		return fmt.Errorf("server logout failed: %w\nLocal data kept in %s; run mtx logout again, or %s and delete that directory", err, dataDir, hint)
 	}
 	b.Stop()
-	dataDir := xdgData()
 	for _, name := range []string{"mtx.db", "mtx.db-wal", "mtx.db-shm", "pickle.key"} {
 		_ = os.Remove(filepath.Join(dataDir, name))
 	}

@@ -205,6 +205,16 @@ func NeedsApproval(err error) bool {
 	return errors.As(err, &httpErr) && httpErr.IsStatus(http.StatusUnauthorized)
 }
 
+// AccountManagementURL is the authorization server's account page, or
+// "" for a server without one.
+func (b *Backend) AccountManagementURL(ctx context.Context) string {
+	meta, err := b.cli.Client.OAuthGetServerMetadata(ctx)
+	if err != nil || meta == nil {
+		return ""
+	}
+	return meta.AccountManagementURI
+}
+
 func crossSigningResetURL(meta *oauth.ServerMetadata) string {
 	if meta == nil || meta.AccountManagementURI == "" {
 		return ""
@@ -223,12 +233,37 @@ func crossSigningResetURL(meta *oauth.ServerMetadata) string {
 	return u.String()
 }
 
+// ErrSessionNotEnded means the authorization server accepted the
+// revocation but the session is still alive.
+var ErrSessionNotEnded = errors.New("the server did not end the session")
+
 // Logout ends this device's session on the server: an OAuth session by
 // revoking its tokens, a password session with /logout.
 func (b *Backend) Logout(ctx context.Context) error {
-	if b.UsesOAuth() {
-		return b.cli.Client.OAuthRevokeToken(ctx)
+	if !b.UsesOAuth() {
+		_, err := b.cli.Client.Logout(ctx)
+		return err
 	}
-	_, err := b.cli.Client.Logout(ctx)
-	return err
+	if err := b.cli.Client.OAuthRevokeToken(ctx); err != nil {
+		return err
+	}
+	// A failed revocation looks like success: MAS answers 200 to a
+	// token it does not consider valid (RFC 7009 §2.2) and mautrix
+	// drops 401s. A forced refresh tells the two apart.
+	return sessionEnded(b.cli.Client.OAuthRefreshToken(ctx, forceRefresh))
+}
+
+// forceRefresh as OAuthRefreshToken's buffer refreshes however long
+// the access token has left.
+const forceRefresh = 100 * 365 * 24 * time.Hour
+
+func sessionEnded(refreshErr error) error {
+	switch {
+	case refreshErr == nil:
+		return ErrSessionNotEnded
+	case errors.Is(refreshErr, mautrix.ErrOAuthInvalidGrant):
+		return nil
+	default:
+		return fmt.Errorf("checking that the session ended: %w", refreshErr)
+	}
 }
