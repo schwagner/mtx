@@ -10,7 +10,10 @@ Matrix one built on [mautrix-go](https://github.com/mautrix/go) and gomuks'
 
 ## What works
 
-- Password login; device verification with your recovery key, or first-time
+- Login through the browser on servers with next-generation auth (Matrix
+  Authentication Service, e.g. matrix.org): mtx prints a link and a code,
+  you approve it in any browser on any device. Password login elsewhere.
+- Device verification with your recovery key, or first-time
   setup of cross-signing, secret storage and key backup for a new account
 - Encrypted rooms and DMs (Megolm, via mautrix's pure-Go `goolm`); history
   from before this device existed is restored from key backup
@@ -42,8 +45,8 @@ Matrix one built on [mautrix-go](https://github.com/mautrix/go) and gomuks'
   bridged rooms whose bridge reports them (e.g. mautrix-signal)
 - Vi normal mode in the composer (see below)
 
-Not done yet: SSO/OIDC login (servers that only offer it, such as those
-behind Matrix Authentication Service, cannot be used yet), interactive emoji
+Not done yet: legacy SSO login (Synapse's own OIDC/SAML/CAS without MAS)
+and OAuth servers without the device-code grant, interactive emoji
 (SAS) verification of other people's devices, room creation/settings beyond
 DMs, workspace-wide search (Ctrl+F), presence.
 

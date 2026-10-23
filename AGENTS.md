@@ -102,6 +102,14 @@ internal/config/        TOML config (slk's format)
   override rule (bridgev2 elsewhere, gomuks, Element). Muted rooms get
   `ChannelItem.IsMuted`, stay off the rail's dots and notify only for
   mentions; a change in a sync refreshes the sidebar.
+- **Login** (`auth.go`): `LoginMethods` reads `/login` and the OAuth
+  server metadata. With next-gen auth (MAS) offering the device-code
+  grant, mtx registers itself as an OAuth client and logs in by device
+  code (`StartDeviceLogin` / `FinishDeviceLogin`); hicli stores and
+  refreshes the tokens. Otherwise password. An OAuth session has no
+  password, so first-time cross-signing setup is authorized on the
+  server's account page (`CrossSigningResetURL`), and logout revokes
+  the token (`Backend.Logout`).
 - **Threads and Activity views** are answered from the local database
   (threads you are in; mentions/highlights), since Matrix has no
   equivalent of Slack's thread-subscription or activity-feed APIs.

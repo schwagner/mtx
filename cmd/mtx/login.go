@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/signal"
 	"strings"
 
 	"golang.org/x/term"
@@ -60,7 +61,9 @@ func (p *prompter) yes(prompt string, def bool) (bool, error) {
 	return strings.HasPrefix(strings.ToLower(s), "y"), nil
 }
 
-// login runs the interactive password login.
+// login runs the interactive login: through the browser (OAuth device
+// code) when the homeserver offers it, otherwise with a password. The
+// password is returned for verify, empty after a browser login.
 func login(ctx context.Context, b *matrix.Backend, p *prompter) (password string, err error) {
 	fmt.Println("Log in to Matrix.")
 	raw, err := p.line("User ID (e.g. @you:example.com)", "")
@@ -79,6 +82,19 @@ func login(ctx context.Context, b *matrix.Backend, p *prompter) (password string
 	if err != nil {
 		return "", err
 	}
+	methods, err := b.LoginMethods(ctx, hsURL)
+	if err != nil {
+		return "", fmt.Errorf("asking %s how to log in: %w", hsURL, err)
+	}
+	switch {
+	case methods.OAuthDeviceCode:
+		return "", deviceLogin(ctx, b, hsURL, userID)
+	case methods.Password:
+	case methods.OAuth || methods.SSO:
+		return "", errors.New("this homeserver only offers browser login without a device code (SSO), which mtx does not support yet")
+	default:
+		return "", errors.New("this homeserver offers no login method mtx supports")
+	}
 	password, err = p.secret("Password")
 	if err != nil {
 		return "", err
@@ -88,6 +104,33 @@ func login(ctx context.Context, b *matrix.Backend, p *prompter) (password string
 	}
 	fmt.Println("Logged in.")
 	return password, nil
+}
+
+// deviceLogin logs in through the homeserver's authorization server:
+// the user approves the login in any browser, on any device.
+func deviceLogin(ctx context.Context, b *matrix.Backend, hsURL string, userID id.UserID) error {
+	d, err := b.StartDeviceLogin(ctx, hsURL, userID)
+	if err != nil {
+		return err
+	}
+	fmt.Println()
+	fmt.Println("Approve this login in a browser (on any device):")
+	fmt.Println()
+	fmt.Println("    " + d.URL)
+	fmt.Println()
+	if d.CodeInURL {
+		fmt.Printf("and check that it shows the code %s.\n", d.Code)
+	} else {
+		fmt.Printf("and enter the code %s.\n", d.Code)
+	}
+	fmt.Println("Waiting for approval (Ctrl-C to cancel)...")
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
+	defer stop()
+	if err := b.FinishDeviceLogin(ctx, d); err != nil {
+		return fmt.Errorf("login failed: %w", err)
+	}
+	fmt.Println("Logged in.")
+	return nil
 }
 
 // verify makes this device trusted: it unlocks secret storage with the
@@ -108,12 +151,7 @@ func verify(ctx context.Context, b *matrix.Backend, p *prompter, password string
 		if !ok {
 			return errors.New("encryption setup declined; mtx needs a verified device to read encrypted rooms")
 		}
-		if password == "" {
-			if password, err = p.secret("Account password (to authorize the setup)"); err != nil {
-				return err
-			}
-		}
-		key, err := b.Bootstrap(ctx, password)
+		key, err := bootstrap(ctx, b, p, password)
 		if err != nil {
 			return fmt.Errorf("setting up encryption: %w", err)
 		}
@@ -142,4 +180,38 @@ func verify(ctx context.Context, b *matrix.Backend, p *prompter, password string
 		fmt.Printf("Verification failed: %v\n", err)
 	}
 	return errors.New("device verification failed")
+}
+
+// bootstrap sets up cross-signing and key backup. The server must
+// authorize publishing the cross-signing keys: a password session
+// proves it with the password, an OAuth session by the user allowing
+// it on the authorization server's account page. A brand-new account
+// needs neither, so an OAuth session tries without first.
+func bootstrap(ctx context.Context, b *matrix.Backend, p *prompter, password string) (string, error) {
+	if !b.UsesOAuth() {
+		if password == "" {
+			var err error
+			if password, err = p.secret("Account password (to authorize the setup)"); err != nil {
+				return "", err
+			}
+		}
+		return b.Bootstrap(ctx, password)
+	}
+	key, err := b.Bootstrap(ctx, "")
+	if err == nil {
+		return key, nil
+	}
+	resetURL := b.CrossSigningResetURL(ctx)
+	if resetURL == "" || !matrix.NeedsApproval(err) {
+		return "", err
+	}
+	fmt.Println()
+	fmt.Println("Your homeserver needs you to allow this in the browser first:")
+	fmt.Println()
+	fmt.Println("    " + resetURL)
+	fmt.Println()
+	if _, err := p.line("Press Enter once you have allowed it", ""); err != nil {
+		return "", err
+	}
+	return b.Bootstrap(ctx, "")
 }

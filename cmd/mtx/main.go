@@ -138,7 +138,7 @@ func logout() error {
 		return err
 	}
 	if userID != "" {
-		if _, err := b.Client().Client.Logout(ctx); err != nil {
+		if err := b.Logout(ctx); err != nil {
 			fmt.Fprintf(os.Stderr, "warning: server logout failed: %v\n", err)
 		}
 	}
