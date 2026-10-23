@@ -55,13 +55,13 @@ func TestResolveSpaces(t *testing.T) {
 
 func TestSpaceInitials(t *testing.T) {
 	for name, want := range map[string]string{
-		"Slack (Techs)": "ST",
-		"Signal":        "SI",
-		"🙂 Fun Club":    "FC",
-		"Équipe":        "ÉQ",
-		"x":             "X",
-		"(( ))":         "?",
-		"":              "?",
+		"Slack (Work)": "SW",
+		"Signal":       "SI",
+		"🙂 Fun Club":   "FC",
+		"Équipe":       "ÉQ",
+		"x":            "X",
+		"(( ))":        "?",
+		"":             "?",
 	} {
 		if got := spaceInitials(name); got != want {
 			t.Errorf("spaceInitials(%q) = %q, want %q", name, got, want)
@@ -94,7 +94,7 @@ func spacesBackend(t *testing.T) *Backend {
 		room("!general", "general", 3*time.Minute),
 		room("!shared", "shared", 2*time.Minute),
 		room("!dm", "beth", time.Minute),
-		space("!slack", "Slack (Techs)"),
+		space("!slack", "Slack (Work)"),
 		space("!signal", "Signal"),
 	} {
 		b.rooms[r.ID] = r
@@ -135,7 +135,7 @@ func TestRailItems(t *testing.T) {
 	for _, it := range items {
 		got = append(got, it.ID+"="+it.Name+"/"+it.Initials)
 	}
-	want := []string{string(testMe) + "=example.com/EX", "!slack=Slack (Techs)/ST", "!signal=Signal/SI"}
+	want := []string{string(testMe) + "=example.com/EX", "!slack=Slack (Work)/SW", "!signal=Signal/SI"}
 	if !slices.Equal(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}

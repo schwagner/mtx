@@ -18,7 +18,7 @@ import (
 
 // The TUI's workspace rail lists the user's top-level Matrix spaces, the
 // way Cinny's does: bridges such as mautrix-slack and mautrix-signal put
-// their rooms in a space per login, so the rail reads "Slack (Techs)",
+// their rooms in a space per login, so the rail reads "Slack (Work)",
 // "Signal". Rooms in no space are listed under Home, the first entry,
 // whose workspace ID is the user ID. A room in a subspace belongs to the
 // top-level space above it; a room in two spaces is listed in both.
@@ -51,8 +51,8 @@ func resolveSpaces(top []id.RoomID, graph map[id.RoomID][]*database.SpaceEdge) m
 }
 
 // spaceInitials is the rail label for a space name: the first letters of
-// its first two words, ignoring punctuation and emoji ("Slack (Techs)" is
-// "ST"), or the first two letters of a single word.
+// its first two words, ignoring punctuation and emoji ("Slack (Work)" is
+// "SW"), or the first two letters of a single word.
 func spaceInitials(name string) string {
 	words := strings.FieldsFunc(name, func(r rune) bool {
 		return !unicode.IsLetter(r) && !unicode.IsDigit(r)

@@ -27,7 +27,7 @@ Matrix one built on [mautrix-go](https://github.com/mautrix/go) and gomuks'
   finds them); set `hide_inactive_after_days = 0` under `[sidebar]` in
   `~/.config/mtx/config.toml` to keep everything listed
 - Spaces in the left rail, like Cinny: Home (rooms in no space) first, then
-  each top-level space, e.g. a bridge's "Slack (Techs)" or "Signal". Switch
+  each top-level space, e.g. a bridge's "Slack (Work)" or "Signal". Switch
   with 1–9, a click, or the workspace finder; subspaces fold into their
   top-level space
 - Threads view (threads you are in) and Activity view (your mentions), for
@@ -35,16 +35,24 @@ Matrix one built on [mautrix-go](https://github.com/mautrix/go) and gomuks'
 - Local full-text search of decrypted messages (`/` in a room)
 - File upload (paste or path) and download (`d`), encrypted in encrypted
   rooms
+- Inline images (kitty, sixel or half-block; `image_protocol` under
+  `[appearance]`) and user avatars beside message authors
+- Clickable links; bare URLs in sent messages are linkified
+- Delivery indicators on your own messages (✓ sent, ✓✓ delivered/read) in
+  bridged rooms whose bridge reports them (e.g. mautrix-signal)
+- Vi normal mode in the composer (see below)
 
-Not done yet: inline images, avatars, interactive emoji (SAS) verification of
-other people's devices, room creation/settings beyond DMs, workspace-wide search (Ctrl+F), presence.
+Not done yet: SSO/OIDC login (servers that only offer it, such as those
+behind Matrix Authentication Service, cannot be used yet), interactive emoji
+(SAS) verification of other people's devices, room creation/settings beyond
+DMs, workspace-wide search (Ctrl+F), presence.
 
 ## Install
 
 With Nix:
 
 ```sh
-nix run git+file:///path/to/mtx      # or: nix build, then ./result/bin/mtx
+nix run github:schwagner/mtx         # or: nix build, then ./result/bin/mtx
 ```
 
 From source (needs Go 1.26+, a C compiler; libX11 headers on Linux):
@@ -61,7 +69,7 @@ them.
 ```
 $ mtx
 Log in to Matrix.
-User ID (e.g. @you:example.com): @andrew:matrix.example.com
+User ID (e.g. @you:example.com): @alice:matrix.example.com
 Homeserver URL [https://matrix.example.com]:
 Password:
 Logged in.
